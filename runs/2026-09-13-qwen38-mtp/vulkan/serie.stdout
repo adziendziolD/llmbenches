@@ -1,0 +1,64 @@
+### baseline: starte Server
+### baseline: bereit, VRAM 30,70 GiB
+  baseline code rep1: 22.19 t/s (256 tok)
+  baseline code rep2: 18.80 t/s (256 tok)
+  baseline code rep3: 19.18 t/s (256 tok)
+  baseline code rep4: 20.63 t/s (256 tok)
+  baseline prosa rep1: 22.74 t/s (256 tok)
+  baseline prosa rep2: 17.75 t/s (256 tok)
+  baseline prosa rep3: 23.36 t/s (256 tok)
+  baseline prosa rep4: 23.36 t/s (256 tok)
+  baseline reasoning rep1: 22.65 t/s (256 tok)
+  baseline reasoning rep2: 17.66 t/s (256 tok)
+  baseline reasoning rep3: 20.06 t/s (256 tok)
+  baseline reasoning rep4: 21.88 t/s (256 tok)
+### baseline: geschrieben nach /tmp/claude-1000/-home-alex/dce8ff16-540f-4966-9f40-40ea0c387b96/scratchpad/results/baseline.json
+### baseline: fertig (rc=0)
+### mtp1: starte Server
+### mtp1: bereit, VRAM 31,48 GiB
+  mtp1 code rep1: 28.43 t/s (256 tok)
+  mtp1 code rep2: 30.40 t/s (256 tok)
+  mtp1 code rep3: 30.26 t/s (256 tok)
+  mtp1 code rep4: 25.58 t/s (256 tok)
+  mtp1 prosa rep1: 26.18 t/s (256 tok)
+  mtp1 prosa rep2: 28.06 t/s (256 tok)
+  mtp1 prosa rep3: 27.73 t/s (256 tok)
+  mtp1 prosa rep4: 27.79 t/s (256 tok)
+  mtp1 reasoning rep1: 30.97 t/s (256 tok)
+  mtp1 reasoning rep2: 26.73 t/s (256 tok)
+  mtp1 reasoning rep3: 24.78 t/s (256 tok)
+  mtp1 reasoning rep4: 24.91 t/s (256 tok)
+### mtp1: geschrieben nach /tmp/claude-1000/-home-alex/dce8ff16-540f-4966-9f40-40ea0c387b96/scratchpad/results/mtp1.json
+### mtp1: fertig (rc=0)
+### mtp2: starte Server
+### mtp2: bereit, VRAM 31,31 GiB
+  mtp2 code rep1: 31.48 t/s (256 tok)
+  mtp2 code rep2: 28.95 t/s (256 tok)
+  mtp2 code rep3: 31.38 t/s (256 tok)
+  mtp2 code rep4: 32.54 t/s (256 tok)
+  mtp2 prosa rep1: 28.95 t/s (256 tok)
+  mtp2 prosa rep2: 30.71 t/s (256 tok)
+  mtp2 prosa rep3: 29.93 t/s (256 tok)
+  mtp2 prosa rep4: 25.84 t/s (256 tok)
+  mtp2 reasoning rep1: 36.64 t/s (256 tok)
+  mtp2 reasoning rep2: 32.24 t/s (256 tok)
+  mtp2 reasoning rep3: 37.44 t/s (256 tok)
+  mtp2 reasoning rep4: 31.95 t/s (256 tok)
+### mtp2: geschrieben nach /tmp/claude-1000/-home-alex/dce8ff16-540f-4966-9f40-40ea0c387b96/scratchpad/results/mtp2.json
+### mtp2: fertig (rc=0)
+### mtp3: starte Server
+### mtp3: bereit, VRAM 31,82 GiB
+  mtp3 code rep1: 29.90 t/s (256 tok)
+  mtp3 code rep2: 27.34 t/s (256 tok)
+  mtp3 code rep3: 30.40 t/s (256 tok)
+  mtp3 code rep4: 26.22 t/s (256 tok)
+  mtp3 prosa rep1: 27.51 t/s (256 tok)
+  mtp3 prosa rep2: 25.12 t/s (256 tok)
+  mtp3 prosa rep3: 27.78 t/s (256 tok)
+  mtp3 prosa rep4: 25.30 t/s (256 tok)
+  mtp3 reasoning rep1: 40.91 t/s (256 tok)
+  mtp3 reasoning rep2: 36.13 t/s (256 tok)
+  mtp3 reasoning rep3: 34.05 t/s (256 tok)
+  mtp3 reasoning rep4: 37.86 t/s (256 tok)
+### mtp3: geschrieben nach /tmp/claude-1000/-home-alex/dce8ff16-540f-4966-9f40-40ea0c387b96/scratchpad/results/mtp3.json
+### mtp3: fertig (rc=0)

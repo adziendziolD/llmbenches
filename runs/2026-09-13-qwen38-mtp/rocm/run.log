@@ -1,0 +1,9 @@
+### baseline: starte Server
+### baseline: bereit, VRAM 30,95 GiB
+### baseline: fertig (rc=0)
+### mtp1: starte Server
+!! Server beendet, siehe /tmp/claude-1000/-home-alex/dce8ff16-540f-4966-9f40-40ea0c387b96/scratchpad/results-rocm/mtp1.server.log
+### mtp2: starte Server
+!! Server beendet, siehe /tmp/claude-1000/-home-alex/dce8ff16-540f-4966-9f40-40ea0c387b96/scratchpad/results-rocm/mtp2.server.log
+### mtp3: starte Server
+!! Server beendet, siehe /tmp/claude-1000/-home-alex/dce8ff16-540f-4966-9f40-40ea0c387b96/scratchpad/results-rocm/mtp3.server.log

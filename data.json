@@ -1,0 +1,534 @@
+{
+ "generated": "2026-09-13T21:02:18+02:00",
+ "runs": [
+  {
+   "id": "2026-09-13-qwen38-mtp",
+   "title": "MTP-Speculative-Decoding, Qwen3.8-Flash-Next",
+   "date": "2026-09-13",
+   "question": "Bringt der MTP-Draft-Head auf dieser Maschine Durchsatz, welches --spec-draft-n-max ist optimal, und wie schlaegt sich ROCm gegen Vulkan?",
+   "machine": {
+    "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "61 GiB, davon rund 58 nutzbar",
+    "OS": "Ubuntu 26.04, Kernel 7.0",
+    "ROCm": "System 7.2.4 (neuester von AMD angebotener Zweig)"
+   },
+   "model": {
+    "Modell": "Qwen3.8-Flash-Next UD-Q2_K_XL (73,45 GiB, Architektur qwen4exp)",
+    "Draft-Head": "mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf (2,6 GiB)",
+    "Build": "Unsloth-Fork b10909-mix-bea84f7, 0.4.0-dev, commit 329b6160f"
+   },
+   "method": {
+    "Kontext": "262144, cache-type-k/v q8_0",
+    "Aufteilung": "--fit on, --parallel 1, --load-mode none",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen je Konfiguration, 256 Tokens, ein Warmlauf vorab",
+    "Kennzahl": "Median der Einzelwerte"
+   },
+   "cmdline": "llama-server --device $DEVICE --ctx-size 262144 --fit on --cache-type-k q8_0 --cache-type-v q8_0 --load-mode none --parallel 1 -m Qwen3.8-Flash-Next-UD-Q2_K_XL-00001-of-00003.gguf [-md MTP/mtp-...-shared-Q8_0.gguf --spec-type draft-mtp --spec-draft-n-max N]",
+   "backends": {
+    "vulkan": {
+     "label": "Vulkan",
+     "device": "Vulkan0",
+     "detail": "Fork-Asset linux-x64-vulkan, Backend ~/llmstore/software/llama.cpp/vulkan-mtp/"
+    },
+    "rocm": {
+     "label": "ROCm",
+     "device": "ROCm0",
+     "detail": "Fork-Asset linux-x64-rocm-gfx120X, mitgelieferte Libs HIP 7.16.26332 / rocBLAS 5.7 / hipBLASLt 1.4, also neuer als System-ROCm 7.2.4. Backend ~/llmstore/software/llama.cpp/rocm-mtp/"
+    }
+   },
+   "configs": {
+    "baseline": {
+     "label": "ohne MTP",
+     "order": 0
+    },
+    "mtp1": {
+     "label": "MTP n-max 1",
+     "order": 1
+    },
+    "mtp2": {
+     "label": "MTP n-max 2",
+     "order": 2
+    },
+    "mtp3": {
+     "label": "MTP n-max 3",
+     "order": 3
+    }
+   },
+   "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+   },
+   "notes": [
+    "Mainline b10930 kennt das Flag --spec-type draft-mtp generisch, enthaelt aber keinen llama_model_qwen4exp::graph_mtp und ignoriert den Head still. Nur der Unsloth-Fork hat die vtable.",
+    "Der shared Draft-Head wirft beim Laden zwingend 'error loading model: ... draft head without its own token_embd.weight'. Das ist erwartet und harmlos, er bezieht Token-Embedding und Output-Projektion aus dem Hauptmodell.",
+    "-md muss explizit gesetzt werden, die Auto-Discovery ueberspringt den Unterordner MTP/.",
+    "--fit meldet in beiden Backends 'failed to measure the memory of the extra model, fitting without it' und rechnet den Draft-Head nicht ein. Auf Vulkan passte er zufaellig noch in den Rest, auf ROCm nicht: dort scheitern alle MTP-Konfigurationen an cudaMalloc out of memory fuer 2647 MiB. Abhilfe ist --fit-target, das eine Marge pro Geraet freihaelt.",
+    "Bei Nebenlaeufigkeit ueber 1 kippt der Gewinn laut Upstream-Diskussion ins Negative (0,81x bis 0,87x). Diese Messung gilt fuer --parallel 1."
+   ],
+   "results": {
+    "rocm": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": 30.95,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 15.55,
+        "median": 16.62,
+        "max": 17.17,
+        "mean": 16.49,
+        "spread_pct": 9.8,
+        "values": [
+         16.32,
+         17.17,
+         16.93,
+         15.55
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 120.1,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 15.13,
+        "median": 15.47,
+        "max": 16.18,
+        "mean": 15.56,
+        "spread_pct": 6.7,
+        "values": [
+         15.13,
+         16.18,
+         15.52,
+         15.42
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 118.0,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 15.24,
+        "median": 15.51,
+        "max": 15.59,
+        "mean": 15.46,
+        "spread_pct": 2.3,
+        "values": [
+         15.24,
+         15.59,
+         15.49,
+         15.53
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 140.6,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 15.13,
+       "median": 15.54,
+       "max": 17.17,
+       "mean": 15.84,
+       "spread_pct": 13.1,
+       "values": [
+        16.32,
+        17.17,
+        16.93,
+        15.55,
+        15.13,
+        16.18,
+        15.52,
+        15.42,
+        15.24,
+        15.59,
+        15.49,
+        15.53
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp1": {
+      "status": "failed",
+      "error": "allocating 2647.04 MiB on device 0: cudaMalloc failed: out of memory",
+      "vram_gib": null
+     },
+     "mtp2": {
+      "status": "failed",
+      "error": "allocating 2647.04 MiB on device 0: cudaMalloc failed: out of memory",
+      "vram_gib": null
+     },
+     "mtp3": {
+      "status": "failed",
+      "error": "allocating 2647.04 MiB on device 0: cudaMalloc failed: out of memory",
+      "vram_gib": null
+     }
+    },
+    "vulkan": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": 30.7,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 18.8,
+        "median": 19.91,
+        "max": 22.19,
+        "mean": 20.2,
+        "spread_pct": 17.1,
+        "values": [
+         22.19,
+         18.8,
+         19.18,
+         20.63
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 112.9,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 17.75,
+        "median": 23.05,
+        "max": 23.36,
+        "mean": 21.8,
+        "spread_pct": 24.4,
+        "values": [
+         22.74,
+         17.75,
+         23.36,
+         23.36
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 113.2,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 17.66,
+        "median": 20.97,
+        "max": 22.65,
+        "mean": 20.56,
+        "spread_pct": 23.8,
+        "values": [
+         22.65,
+         17.66,
+         20.06,
+         21.88
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 140.9,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 17.66,
+       "median": 21.26,
+       "max": 23.36,
+       "mean": 20.86,
+       "spread_pct": 26.8,
+       "values": [
+        22.19,
+        18.8,
+        19.18,
+        20.63,
+        22.74,
+        17.75,
+        23.36,
+        23.36,
+        22.65,
+        17.66,
+        20.06,
+        21.88
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp1": {
+      "status": "ok",
+      "vram_gib": 31.48,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 25.58,
+        "median": 29.34,
+        "max": 30.4,
+        "mean": 28.66,
+        "spread_pct": 16.4,
+        "values": [
+         28.43,
+         30.4,
+         30.26,
+         25.58
+        ],
+        "acceptance": 81.2,
+        "mean_len": 1.81,
+        "pred_n": 256,
+        "prompt_tps": 111.0,
+        "speedup": 1.474
+       },
+       "prosa": {
+        "n": 4,
+        "min": 26.18,
+        "median": 27.76,
+        "max": 28.06,
+        "mean": 27.44,
+        "spread_pct": 6.8,
+        "values": [
+         26.18,
+         28.06,
+         27.73,
+         27.79
+        ],
+        "acceptance": 64.9,
+        "mean_len": 1.64,
+        "pred_n": 256,
+        "prompt_tps": 110.3,
+        "speedup": 1.204
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 24.78,
+        "median": 25.82,
+        "max": 30.97,
+        "mean": 26.85,
+        "spread_pct": 24.0,
+        "values": [
+         30.97,
+         26.73,
+         24.78,
+         24.91
+        ],
+        "acceptance": 94.7,
+        "mean_len": 1.94,
+        "pred_n": 256,
+        "prompt_tps": 135.1,
+        "speedup": 1.231
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 24.78,
+       "median": 27.76,
+       "max": 30.97,
+       "mean": 27.65,
+       "spread_pct": 22.3,
+       "values": [
+        28.43,
+        30.4,
+        30.26,
+        25.58,
+        26.18,
+        28.06,
+        27.73,
+        27.79,
+        30.97,
+        26.73,
+        24.78,
+        24.91
+       ],
+       "acceptance": 79.4,
+       "mean_len": 1.79
+      },
+      "speedup": 1.306
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 31.31,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 28.95,
+        "median": 31.43,
+        "max": 32.54,
+        "mean": 31.09,
+        "spread_pct": 11.4,
+        "values": [
+         31.48,
+         28.95,
+         31.38,
+         32.54
+        ],
+        "acceptance": 67.6,
+        "mean_len": 2.33,
+        "pred_n": 256,
+        "prompt_tps": 107.5,
+        "speedup": 1.579
+       },
+       "prosa": {
+        "n": 4,
+        "min": 25.84,
+        "median": 29.44,
+        "max": 30.71,
+        "mean": 28.86,
+        "spread_pct": 16.5,
+        "values": [
+         28.95,
+         30.71,
+         29.93,
+         25.84
+        ],
+        "acceptance": 60.2,
+        "mean_len": 2.18,
+        "pred_n": 256,
+        "prompt_tps": 110.8,
+        "speedup": 1.277
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 31.95,
+        "median": 34.44,
+        "max": 37.44,
+        "mean": 34.57,
+        "spread_pct": 15.9,
+        "values": [
+         36.64,
+         32.24,
+         37.44,
+         31.95
+        ],
+        "acceptance": 85.6,
+        "mean_len": 2.67,
+        "pred_n": 256,
+        "prompt_tps": 135.3,
+        "speedup": 1.642
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 25.84,
+       "median": 31.43,
+       "max": 37.44,
+       "mean": 31.51,
+       "spread_pct": 36.9,
+       "values": [
+        31.48,
+        28.95,
+        31.38,
+        32.54,
+        28.95,
+        30.71,
+        29.93,
+        25.84,
+        36.64,
+        32.24,
+        37.44,
+        31.95
+       ],
+       "acceptance": 70.2,
+       "mean_len": 2.38
+      },
+      "speedup": 1.478
+     },
+     "mtp3": {
+      "status": "ok",
+      "vram_gib": 31.82,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 26.22,
+        "median": 28.62,
+        "max": 30.4,
+        "mean": 28.46,
+        "spread_pct": 14.6,
+        "values": [
+         29.9,
+         27.34,
+         30.4,
+         26.22
+        ],
+        "acceptance": 54.0,
+        "mean_len": 2.59,
+        "pred_n": 256,
+        "prompt_tps": 95.3,
+        "speedup": 1.437
+       },
+       "prosa": {
+        "n": 4,
+        "min": 25.12,
+        "median": 26.4,
+        "max": 27.78,
+        "mean": 26.42,
+        "spread_pct": 10.1,
+        "values": [
+         27.51,
+         25.12,
+         27.78,
+         25.3
+        ],
+        "acceptance": 45.1,
+        "mean_len": 2.33,
+        "pred_n": 256,
+        "prompt_tps": 96.2,
+        "speedup": 1.145
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 34.05,
+        "median": 37.0,
+        "max": 40.91,
+        "mean": 37.24,
+        "spread_pct": 18.5,
+        "values": [
+         40.91,
+         36.13,
+         34.05,
+         37.86
+        ],
+        "acceptance": 86.4,
+        "mean_len": 3.56,
+        "pred_n": 256,
+        "prompt_tps": 120.8,
+        "speedup": 1.764
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 25.12,
+       "median": 28.84,
+       "max": 40.91,
+       "mean": 30.71,
+       "spread_pct": 54.8,
+       "values": [
+        29.9,
+        27.34,
+        30.4,
+        26.22,
+        27.51,
+        25.12,
+        27.78,
+        25.3,
+        40.91,
+        36.13,
+        34.05,
+        37.86
+       ],
+       "acceptance": 58.8,
+       "mean_len": 2.73
+      },
+      "speedup": 1.357
+     }
+    }
+   }
+  }
+ ]
+}

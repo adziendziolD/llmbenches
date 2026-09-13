@@ -1,0 +1,88 @@
+### baseline: starte Server
+### baseline: bereit, VRAM 30,95 GiB
+  baseline code rep1: 16.32 t/s (256 tok)
+  baseline code rep2: 17.17 t/s (256 tok)
+  baseline code rep3: 16.93 t/s (256 tok)
+  baseline code rep4: 15.55 t/s (256 tok)
+  baseline prosa rep1: 15.13 t/s (256 tok)
+  baseline prosa rep2: 16.18 t/s (256 tok)
+  baseline prosa rep3: 15.52 t/s (256 tok)
+  baseline prosa rep4: 15.42 t/s (256 tok)
+  baseline reasoning rep1: 15.24 t/s (256 tok)
+  baseline reasoning rep2: 15.59 t/s (256 tok)
+  baseline reasoning rep3: 15.49 t/s (256 tok)
+  baseline reasoning rep4: 15.53 t/s (256 tok)
+### baseline: geschrieben nach /tmp/claude-1000/-home-alex/dce8ff16-540f-4966-9f40-40ea0c387b96/scratchpad/results-rocm/baseline.json
+### baseline: fertig (rc=0)
+### mtp1: starte Server
+!! Server beendet, siehe /tmp/claude-1000/-home-alex/dce8ff16-540f-4966-9f40-40ea0c387b96/scratchpad/results-rocm/mtp1.server.log
+0.00.429.397 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.429.482 I srv          init: The UI is disabled
+0.00.429.486 I srv          init: Use --ui/--no-ui (or deprecated --webui/--no-webui) to enable/disable
+0.00.429.607 W srv  llama_server: -----------------
+0.00.429.611 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.429.611 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.429.611 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.429.611 W srv  llama_server: -----------------
+0.00.430.877 I srv    load_model: loading model '/home/alex/llmstore/qwen/qwen3.8-flash-next/UD-Q2_K_XL/Qwen3.8-Flash-Next-UD-Q2_K_XL-00001-of-00003.gguf'
+0.01.625.752 E llama_model_load: error loading model: borrow_shared_tensor: this model is a draft head without its own 'token_embd.weight'; load it as a draft of its target model, not on its own
+0.01.625.768 E llama_model_load_from_file_impl: failed to load model
+0.01.626.268 W operator(): failed to measure the memory of the extra model, fitting without it: failed to load model
+0.49.878.766 I cmn          init: llama threadpool init, n_threads = 32
+0.50.131.746 I common_speculative_init_result: loading draft model '/home/alex/llmstore/qwen/qwen3.8-flash-next/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+0.50.629.609 E ggml_backend_cuda_buffer_type_alloc_buffer: allocating 2647.04 MiB on device 0: cudaMalloc failed: out of memory
+0.50.629.615 E alloc_tensor_range: failed to allocate ROCm0 buffer of size 2775623424
+0.50.672.871 E llama_model_load: error loading model: unable to allocate ROCm0 buffer
+0.50.672.877 E llama_model_load_from_file_impl: failed to load model
+0.50.672.879 E common_speculative_init_result: failed to load draft model, '/home/alex/llmstore/qwen/qwen3.8-flash-next/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+0.50.672.885 E srv    load_model: failed to load draft model, '/home/alex/llmstore/qwen/qwen3.8-flash-next/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+0.50.672.892 I srv    operator(): operator(): cleaning up before exit...
+0.50.675.191 E srv  llama_server: exiting due to model loading error
+### mtp2: starte Server
+!! Server beendet, siehe /tmp/claude-1000/-home-alex/dce8ff16-540f-4966-9f40-40ea0c387b96/scratchpad/results-rocm/mtp2.server.log
+0.00.050.993 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.051.081 I srv          init: The UI is disabled
+0.00.051.083 I srv          init: Use --ui/--no-ui (or deprecated --webui/--no-webui) to enable/disable
+0.00.051.136 W srv  llama_server: -----------------
+0.00.051.138 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.051.138 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.051.138 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.051.139 W srv  llama_server: -----------------
+0.00.052.395 I srv    load_model: loading model '/home/alex/llmstore/qwen/qwen3.8-flash-next/UD-Q2_K_XL/Qwen3.8-Flash-Next-UD-Q2_K_XL-00001-of-00003.gguf'
+0.01.250.726 E llama_model_load: error loading model: borrow_shared_tensor: this model is a draft head without its own 'token_embd.weight'; load it as a draft of its target model, not on its own
+0.01.250.742 E llama_model_load_from_file_impl: failed to load model
+0.01.251.168 W operator(): failed to measure the memory of the extra model, fitting without it: failed to load model
+0.42.102.619 I cmn          init: llama threadpool init, n_threads = 32
+0.42.343.205 I common_speculative_init_result: loading draft model '/home/alex/llmstore/qwen/qwen3.8-flash-next/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+0.42.846.589 E ggml_backend_cuda_buffer_type_alloc_buffer: allocating 2647.04 MiB on device 0: cudaMalloc failed: out of memory
+0.42.846.595 E alloc_tensor_range: failed to allocate ROCm0 buffer of size 2775623424
+0.42.885.586 E llama_model_load: error loading model: unable to allocate ROCm0 buffer
+0.42.885.591 E llama_model_load_from_file_impl: failed to load model
+0.42.885.593 E common_speculative_init_result: failed to load draft model, '/home/alex/llmstore/qwen/qwen3.8-flash-next/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+0.42.885.600 E srv    load_model: failed to load draft model, '/home/alex/llmstore/qwen/qwen3.8-flash-next/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+0.42.885.608 I srv    operator(): operator(): cleaning up before exit...
+0.42.887.939 E srv  llama_server: exiting due to model loading error
+### mtp3: starte Server
+!! Server beendet, siehe /tmp/claude-1000/-home-alex/dce8ff16-540f-4966-9f40-40ea0c387b96/scratchpad/results-rocm/mtp3.server.log
+0.00.430.505 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.430.595 I srv          init: The UI is disabled
+0.00.430.597 I srv          init: Use --ui/--no-ui (or deprecated --webui/--no-webui) to enable/disable
+0.00.430.651 W srv  llama_server: -----------------
+0.00.430.653 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.430.653 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.430.654 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.430.654 W srv  llama_server: -----------------
+0.00.431.914 I srv    load_model: loading model '/home/alex/llmstore/qwen/qwen3.8-flash-next/UD-Q2_K_XL/Qwen3.8-Flash-Next-UD-Q2_K_XL-00001-of-00003.gguf'
+0.01.614.483 E llama_model_load: error loading model: borrow_shared_tensor: this model is a draft head without its own 'token_embd.weight'; load it as a draft of its target model, not on its own
+0.01.614.498 E llama_model_load_from_file_impl: failed to load model
+0.01.614.928 W operator(): failed to measure the memory of the extra model, fitting without it: failed to load model
+0.50.704.375 I cmn          init: llama threadpool init, n_threads = 32
+0.50.971.201 I common_speculative_init_result: loading draft model '/home/alex/llmstore/qwen/qwen3.8-flash-next/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+0.51.471.547 E ggml_backend_cuda_buffer_type_alloc_buffer: allocating 2647.04 MiB on device 0: cudaMalloc failed: out of memory
+0.51.471.554 E alloc_tensor_range: failed to allocate ROCm0 buffer of size 2775623424
+0.51.509.693 E llama_model_load: error loading model: unable to allocate ROCm0 buffer
+0.51.509.699 E llama_model_load_from_file_impl: failed to load model
+0.51.509.701 E common_speculative_init_result: failed to load draft model, '/home/alex/llmstore/qwen/qwen3.8-flash-next/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+0.51.509.709 E srv    load_model: failed to load draft model, '/home/alex/llmstore/qwen/qwen3.8-flash-next/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+0.51.509.716 I srv    operator(): operator(): cleaning up before exit...
+0.51.512.076 E srv  llama_server: exiting due to model loading error
