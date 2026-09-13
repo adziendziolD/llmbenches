@@ -33,13 +33,30 @@
       "label": "ROCm",
       "device": "ROCm0",
       "detail": "Fork-Asset linux-x64-rocm-gfx120X, mitgelieferte Libs HIP 7.16.26332 / rocBLAS 5.7 / hipBLASLt 1.4, also neuer als System-ROCm 7.2.4. Backend ~/llmstore/software/llama.cpp/rocm-mtp/"
+    },
+    "rocm-fit": {
+      "label": "ROCm + Marge",
+      "device": "ROCm0",
+      "detail": "Wie ROCm, zusaetzlich --fit-target 3600. Die Marge haelt VRAM frei, damit der Draft-Head ueberhaupt geladen werden kann. Nur so laufen die MTP-Konfigurationen auf ROCm."
     }
   },
   "configs": {
-    "baseline": { "label": "ohne MTP", "order": 0 },
-    "mtp1": { "label": "MTP n-max 1", "order": 1 },
-    "mtp2": { "label": "MTP n-max 2", "order": 2 },
-    "mtp3": { "label": "MTP n-max 3", "order": 3 }
+    "baseline": {
+      "label": "ohne MTP",
+      "order": 0
+    },
+    "mtp1": {
+      "label": "MTP n-max 1",
+      "order": 1
+    },
+    "mtp2": {
+      "label": "MTP n-max 2",
+      "order": 2
+    },
+    "mtp3": {
+      "label": "MTP n-max 3",
+      "order": 3
+    }
   },
   "prompts": {
     "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
@@ -51,6 +68,8 @@
     "Der shared Draft-Head wirft beim Laden zwingend 'error loading model: ... draft head without its own token_embd.weight'. Das ist erwartet und harmlos, er bezieht Token-Embedding und Output-Projektion aus dem Hauptmodell.",
     "-md muss explizit gesetzt werden, die Auto-Discovery ueberspringt den Unterordner MTP/.",
     "--fit meldet in beiden Backends 'failed to measure the memory of the extra model, fitting without it' und rechnet den Draft-Head nicht ein. Auf Vulkan passte er zufaellig noch in den Rest, auf ROCm nicht: dort scheitern alle MTP-Konfigurationen an cudaMalloc out of memory fuer 2647 MiB. Abhilfe ist --fit-target, das eine Marge pro Geraet freihaelt.",
-    "Bei Nebenlaeufigkeit ueber 1 kippt der Gewinn laut Upstream-Diskussion ins Negative (0,81x bis 0,87x). Diese Messung gilt fuer --parallel 1."
+    "Bei Nebenlaeufigkeit ueber 1 kippt der Gewinn laut Upstream-Diskussion ins Negative (0,81x bis 0,87x). Diese Messung gilt fuer --parallel 1.",
+    "Mit --fit-target 3600 laufen die MTP-Konfigurationen auch auf ROCm. Die Marge kostet die Baseline wenig (28,28 statt 30,95 GiB VRAM, rund 3 Prozent Durchsatz), die MTP-Laeufe fuellen sie mit dem Draft-Head wieder auf (31,3 bis 31,6 GiB).",
+    "ROCm liegt in dieser Messreihe durchgehend hinter Vulkan, ohne MTP um rund ein Viertel. Auch mit MTP erreicht ROCm nicht die Vulkan-Baseline."
   ]
 }

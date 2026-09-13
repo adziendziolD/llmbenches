@@ -1,0 +1,48 @@
+### baseline: starte Server
+### baseline: bereit, VRAM 28,28 GiB
+  baseline code rep1: 14.75 t/s (256 tok)
+  baseline code rep2: 15.00 t/s (256 tok)
+  baseline code rep3: 14.75 t/s (256 tok)
+  baseline code rep4: 14.68 t/s (256 tok)
+  baseline prosa rep1: 14.53 t/s (256 tok)
+  baseline prosa rep2: 15.56 t/s (256 tok)
+  baseline prosa rep3: 14.69 t/s (256 tok)
+  baseline prosa rep4: 15.31 t/s (256 tok)
+  baseline reasoning rep1: 15.26 t/s (256 tok)
+  baseline reasoning rep2: 15.34 t/s (256 tok)
+  baseline reasoning rep3: 15.59 t/s (256 tok)
+  baseline reasoning rep4: 15.49 t/s (256 tok)
+### baseline: geschrieben nach /home/alex/llmstore/bench/mtp-2026-09-13/rocm-fit/baseline.json
+### baseline: fertig (rc=0)
+### mtp1: starte Server
+### mtp1: bereit, VRAM 31,61 GiB
+  mtp1 code rep1: 17.29 t/s (256 tok)
+  mtp1 code rep2: 19.00 t/s (256 tok)
+  mtp1 code rep3: 18.29 t/s (256 tok)
+  mtp1 code rep4: 17.66 t/s (256 tok)
+  mtp1 prosa rep1: 17.61 t/s (256 tok)
+  mtp1 prosa rep2: 19.94 t/s (256 tok)
+  mtp1 prosa rep3: 19.35 t/s (256 tok)
+  mtp1 prosa rep4: 18.85 t/s (256 tok)
+  mtp1 reasoning rep1: 18.48 t/s (256 tok)
+  mtp1 reasoning rep2: 19.57 t/s (256 tok)
+  mtp1 reasoning rep3: 19.65 t/s (256 tok)
+  mtp1 reasoning rep4: 18.93 t/s (256 tok)
+### mtp1: geschrieben nach /home/alex/llmstore/bench/mtp-2026-09-13/rocm-fit/mtp1.json
+### mtp1: fertig (rc=0)
+### mtp3: starte Server
+### mtp3: bereit, VRAM 31,40 GiB
+  mtp3 code rep1: 17.68 t/s (256 tok)
+  mtp3 code rep2: 19.67 t/s (256 tok)
+  mtp3 code rep3: 18.25 t/s (256 tok)
+  mtp3 code rep4: 18.55 t/s (256 tok)
+  mtp3 prosa rep1: 13.73 t/s (256 tok)
+  mtp3 prosa rep2: 14.11 t/s (256 tok)
+  mtp3 prosa rep3: 14.90 t/s (256 tok)
+  mtp3 prosa rep4: 14.36 t/s (256 tok)
+  mtp3 reasoning rep1: 17.46 t/s (256 tok)
+  mtp3 reasoning rep2: 17.84 t/s (256 tok)
+  mtp3 reasoning rep3: 19.00 t/s (256 tok)
+  mtp3 reasoning rep4: 18.47 t/s (256 tok)
+### mtp3: geschrieben nach /home/alex/llmstore/bench/mtp-2026-09-13/rocm-fit/mtp3.json
+### mtp3: fertig (rc=0)
