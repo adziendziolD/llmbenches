@@ -30,10 +30,11 @@ h3 { font-size: 14px; margin: 20px 0 8px; color: var(--muted); font-weight: 600;
 select, button { font: inherit; padding: 5px 9px; border: 1px solid var(--line); border-radius: 6px;
   background: var(--panel); color: var(--ink); cursor: pointer; }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: 16px 18px; }
-.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); }
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+  align-items: start; }
 dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13.5px; }
 dt { color: var(--muted); white-space: nowrap; }
-dd { margin: 0; }
+dd { margin: 0; overflow-wrap: anywhere; }
 .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 0 6px; }
 .chip { padding: 4px 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel);
   font-size: 13px; cursor: pointer; color: var(--muted); }

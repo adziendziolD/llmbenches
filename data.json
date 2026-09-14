@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-14T09:35:09+02:00",
+ "generated": "2026-09-14T09:58:43+02:00",
  "runs": [
   {
    "id": "2026-09-14-qwen38-27b-mtp",
@@ -15,7 +15,7 @@
    "model": {
     "Modell": "Qwen3.8-27B-UD-Q6_K (20,5 GiB, Architektur qwen35, dicht)",
     "Draft-Head": "mtp-Qwen3.8-27B-shared-Q6_K.gguf (345 MiB, selbst extrahiert)",
-    "Herkunft des Heads": "Fuer qwen35 gibt es keinen veroeffentlichten MTP-Head. Unsloth liefert nur fuer Qwen3.8-Flash-Next (qwen4exp) einen. Das Modell bringt den Layer aber als blk.64 selbst mit; llama.cpp ignoriert ihn beim normalen Laden mit 15 'unused tensor'-Warnungen. tools/extract-mtp.py schneidet ihn heraus und setzt qwen35.nextn_shared_target_tensors, damit der Head Token-Embedding und Output-Projektion vom Zielmodell leiht.",
+    "Herkunft des Heads": "selbst geschnitten aus blk.64, siehe tools/extract-mtp.py",
     "Build": "Unsloth-Fork, ~/llmstore/software/llama.cpp/vulkan-mtp/"
    },
    "method": {

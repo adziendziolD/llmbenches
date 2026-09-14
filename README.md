@@ -50,7 +50,8 @@ Eine Messdatei ist eine Liste von Einzelmessungen:
 `draft_n` und `draft_accepted` duerfen fehlen, dann entfaellt die Akzeptanzrate.
 
 `meta.json` beschreibt den Lauf. `machine`, `model` und `method` sind freie
-Schluessel-Wert-Paare und werden als Steckbrief angezeigt, `backends`, `configs` und `prompts`
+Schluessel-Wert-Paare und werden als Steckbrief angezeigt -- kurze Werte, eine Zeile,
+keine Absaetze; alles Ausfuehrliche gehoert nach `notes`, `backends`, `configs` und `prompts`
 liefern die Beschriftungen, `notes` die Befunde:
 
 ```json
