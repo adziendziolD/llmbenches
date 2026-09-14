@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-14T09:58:43+02:00",
+ "generated": "2026-09-14T11:44:48+02:00",
  "runs": [
   {
    "id": "2026-09-14-qwen38-27b-mtp",
@@ -15,7 +15,7 @@
    "model": {
     "Modell": "Qwen3.8-27B-UD-Q6_K (20,5 GiB, Architektur qwen35, dicht)",
     "Draft-Head": "mtp-Qwen3.8-27B-shared-Q6_K.gguf (345 MiB, selbst extrahiert)",
-    "Herkunft des Heads": "selbst geschnitten aus blk.64, siehe tools/extract-mtp.py",
+    "Herkunft des Heads": "selbst geschnitten aus blk.64, siehe tools/extract-mtp.py. Nachtrag 2026-09-14: unnoetig, das Modell traegt den Layer und llama.cpp laedt ihn seit b10440 selbst, siehe die letzte Anmerkung.",
     "Build": "Unsloth-Fork, ~/llmstore/software/llama.cpp/vulkan-mtp/"
    },
    "method": {
@@ -76,7 +76,8 @@
     "Fuer qwen35 gibt es keinen veroeffentlichten Draft-Head. Unsloth liefert nur fuer qwen4exp (Flash-Next) einen und schreibt ausdruecklich 'for Qwen3.8-Flash-Next only'. Der hier benutzte Head ist mit tools/extract-mtp.py aus blk.64 des Modells selbst geschnitten, tensorweise byte-identisch zum Original.",
     "Das Modell als eigenen Draft zu uebergeben (-md auf dieselbe Datei) funktioniert, ist aber die falsche Loesung: 11,36 statt 25,12 t/s bei ctx 8192, also 0,45x, und +10 GiB VRAM. llama.cpp laedt dann ein zweites vollstaendiges Modell statt nur des nextn-Layers.",
     "VRAM wird eng: Baseline 28,4 bis 28,7 GiB, mit MTP 30,6 bis 31,2 GiB von 31,86 GiB. Dazu rechnet --fit den Draft-Head bekanntermassen nicht ein ('failed to measure the memory of the extra model, fitting without it'). Auf dieser Karte ging es gut; eine Marge per --fit-target ist ratsam, wie in der ROCm-Reihe vom 2026-09-13.",
-    "Die Streuung ist bei MTP deutlich groesser als ohne (mtp3: 41,26 bis 52,11 t/s gegen baseline 24,34 bis 24,69), weil die Akzeptanzrate am Prompt haengt. Nach Prompt-Typ bei mtp2 und einem Slot: Reasoning 2,00x, Prosa 1,89x, Code 1,69x. Ausgerechnet Code profitiert am wenigsten."
+    "Die Streuung ist bei MTP deutlich groesser als ohne (mtp3: 41,26 bis 52,11 t/s gegen baseline 24,34 bis 24,69), weil die Akzeptanzrate am Prompt haengt. Nach Prompt-Typ bei mtp2 und einem Slot: Reasoning 2,00x, Prosa 1,89x, Code 1,69x. Ausgerechnet Code profitiert am wenigsten.",
+    "Nachtrag vom 2026-09-14, nach dieser Reihe gemessen: der separat geschnittene Head war gar nicht noetig. Seit b10440 (PR 22673) laedt --spec-type draft-mtp den blk.64.nextn-Layer aus dem Hauptmodell selbst. Ohne -md gestartet erreicht Qwen3.8-27B-UD-Q6_K bei ctx 8192 eine Akzeptanz von 0,803 und 50,2 t/s, ohne unused-tensor-Warnung; die abliterierte Schwester RVN-Q6_K kommt auf 0,838 und 51,2 t/s. Die Zahlen dieser Reihe bleiben gueltig, der Head ist tensorweise derselbe, nur der Umweg ueber die eigene Datei ist verzichtbar. Wer ihn weglaesst, spart 345 MiB VRAM und die Luecke, die --fit beim Extramodell laesst. Was das nicht aufhebt: Modelle ohne den Layer, etwa Qwen3.8-Flash-Next, brauchen den separaten Head weiterhin."
    ],
    "results": {
     "vulkan": {

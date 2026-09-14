@@ -9,6 +9,12 @@ Qwen3.8-27B (qwen35) bringt den Layer als blk.64 mit, llama.cpp ignoriert ihn
 beim normalen Laden ("model has unused tensor blk.64.* -- ignoring"). Als
 eigenes -md-Modell wird daraus ein 0,33-GiB-Draft statt eines zweiten 20,5-GiB-
 Modells.
+
+Erst pruefen, ob es das ueberhaupt braucht: seit llama.cpp b10440 (PR 22673)
+laedt --spec-type draft-mtp den Layer aus dem Hauptmodell selbst, ganz ohne -md.
+Am 2026-09-14 fuer Qwen3.8-27B nachgemessen, es funktioniert. Dieses Skript ist
+dann nur noch fuer aeltere Builds und fuer Modelle noetig, die den Layer nicht
+mitbringen.
 """
 import sys
 import gguf

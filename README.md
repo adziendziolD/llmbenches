@@ -74,16 +74,29 @@ beide liegen im Repo, damit die Seite auch ohne Webserver etwas anzuzeigen hat.
 
 ## MTP-Draft-Head selbst schneiden
 
+**Meistens ist das unnoetig, nachgetragen am 2026-09-14.** Seit llama.cpp b10440
+(PR 22673) laedt `--spec-type draft-mtp` den `blk.N.nextn`-Layer aus dem
+Hauptmodell selbst, sofern er darin steckt. Ein `-md` braucht es dann gar nicht.
+Auf dieser Maschine geprueft, indem der Server bewusst ohne `-md` gestartet und
+nachgesehen wurde, ob ueberhaupt gedraftet wird: `Qwen3.8-27B-UD-Q6_K` erreicht
+so 0,803 Akzeptanz, die abliterierte Schwester 0,838, beide ohne
+`unused tensor`-Warnung. Das Werkzeug hier bleibt trotzdem richtig fuer Modelle,
+die den Layer nicht mitbringen -- `Qwen3.8-Flash-Next` etwa hat in keinem seiner
+drei Splits einen `nextn`-Tensor und braucht den veroeffentlichten Shared-Head.
+Der Dateiname verraet das uebrigens nicht: `Qwen3.8-27B-UD-Q6_K` traegt den Layer,
+ohne ihn im Namen zu nennen. Sicherheit gibt nur die Tensorliste oder derselbe
+Testlauf, siehe `llama-launcher/scripts/pruefe-eingebettetes-mtp.sh`.
+
 `tools/extract-mtp.py` baut aus einem GGUF mit nextn-Layer einen schlanken
 Shared-Draft-Head, wie ihn `llama-server -md ... --spec-type draft-mtp`
 erwartet.
 
 Hintergrund: Modelle mit Multi-Token-Prediction tragen den MTP-Layer als
 letzten Block im GGUF mit (bei Qwen3.8-27B ist das `blk.64`, 15 Tensoren,
-0,33 GiB). llama.cpp benutzt ihn beim normalen Laden **nicht** und meldet
-stattdessen `model has unused tensor blk.64.* -- ignoring`. Um ihn als Draft zu
-verwenden, braucht llama.cpp ihn als eigene Datei. Unsloth veroeffentlicht
-solche Heads nur fuer einzelne Architekturen; fuer `qwen35` gibt es keinen.
+0,33 GiB). **Ohne** `--spec-type draft-mtp` benutzt llama.cpp ihn nicht und
+meldet `model has unused tensor blk.64.* -- ignoring`. Aeltere Builds als b10440
+brauchen ihn zwingend als eigene Datei. Unsloth veroeffentlicht solche Heads nur
+fuer einzelne Architekturen; fuer `qwen35` gibt es keinen.
 
 ```
 python3 tools/extract-mtp.py modell.gguf MTP/mtp-modell-shared.gguf
