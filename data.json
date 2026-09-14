@@ -1,6 +1,972 @@
 {
- "generated": "2026-09-13T21:12:36+02:00",
+ "generated": "2026-09-14T09:35:09+02:00",
  "runs": [
+  {
+   "id": "2026-09-14-qwen38-27b-mtp",
+   "title": "MTP-Speculative-Decoding, Qwen3.8-27B (dicht, qwen35)",
+   "date": "2026-09-14",
+   "question": "Bringt der MTP-Draft-Head auch beim dichten Qwen3.8-27B Durchsatz, welches --spec-draft-n-max ist optimal, und wie viel davon kostet jeder zusaetzliche Server-Slot?",
+   "machine": {
+    "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "61 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0"
+   },
+   "model": {
+    "Modell": "Qwen3.8-27B-UD-Q6_K (20,5 GiB, Architektur qwen35, dicht)",
+    "Draft-Head": "mtp-Qwen3.8-27B-shared-Q6_K.gguf (345 MiB, selbst extrahiert)",
+    "Herkunft des Heads": "Fuer qwen35 gibt es keinen veroeffentlichten MTP-Head. Unsloth liefert nur fuer Qwen3.8-Flash-Next (qwen4exp) einen. Das Modell bringt den Layer aber als blk.64 selbst mit; llama.cpp ignoriert ihn beim normalen Laden mit 15 'unused tensor'-Warnungen. tools/extract-mtp.py schneidet ihn heraus und setzt qwen35.nextn_shared_target_tensors, damit der Head Token-Embedding und Output-Projektion vom Zielmodell leiht.",
+    "Build": "Unsloth-Fork, ~/llmstore/software/llama.cpp/vulkan-mtp/"
+   },
+   "method": {
+    "Kontext": "262144, cache-type-k/v q8_0, flash-attn on",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen je Konfiguration, 256 Tokens, ein Warmlauf vorab",
+    "Kennzahl": "Median der Einzelwerte"
+   },
+   "cmdline": "llama-server -m Qwen3.8-27B-UD-Q6_K.gguf --device Vulkan0 --ctx-size 262144 --flash-attn on --cache-type-k q8_0 --cache-type-v q8_0 --parallel N [--kv-unified] [-md MTP/mtp-Qwen3.8-27B-shared-Q6_K.gguf --spec-type draft-mtp --spec-draft-n-max N]",
+   "backends": {
+    "vulkan": {
+     "label": "Vulkan, 1 Slot",
+     "device": "Vulkan0",
+     "detail": "--parallel 1. Vergleichbar mit der Flash-Next-Reihe vom 2026-09-13."
+    },
+    "vulkan-p2": {
+     "label": "Vulkan, 2 Slots",
+     "device": "Vulkan0",
+     "detail": "--parallel 2 --kv-unified. Mittelweg zwischen einem Slot (voller MTP-Gewinn) und drei Slots (mehr Nebenlaeufigkeit)."
+    },
+    "vulkan-p3": {
+     "label": "Vulkan, 3 Slots",
+     "device": "Vulkan0",
+     "detail": "--parallel 3 --kv-unified, also die Konfiguration des Katalogpresets qwen3.8-27b-code. Anfragen laufen trotzdem einzeln; gemessen wird, ob die blosse Existenz von drei Slots den MTP-Gewinn kostet."
+    }
+   },
+   "configs": {
+    "baseline": {
+     "label": "ohne MTP",
+     "order": 0
+    },
+    "mtp1": {
+     "label": "MTP n-max 1",
+     "order": 1
+    },
+    "mtp2": {
+     "label": "MTP n-max 2",
+     "order": 2
+    },
+    "mtp3": {
+     "label": "MTP n-max 3",
+     "order": 3
+    }
+   },
+   "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+   },
+   "notes": [
+    "MTP wirkt beim dichten 27B deutlich staerker als beim MoE Flash-Next: 1,89x gegen 1,48x. Plausibel, weil bei einem dichten Modell jeder verworfene Token einen vollen Vorwaertslauf ueber 20,5 GiB kostet, der Draft-Head aber nur 345 MiB gross ist.",
+    "Bei einem Slot ist n-max 2 das Optimum (1,89x). n-max 3 bringt nichts mehr (1,87x) und kostet Akzeptanz: 0,569 gegen 0,672. n-max 1 liegt bei 1,53x, hat aber mit 0,819 die hoechste Akzeptanz.",
+    "Zwei Slots kosten so gut wie nichts: mtp2 faellt von 46,23 auf 45,78 t/s, also rund ein Prozent, bei doppelter Nebenlaeufigkeit. Das ist der Betriebspunkt mit dem besten Verhaeltnis.",
+    "Drei Slots brechen mtp2 auf 32,30 t/s ein (1,28x). Nachgemessen in einem zweiten Lauf: 31,51 t/s bei identischer Akzeptanz 0,651, der Einbruch ist also reproduzierbar und kein Ausreisser.",
+    "Der Einbruch liegt nicht an der Draft-Qualitaet: die Akzeptanz bleibt ueber alle Slotzahlen fast konstant (0,672 bei einem, 0,651 bei drei Slots). Es ist die Verifikation, die langsamer wird. Die Ursache ist aus den Logs dieser Reihe nicht zu belegen.",
+    "n-max 1 ist von der Slotzahl voellig unberuehrt: 1,53x bei einem, zwei und drei Slots, Akzeptanz jedes Mal exakt 0,819. Die Slotzahl trifft MTP also nicht pauschal, sondern nur groessere Draft-Laengen.",
+    "Die Baseline ist von der Slotzahl ebenfalls unberuehrt (24,47 / 25,20 / 25,18 t/s). Wer kein MTP faehrt, zahlt fuer zusaetzliche Slots nichts.",
+    "Fuer qwen35 gibt es keinen veroeffentlichten Draft-Head. Unsloth liefert nur fuer qwen4exp (Flash-Next) einen und schreibt ausdruecklich 'for Qwen3.8-Flash-Next only'. Der hier benutzte Head ist mit tools/extract-mtp.py aus blk.64 des Modells selbst geschnitten, tensorweise byte-identisch zum Original.",
+    "Das Modell als eigenen Draft zu uebergeben (-md auf dieselbe Datei) funktioniert, ist aber die falsche Loesung: 11,36 statt 25,12 t/s bei ctx 8192, also 0,45x, und +10 GiB VRAM. llama.cpp laedt dann ein zweites vollstaendiges Modell statt nur des nextn-Layers.",
+    "VRAM wird eng: Baseline 28,4 bis 28,7 GiB, mit MTP 30,6 bis 31,2 GiB von 31,86 GiB. Dazu rechnet --fit den Draft-Head bekanntermassen nicht ein ('failed to measure the memory of the extra model, fitting without it'). Auf dieser Karte ging es gut; eine Marge per --fit-target ist ratsam, wie in der ROCm-Reihe vom 2026-09-13.",
+    "Die Streuung ist bei MTP deutlich groesser als ohne (mtp3: 41,26 bis 52,11 t/s gegen baseline 24,34 bis 24,69), weil die Akzeptanzrate am Prompt haengt. Nach Prompt-Typ bei mtp2 und einem Slot: Reasoning 2,00x, Prosa 1,89x, Code 1,69x. Ausgerechnet Code profitiert am wenigsten."
+   ],
+   "results": {
+    "vulkan": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": 28.43,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 24.47,
+        "median": 24.55,
+        "max": 24.69,
+        "mean": 24.56,
+        "spread_pct": 0.9,
+        "values": [
+         24.69,
+         24.59,
+         24.47,
+         24.51
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 265.8,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 24.34,
+        "median": 24.44,
+        "max": 24.69,
+        "mean": 24.48,
+        "spread_pct": 1.4,
+        "values": [
+         24.42,
+         24.34,
+         24.47,
+         24.69
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 269.3,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 24.34,
+        "median": 24.43,
+        "max": 24.62,
+        "mean": 24.45,
+        "spread_pct": 1.1,
+        "values": [
+         24.62,
+         24.34,
+         24.46,
+         24.4
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 353.2,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 24.34,
+       "median": 24.47,
+       "max": 24.69,
+       "mean": 24.5,
+       "spread_pct": 1.4,
+       "values": [
+        24.69,
+        24.59,
+        24.47,
+        24.51,
+        24.42,
+        24.34,
+        24.47,
+        24.69,
+        24.62,
+        24.34,
+        24.46,
+        24.4
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp1": {
+      "status": "ok",
+      "vram_gib": 30.56,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 37.02,
+        "median": 37.18,
+        "max": 37.31,
+        "mean": 37.17,
+        "spread_pct": 0.8,
+        "values": [
+         37.02,
+         37.18,
+         37.18,
+         37.31
+        ],
+        "acceptance": 78.3,
+        "mean_len": 1.78,
+        "pred_n": 256,
+        "prompt_tps": 224.6,
+        "speedup": 1.514
+       },
+       "prosa": {
+        "n": 4,
+        "min": 37.41,
+        "median": 37.46,
+        "max": 37.95,
+        "mean": 37.57,
+        "spread_pct": 1.4,
+        "values": [
+         37.41,
+         37.41,
+         37.51,
+         37.95
+        ],
+        "acceptance": 80.1,
+        "mean_len": 1.79,
+        "pred_n": 256,
+        "prompt_tps": 257.3,
+        "speedup": 1.533
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 39.29,
+        "median": 39.86,
+        "max": 40.2,
+        "mean": 39.8,
+        "spread_pct": 2.3,
+        "values": [
+         39.29,
+         39.54,
+         40.18,
+         40.2
+        ],
+        "acceptance": 87.5,
+        "mean_len": 1.87,
+        "pred_n": 256,
+        "prompt_tps": 338.9,
+        "speedup": 1.632
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 37.02,
+       "median": 37.46,
+       "max": 40.2,
+       "mean": 38.18,
+       "spread_pct": 8.5,
+       "values": [
+        37.02,
+        37.18,
+        37.18,
+        37.31,
+        37.41,
+        37.41,
+        37.51,
+        37.95,
+        39.29,
+        39.54,
+        40.18,
+        40.2
+       ],
+       "acceptance": 81.9,
+       "mean_len": 1.81
+      },
+      "speedup": 1.531
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 30.7,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 39.76,
+        "median": 41.44,
+        "max": 41.55,
+        "mean": 41.05,
+        "spread_pct": 4.3,
+        "values": [
+         39.76,
+         41.46,
+         41.55,
+         41.43
+        ],
+        "acceptance": 57.4,
+        "mean_len": 2.13,
+        "pred_n": 256,
+        "prompt_tps": 252.1,
+        "speedup": 1.688
+       },
+       "prosa": {
+        "n": 4,
+        "min": 46.07,
+        "median": 46.23,
+        "max": 46.28,
+        "mean": 46.2,
+        "spread_pct": 0.5,
+        "values": [
+         46.07,
+         46.22,
+         46.28,
+         46.24
+        ],
+        "acceptance": 69.2,
+        "mean_len": 2.37,
+        "pred_n": 256,
+        "prompt_tps": 261.8,
+        "speedup": 1.892
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 48.62,
+        "median": 48.75,
+        "max": 48.82,
+        "mean": 48.74,
+        "spread_pct": 0.4,
+        "values": [
+         48.82,
+         48.76,
+         48.62,
+         48.74
+        ],
+        "acceptance": 76.6,
+        "mean_len": 2.51,
+        "pred_n": 256,
+        "prompt_tps": 342.2,
+        "speedup": 1.995
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 39.76,
+       "median": 46.23,
+       "max": 48.82,
+       "mean": 45.33,
+       "spread_pct": 19.6,
+       "values": [
+        39.76,
+        41.46,
+        41.55,
+        41.43,
+        46.07,
+        46.22,
+        46.28,
+        46.24,
+        48.82,
+        48.76,
+        48.62,
+        48.74
+       ],
+       "acceptance": 67.2,
+       "mean_len": 2.33
+      },
+      "speedup": 1.889
+     },
+     "mtp3": {
+      "status": "ok",
+      "vram_gib": 30.85,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 41.26,
+        "median": 42.22,
+        "max": 42.29,
+        "mean": 42.0,
+        "spread_pct": 2.4,
+        "values": [
+         41.26,
+         42.21,
+         42.24,
+         42.29
+        ],
+        "acceptance": 48.9,
+        "mean_len": 2.44,
+        "pred_n": 256,
+        "prompt_tps": 256.4,
+        "speedup": 1.72
+       },
+       "prosa": {
+        "n": 4,
+        "min": 45.77,
+        "median": 45.8,
+        "max": 45.81,
+        "mean": 45.8,
+        "spread_pct": 0.1,
+        "values": [
+         45.81,
+         45.77,
+         45.81,
+         45.79
+        ],
+        "acceptance": 55.6,
+        "mean_len": 2.64,
+        "pred_n": 256,
+        "prompt_tps": 258.6,
+        "speedup": 1.874
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 51.97,
+        "median": 52.05,
+        "max": 52.11,
+        "mean": 52.04,
+        "spread_pct": 0.3,
+        "values": [
+         52.07,
+         52.02,
+         52.11,
+         51.97
+        ],
+        "acceptance": 68.4,
+        "mean_len": 3.01,
+        "pred_n": 256,
+        "prompt_tps": 339.7,
+        "speedup": 2.131
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 41.26,
+       "median": 45.8,
+       "max": 52.11,
+       "mean": 46.61,
+       "spread_pct": 23.7,
+       "values": [
+        41.26,
+        42.21,
+        42.24,
+        42.29,
+        45.81,
+        45.77,
+        45.81,
+        45.79,
+        52.07,
+        52.02,
+        52.11,
+        51.97
+       ],
+       "acceptance": 56.9,
+       "mean_len": 2.68
+      },
+      "speedup": 1.872
+     }
+    },
+    "vulkan-p2": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": 28.51,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 25.07,
+        "median": 25.24,
+        "max": 25.26,
+        "mean": 25.21,
+        "spread_pct": 0.8,
+        "values": [
+         25.07,
+         25.26,
+         25.26,
+         25.23
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 276.4,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 25.19,
+        "median": 25.2,
+        "max": 25.21,
+        "mean": 25.2,
+        "spread_pct": 0.1,
+        "values": [
+         25.21,
+         25.2,
+         25.2,
+         25.19
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 275.4,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 25.16,
+        "median": 25.18,
+        "max": 25.19,
+        "mean": 25.18,
+        "spread_pct": 0.1,
+        "values": [
+         25.19,
+         25.18,
+         25.16,
+         25.18
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 358.3,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 25.07,
+       "median": 25.2,
+       "max": 25.26,
+       "mean": 25.2,
+       "spread_pct": 0.8,
+       "values": [
+        25.07,
+        25.26,
+        25.26,
+        25.23,
+        25.21,
+        25.2,
+        25.2,
+        25.19,
+        25.19,
+        25.18,
+        25.16,
+        25.18
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp1": {
+      "status": "ok",
+      "vram_gib": 30.77,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 38.2,
+        "median": 38.28,
+        "max": 38.3,
+        "mean": 38.27,
+        "spread_pct": 0.3,
+        "values": [
+         38.2,
+         38.3,
+         38.28,
+         38.28
+        ],
+        "acceptance": 78.3,
+        "mean_len": 1.78,
+        "pred_n": 256,
+        "prompt_tps": 258.6,
+        "speedup": 1.517
+       },
+       "prosa": {
+        "n": 4,
+        "min": 38.46,
+        "median": 38.49,
+        "max": 38.53,
+        "mean": 38.49,
+        "spread_pct": 0.2,
+        "values": [
+         38.51,
+         38.46,
+         38.46,
+         38.53
+        ],
+        "acceptance": 80.1,
+        "mean_len": 1.79,
+        "pred_n": 256,
+        "prompt_tps": 261.1,
+        "speedup": 1.527
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 40.09,
+        "median": 40.14,
+        "max": 40.16,
+        "mean": 40.13,
+        "spread_pct": 0.2,
+        "values": [
+         40.14,
+         40.09,
+         40.14,
+         40.16
+        ],
+        "acceptance": 87.5,
+        "mean_len": 1.87,
+        "pred_n": 256,
+        "prompt_tps": 342.4,
+        "speedup": 1.594
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 38.2,
+       "median": 38.49,
+       "max": 40.16,
+       "mean": 38.96,
+       "spread_pct": 5.1,
+       "values": [
+        38.2,
+        38.3,
+        38.28,
+        38.28,
+        38.51,
+        38.46,
+        38.46,
+        38.53,
+        40.14,
+        40.09,
+        40.14,
+        40.16
+       ],
+       "acceptance": 81.9,
+       "mean_len": 1.81
+      },
+      "speedup": 1.527
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 31.07,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 39.52,
+        "median": 41.13,
+        "max": 41.38,
+        "mean": 40.79,
+        "spread_pct": 4.5,
+        "values": [
+         40.91,
+         41.35,
+         41.38,
+         39.52
+        ],
+        "acceptance": 57.4,
+        "mean_len": 2.13,
+        "pred_n": 256,
+        "prompt_tps": 230.8,
+        "speedup": 1.63
+       },
+       "prosa": {
+        "n": 4,
+        "min": 45.46,
+        "median": 45.78,
+        "max": 45.88,
+        "mean": 45.72,
+        "spread_pct": 0.9,
+        "values": [
+         45.46,
+         45.78,
+         45.88,
+         45.77
+        ],
+        "acceptance": 69.2,
+        "mean_len": 2.37,
+        "pred_n": 256,
+        "prompt_tps": 259.3,
+        "speedup": 1.817
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 48.29,
+        "median": 48.35,
+        "max": 48.45,
+        "mean": 48.36,
+        "spread_pct": 0.3,
+        "values": [
+         48.31,
+         48.39,
+         48.45,
+         48.29
+        ],
+        "acceptance": 76.6,
+        "mean_len": 2.51,
+        "pred_n": 256,
+        "prompt_tps": 341.2,
+        "speedup": 1.92
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 39.52,
+       "median": 45.78,
+       "max": 48.45,
+       "mean": 44.96,
+       "spread_pct": 19.5,
+       "values": [
+        40.91,
+        41.35,
+        41.38,
+        39.52,
+        45.46,
+        45.78,
+        45.88,
+        45.77,
+        48.31,
+        48.39,
+        48.45,
+        48.29
+       ],
+       "acceptance": 67.2,
+       "mean_len": 2.33
+      },
+      "speedup": 1.817
+     }
+    },
+    "vulkan-p3": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": 28.71,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 25.13,
+        "median": 25.19,
+        "max": 25.21,
+        "mean": 25.18,
+        "spread_pct": 0.3,
+        "values": [
+         25.13,
+         25.21,
+         25.2,
+         25.18
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 272.4,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 25.17,
+        "median": 25.18,
+        "max": 25.18,
+        "mean": 25.18,
+        "spread_pct": 0.0,
+        "values": [
+         25.18,
+         25.17,
+         25.18,
+         25.18
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 274.5,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 25.15,
+        "median": 25.17,
+        "max": 25.19,
+        "mean": 25.17,
+        "spread_pct": 0.1,
+        "values": [
+         25.17,
+         25.15,
+         25.17,
+         25.19
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 358.8,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 25.13,
+       "median": 25.18,
+       "max": 25.21,
+       "mean": 25.18,
+       "spread_pct": 0.3,
+       "values": [
+        25.13,
+        25.21,
+        25.2,
+        25.18,
+        25.18,
+        25.17,
+        25.18,
+        25.18,
+        25.17,
+        25.15,
+        25.17,
+        25.19
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp1": {
+      "status": "ok",
+      "vram_gib": 31.15,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 37.95,
+        "median": 38.13,
+        "max": 38.3,
+        "mean": 38.13,
+        "spread_pct": 0.9,
+        "values": [
+         37.95,
+         38.11,
+         38.14,
+         38.3
+        ],
+        "acceptance": 78.3,
+        "mean_len": 1.78,
+        "pred_n": 256,
+        "prompt_tps": 259.6,
+        "speedup": 1.514
+       },
+       "prosa": {
+        "n": 4,
+        "min": 38.5,
+        "median": 38.51,
+        "max": 38.53,
+        "mean": 38.51,
+        "spread_pct": 0.1,
+        "values": [
+         38.53,
+         38.52,
+         38.5,
+         38.5
+        ],
+        "acceptance": 80.1,
+        "mean_len": 1.79,
+        "pred_n": 256,
+        "prompt_tps": 260.4,
+        "speedup": 1.529
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 40.12,
+        "median": 40.16,
+        "max": 40.16,
+        "mean": 40.15,
+        "spread_pct": 0.1,
+        "values": [
+         40.16,
+         40.12,
+         40.16,
+         40.16
+        ],
+        "acceptance": 87.5,
+        "mean_len": 1.87,
+        "pred_n": 256,
+        "prompt_tps": 343.3,
+        "speedup": 1.596
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 37.95,
+       "median": 38.51,
+       "max": 40.16,
+       "mean": 38.93,
+       "spread_pct": 5.7,
+       "values": [
+        37.95,
+        38.11,
+        38.14,
+        38.3,
+        38.53,
+        38.52,
+        38.5,
+        38.5,
+        40.16,
+        40.12,
+        40.16,
+        40.16
+       ],
+       "acceptance": 81.9,
+       "mean_len": 1.81
+      },
+      "speedup": 1.529
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 30.99,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 30.21,
+        "median": 30.92,
+        "max": 31.03,
+        "mean": 30.77,
+        "spread_pct": 2.7,
+        "values": [
+         30.21,
+         30.89,
+         31.03,
+         30.96
+        ],
+        "acceptance": 57.1,
+        "mean_len": 2.13,
+        "pred_n": 256,
+        "prompt_tps": 168.5,
+        "speedup": 1.227
+       },
+       "prosa": {
+        "n": 4,
+        "min": 32.21,
+        "median": 32.3,
+        "max": 32.34,
+        "mean": 32.29,
+        "spread_pct": 0.4,
+        "values": [
+         32.21,
+         32.34,
+         32.32,
+         32.29
+        ],
+        "acceptance": 62.1,
+        "mean_len": 2.23,
+        "pred_n": 256,
+        "prompt_tps": 177.6,
+        "speedup": 1.283
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 36.57,
+        "median": 36.78,
+        "max": 36.89,
+        "mean": 36.76,
+        "spread_pct": 0.9,
+        "values": [
+         36.57,
+         36.89,
+         36.74,
+         36.83
+        ],
+        "acceptance": 77.9,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 224.3,
+        "speedup": 1.461
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 30.21,
+       "median": 32.3,
+       "max": 36.89,
+       "mean": 33.27,
+       "spread_pct": 20.7,
+       "values": [
+        30.21,
+        30.89,
+        31.03,
+        30.96,
+        32.21,
+        32.34,
+        32.32,
+        32.29,
+        36.57,
+        36.89,
+        36.74,
+        36.83
+       ],
+       "acceptance": 65.1,
+       "mean_len": 2.29
+      },
+      "speedup": 1.283
+     }
+    }
+   }
+  },
   {
    "id": "2026-09-13-qwen38-mtp",
    "title": "MTP-Speculative-Decoding, Qwen3.8-Flash-Next",

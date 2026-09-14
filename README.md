@@ -71,6 +71,50 @@ jeweiligen Backends.
 Danach `python3 tools/collect.py` ausfuehren. Das Skript schreibt `data.json` und `data.js`;
 beide liegen im Repo, damit die Seite auch ohne Webserver etwas anzuzeigen hat.
 
+## MTP-Draft-Head selbst schneiden
+
+`tools/extract-mtp.py` baut aus einem GGUF mit nextn-Layer einen schlanken
+Shared-Draft-Head, wie ihn `llama-server -md ... --spec-type draft-mtp`
+erwartet.
+
+Hintergrund: Modelle mit Multi-Token-Prediction tragen den MTP-Layer als
+letzten Block im GGUF mit (bei Qwen3.8-27B ist das `blk.64`, 15 Tensoren,
+0,33 GiB). llama.cpp benutzt ihn beim normalen Laden **nicht** und meldet
+stattdessen `model has unused tensor blk.64.* -- ignoring`. Um ihn als Draft zu
+verwenden, braucht llama.cpp ihn als eigene Datei. Unsloth veroeffentlicht
+solche Heads nur fuer einzelne Architekturen; fuer `qwen35` gibt es keinen.
+
+```
+python3 tools/extract-mtp.py modell.gguf MTP/mtp-modell-shared.gguf
+```
+
+Das Skript kopiert die Tensoren des letzten Blocks verbatim, uebernimmt alle
+Metadaten und Tokenizer-Felder und setzt `<arch>.nextn_shared_target_tensors`.
+Dieses Flag macht den Head zum *shared* Head: er bringt weder `token_embd` noch
+Output-Projektion mit, sondern leiht beides vom Zielmodell. Deshalb ist die
+Fehlermeldung beim Start
+
+```
+borrow_shared_tensor: this model is a draft head without its own
+'token_embd.weight'; load it as a draft of its target model, not on its own
+```
+
+erwartet und harmlos: sie kommt aus dem Versuch von `--fit`, den Head zur
+Speichermessung einzeln zu laden. Direkt danach laedt ihn llama.cpp als Draft.
+
+Das Skript braucht `gguf-py`. Auf dieser Maschine liegt es in der
+comfyui-venv:
+
+```
+~/llmstore/software/comfyui/.venv/bin/python tools/extract-mtp.py ...
+```
+
+Der Fork muss fuer die Architektur einen MTP-Graphen mitbringen. Nachsehen mit:
+
+```
+nm -D --defined-only libllama.so | c++filt | grep graph_mtp
+```
+
 ## Messwerkzeug
 
 `runs/2026-09-13-qwen38-mtp/mtp-bench.sh` ist das Skript, mit dem diese Reihe entstanden ist.

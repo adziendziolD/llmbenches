@@ -1,0 +1,78 @@
+{
+  "id": "2026-09-14-qwen38-27b-mtp",
+  "title": "MTP-Speculative-Decoding, Qwen3.8-27B (dicht, qwen35)",
+  "date": "2026-09-14",
+  "question": "Bringt der MTP-Draft-Head auch beim dichten Qwen3.8-27B Durchsatz, welches --spec-draft-n-max ist optimal, und wie viel davon kostet jeder zusaetzliche Server-Slot?",
+  "machine": {
+    "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "61 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0"
+  },
+  "model": {
+    "Modell": "Qwen3.8-27B-UD-Q6_K (20,5 GiB, Architektur qwen35, dicht)",
+    "Draft-Head": "mtp-Qwen3.8-27B-shared-Q6_K.gguf (345 MiB, selbst extrahiert)",
+    "Herkunft des Heads": "Fuer qwen35 gibt es keinen veroeffentlichten MTP-Head. Unsloth liefert nur fuer Qwen3.8-Flash-Next (qwen4exp) einen. Das Modell bringt den Layer aber als blk.64 selbst mit; llama.cpp ignoriert ihn beim normalen Laden mit 15 'unused tensor'-Warnungen. tools/extract-mtp.py schneidet ihn heraus und setzt qwen35.nextn_shared_target_tensors, damit der Head Token-Embedding und Output-Projektion vom Zielmodell leiht.",
+    "Build": "Unsloth-Fork, ~/llmstore/software/llama.cpp/vulkan-mtp/"
+  },
+  "method": {
+    "Kontext": "262144, cache-type-k/v q8_0, flash-attn on",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen je Konfiguration, 256 Tokens, ein Warmlauf vorab",
+    "Kennzahl": "Median der Einzelwerte"
+  },
+  "cmdline": "llama-server -m Qwen3.8-27B-UD-Q6_K.gguf --device Vulkan0 --ctx-size 262144 --flash-attn on --cache-type-k q8_0 --cache-type-v q8_0 --parallel N [--kv-unified] [-md MTP/mtp-Qwen3.8-27B-shared-Q6_K.gguf --spec-type draft-mtp --spec-draft-n-max N]",
+  "backends": {
+    "vulkan": {
+      "label": "Vulkan, 1 Slot",
+      "device": "Vulkan0",
+      "detail": "--parallel 1. Vergleichbar mit der Flash-Next-Reihe vom 2026-09-13."
+    },
+    "vulkan-p2": {
+      "label": "Vulkan, 2 Slots",
+      "device": "Vulkan0",
+      "detail": "--parallel 2 --kv-unified. Mittelweg zwischen einem Slot (voller MTP-Gewinn) und drei Slots (mehr Nebenlaeufigkeit)."
+    },
+    "vulkan-p3": {
+      "label": "Vulkan, 3 Slots",
+      "device": "Vulkan0",
+      "detail": "--parallel 3 --kv-unified, also die Konfiguration des Katalogpresets qwen3.8-27b-code. Anfragen laufen trotzdem einzeln; gemessen wird, ob die blosse Existenz von drei Slots den MTP-Gewinn kostet."
+    }
+  },
+  "configs": {
+    "baseline": {
+      "label": "ohne MTP",
+      "order": 0
+    },
+    "mtp1": {
+      "label": "MTP n-max 1",
+      "order": 1
+    },
+    "mtp2": {
+      "label": "MTP n-max 2",
+      "order": 2
+    },
+    "mtp3": {
+      "label": "MTP n-max 3",
+      "order": 3
+    }
+  },
+  "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+  },
+  "notes": [
+    "MTP wirkt beim dichten 27B deutlich staerker als beim MoE Flash-Next: 1,89x gegen 1,48x. Plausibel, weil bei einem dichten Modell jeder verworfene Token einen vollen Vorwaertslauf ueber 20,5 GiB kostet, der Draft-Head aber nur 345 MiB gross ist.",
+    "Bei einem Slot ist n-max 2 das Optimum (1,89x). n-max 3 bringt nichts mehr (1,87x) und kostet Akzeptanz: 0,569 gegen 0,672. n-max 1 liegt bei 1,53x, hat aber mit 0,819 die hoechste Akzeptanz.",
+    "Zwei Slots kosten so gut wie nichts: mtp2 faellt von 46,23 auf 45,78 t/s, also rund ein Prozent, bei doppelter Nebenlaeufigkeit. Das ist der Betriebspunkt mit dem besten Verhaeltnis.",
+    "Drei Slots brechen mtp2 auf 32,30 t/s ein (1,28x). Nachgemessen in einem zweiten Lauf: 31,51 t/s bei identischer Akzeptanz 0,651, der Einbruch ist also reproduzierbar und kein Ausreisser.",
+    "Der Einbruch liegt nicht an der Draft-Qualitaet: die Akzeptanz bleibt ueber alle Slotzahlen fast konstant (0,672 bei einem, 0,651 bei drei Slots). Es ist die Verifikation, die langsamer wird. Die Ursache ist aus den Logs dieser Reihe nicht zu belegen.",
+    "n-max 1 ist von der Slotzahl voellig unberuehrt: 1,53x bei einem, zwei und drei Slots, Akzeptanz jedes Mal exakt 0,819. Die Slotzahl trifft MTP also nicht pauschal, sondern nur groessere Draft-Laengen.",
+    "Die Baseline ist von der Slotzahl ebenfalls unberuehrt (24,47 / 25,20 / 25,18 t/s). Wer kein MTP faehrt, zahlt fuer zusaetzliche Slots nichts.",
+    "Fuer qwen35 gibt es keinen veroeffentlichten Draft-Head. Unsloth liefert nur fuer qwen4exp (Flash-Next) einen und schreibt ausdruecklich 'for Qwen3.8-Flash-Next only'. Der hier benutzte Head ist mit tools/extract-mtp.py aus blk.64 des Modells selbst geschnitten, tensorweise byte-identisch zum Original.",
+    "Das Modell als eigenen Draft zu uebergeben (-md auf dieselbe Datei) funktioniert, ist aber die falsche Loesung: 11,36 statt 25,12 t/s bei ctx 8192, also 0,45x, und +10 GiB VRAM. llama.cpp laedt dann ein zweites vollstaendiges Modell statt nur des nextn-Layers.",
+    "VRAM wird eng: Baseline 28,4 bis 28,7 GiB, mit MTP 30,6 bis 31,2 GiB von 31,86 GiB. Dazu rechnet --fit den Draft-Head bekanntermassen nicht ein ('failed to measure the memory of the extra model, fitting without it'). Auf dieser Karte ging es gut; eine Marge per --fit-target ist ratsam, wie in der ROCm-Reihe vom 2026-09-13.",
+    "Die Streuung ist bei MTP deutlich groesser als ohne (mtp3: 41,26 bis 52,11 t/s gegen baseline 24,34 bis 24,69), weil die Akzeptanzrate am Prompt haengt. Nach Prompt-Typ bei mtp2 und einem Slot: Reasoning 2,00x, Prosa 1,89x, Code 1,69x. Ausgerechnet Code profitiert am wenigsten."
+  ]
+}

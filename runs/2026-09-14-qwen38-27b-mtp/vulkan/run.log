@@ -1,0 +1,12 @@
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 28,43 GiB
+### baseline: fertig (rc=0)
+### mtp1 (parallel=1): starte Server
+### mtp1: bereit, VRAM 30,56 GiB
+### mtp1: fertig (rc=0)
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 30,70 GiB
+### mtp2: fertig (rc=0)
+### mtp3 (parallel=1): starte Server
+### mtp3: bereit, VRAM 30,85 GiB
+### mtp3: fertig (rc=0)

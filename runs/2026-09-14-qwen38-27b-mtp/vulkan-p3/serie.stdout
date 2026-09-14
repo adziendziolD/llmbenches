@@ -1,0 +1,48 @@
+### baseline (parallel=3): starte Server
+### baseline: bereit, VRAM 28,71 GiB
+  baseline code rep1: 25.13 t/s (256 tok)
+  baseline code rep2: 25.21 t/s (256 tok)
+  baseline code rep3: 25.20 t/s (256 tok)
+  baseline code rep4: 25.18 t/s (256 tok)
+  baseline prosa rep1: 25.18 t/s (256 tok)
+  baseline prosa rep2: 25.17 t/s (256 tok)
+  baseline prosa rep3: 25.18 t/s (256 tok)
+  baseline prosa rep4: 25.18 t/s (256 tok)
+  baseline reasoning rep1: 25.17 t/s (256 tok)
+  baseline reasoning rep2: 25.15 t/s (256 tok)
+  baseline reasoning rep3: 25.17 t/s (256 tok)
+  baseline reasoning rep4: 25.19 t/s (256 tok)
+### baseline: geschrieben nach /home/alex/git/llmbenches/runs/2026-09-14-qwen38-27b-mtp/vulkan-p3/baseline.json
+### baseline: fertig (rc=0)
+### mtp2 (parallel=3): starte Server
+### mtp2: bereit, VRAM 30,99 GiB
+  mtp2 code rep1: 30.21 t/s (256 tok)
+  mtp2 code rep2: 30.89 t/s (256 tok)
+  mtp2 code rep3: 31.03 t/s (256 tok)
+  mtp2 code rep4: 30.96 t/s (256 tok)
+  mtp2 prosa rep1: 32.21 t/s (256 tok)
+  mtp2 prosa rep2: 32.34 t/s (256 tok)
+  mtp2 prosa rep3: 32.32 t/s (256 tok)
+  mtp2 prosa rep4: 32.29 t/s (256 tok)
+  mtp2 reasoning rep1: 36.57 t/s (256 tok)
+  mtp2 reasoning rep2: 36.89 t/s (256 tok)
+  mtp2 reasoning rep3: 36.74 t/s (256 tok)
+  mtp2 reasoning rep4: 36.83 t/s (256 tok)
+### mtp2: geschrieben nach /home/alex/git/llmbenches/runs/2026-09-14-qwen38-27b-mtp/vulkan-p3/mtp2.json
+### mtp2: fertig (rc=0)
+### mtp1 (parallel=3): starte Server
+### mtp1: bereit, VRAM 31,15 GiB
+  mtp1 code rep1: 37.95 t/s (256 tok)
+  mtp1 code rep2: 38.11 t/s (256 tok)
+  mtp1 code rep3: 38.14 t/s (256 tok)
+  mtp1 code rep4: 38.30 t/s (256 tok)
+  mtp1 prosa rep1: 38.53 t/s (256 tok)
+  mtp1 prosa rep2: 38.52 t/s (256 tok)
+  mtp1 prosa rep3: 38.50 t/s (256 tok)
+  mtp1 prosa rep4: 38.50 t/s (256 tok)
+  mtp1 reasoning rep1: 40.16 t/s (256 tok)
+  mtp1 reasoning rep2: 40.12 t/s (256 tok)
+  mtp1 reasoning rep3: 40.16 t/s (256 tok)
+  mtp1 reasoning rep4: 40.16 t/s (256 tok)
+### mtp1: geschrieben nach /home/alex/git/llmbenches/runs/2026-09-14-qwen38-27b-mtp/vulkan-p3/mtp1.json
+### mtp1: fertig (rc=0)

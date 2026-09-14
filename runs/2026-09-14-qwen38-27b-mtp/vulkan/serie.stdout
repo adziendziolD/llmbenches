@@ -1,0 +1,64 @@
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 28,43 GiB
+  baseline code rep1: 24.69 t/s (256 tok)
+  baseline code rep2: 24.59 t/s (256 tok)
+  baseline code rep3: 24.47 t/s (256 tok)
+  baseline code rep4: 24.51 t/s (256 tok)
+  baseline prosa rep1: 24.42 t/s (256 tok)
+  baseline prosa rep2: 24.34 t/s (256 tok)
+  baseline prosa rep3: 24.47 t/s (256 tok)
+  baseline prosa rep4: 24.69 t/s (256 tok)
+  baseline reasoning rep1: 24.62 t/s (256 tok)
+  baseline reasoning rep2: 24.34 t/s (256 tok)
+  baseline reasoning rep3: 24.46 t/s (256 tok)
+  baseline reasoning rep4: 24.40 t/s (256 tok)
+### baseline: geschrieben nach /home/alex/git/llmbenches/runs/2026-09-14-qwen38-27b-mtp/vulkan/baseline.json
+### baseline: fertig (rc=0)
+### mtp1 (parallel=1): starte Server
+### mtp1: bereit, VRAM 30,56 GiB
+  mtp1 code rep1: 37.02 t/s (256 tok)
+  mtp1 code rep2: 37.18 t/s (256 tok)
+  mtp1 code rep3: 37.18 t/s (256 tok)
+  mtp1 code rep4: 37.31 t/s (256 tok)
+  mtp1 prosa rep1: 37.41 t/s (256 tok)
+  mtp1 prosa rep2: 37.41 t/s (256 tok)
+  mtp1 prosa rep3: 37.51 t/s (256 tok)
+  mtp1 prosa rep4: 37.95 t/s (256 tok)
+  mtp1 reasoning rep1: 39.29 t/s (256 tok)
+  mtp1 reasoning rep2: 39.54 t/s (256 tok)
+  mtp1 reasoning rep3: 40.18 t/s (256 tok)
+  mtp1 reasoning rep4: 40.20 t/s (256 tok)
+### mtp1: geschrieben nach /home/alex/git/llmbenches/runs/2026-09-14-qwen38-27b-mtp/vulkan/mtp1.json
+### mtp1: fertig (rc=0)
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 30,70 GiB
+  mtp2 code rep1: 39.76 t/s (256 tok)
+  mtp2 code rep2: 41.46 t/s (256 tok)
+  mtp2 code rep3: 41.55 t/s (256 tok)
+  mtp2 code rep4: 41.43 t/s (256 tok)
+  mtp2 prosa rep1: 46.07 t/s (256 tok)
+  mtp2 prosa rep2: 46.22 t/s (256 tok)
+  mtp2 prosa rep3: 46.28 t/s (256 tok)
+  mtp2 prosa rep4: 46.24 t/s (256 tok)
+  mtp2 reasoning rep1: 48.82 t/s (256 tok)
+  mtp2 reasoning rep2: 48.76 t/s (256 tok)
+  mtp2 reasoning rep3: 48.62 t/s (256 tok)
+  mtp2 reasoning rep4: 48.74 t/s (256 tok)
+### mtp2: geschrieben nach /home/alex/git/llmbenches/runs/2026-09-14-qwen38-27b-mtp/vulkan/mtp2.json
+### mtp2: fertig (rc=0)
+### mtp3 (parallel=1): starte Server
+### mtp3: bereit, VRAM 30,85 GiB
+  mtp3 code rep1: 41.26 t/s (256 tok)
+  mtp3 code rep2: 42.21 t/s (256 tok)
+  mtp3 code rep3: 42.24 t/s (256 tok)
+  mtp3 code rep4: 42.29 t/s (256 tok)
+  mtp3 prosa rep1: 45.81 t/s (256 tok)
+  mtp3 prosa rep2: 45.77 t/s (256 tok)
+  mtp3 prosa rep3: 45.81 t/s (256 tok)
+  mtp3 prosa rep4: 45.79 t/s (256 tok)
+  mtp3 reasoning rep1: 52.07 t/s (256 tok)
+  mtp3 reasoning rep2: 52.02 t/s (256 tok)
+  mtp3 reasoning rep3: 52.11 t/s (256 tok)
+  mtp3 reasoning rep4: 51.97 t/s (256 tok)
+### mtp3: geschrieben nach /home/alex/git/llmbenches/runs/2026-09-14-qwen38-27b-mtp/vulkan/mtp3.json
+### mtp3: fertig (rc=0)
