@@ -1,0 +1,33 @@
+### mtp2 (parallel=2): starte Server
+### mtp2: bereit, VRAM 29,77 GiB
+  mtp2 code rep1: 27.71 t/s (256 tok)
+  mtp2 code rep2: 27.84 t/s (256 tok)
+  mtp2 code rep3: 27.77 t/s (256 tok)
+  mtp2 code rep4: 27.81 t/s (256 tok)
+  mtp2 prosa rep1: 27.39 t/s (256 tok)
+  mtp2 prosa rep2: 27.29 t/s (256 tok)
+  mtp2 prosa rep3: 27.29 t/s (256 tok)
+  mtp2 prosa rep4: 27.25 t/s (256 tok)
+  mtp2 reasoning rep1: 30.73 t/s (256 tok)
+  mtp2 reasoning rep2: 30.70 t/s (256 tok)
+  mtp2 reasoning rep3: 30.66 t/s (256 tok)
+  mtp2 reasoning rep4: 30.70 t/s (256 tok)
+### mtp2: geschrieben nach new-p2-preset/mtp2.json
+### mtp2: fertig (rc=0)
+### mtp2 (parallel=2): starte Server
+### mtp2: bereit, VRAM 29,85 GiB
+  mtp2 code rep1: 30.84 t/s (256 tok)
+  mtp2 code rep2: 30.86 t/s (256 tok)
+  mtp2 code rep3: 30.94 t/s (256 tok)
+  mtp2 code rep4: 30.82 t/s (256 tok)
+  mtp2 prosa rep1: 31.92 t/s (256 tok)
+  mtp2 prosa rep2: 31.97 t/s (256 tok)
+  mtp2 prosa rep3: 31.91 t/s (256 tok)
+  mtp2 prosa rep4: 31.94 t/s (256 tok)
+  mtp2 reasoning rep1: 36.40 t/s (256 tok)
+  mtp2 reasoning rep2: 36.42 t/s (256 tok)
+  mtp2 reasoning rep3: 36.40 t/s (256 tok)
+  mtp2 reasoning rep4: 36.38 t/s (256 tok)
+### mtp2: geschrieben nach new-p2/mtp2.json
+### mtp2: fertig (rc=0)
+ALLES-FERTIG

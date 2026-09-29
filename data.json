@@ -1,6 +1,1006 @@
 {
- "generated": "2026-09-14T11:44:48+02:00",
+ "generated": "2026-09-29T14:18:26+02:00",
  "runs": [
+  {
+   "id": "2026-09-29-qwen38-27b-slots-build",
+   "title": "Slotzahl, kv-unified, mmproj und Build, Qwen3.8-27B mit MTP",
+   "date": "2026-09-29",
+   "question": "Warum fuehlt sich das Preset qwen3.8-27b-code (ctx 262144) nach dem llama.cpp-Update langsam an: Build, Slotzahl, --kv-unified oder mmproj?",
+   "machine": {
+    "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "61 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0"
+   },
+   "model": {
+    "Modell": "Qwen3.8-27B-UD-Q6_K (20,5 GiB, qwen35, dicht)",
+    "Draft-Head": "eingebettet (blk.64), kein -md",
+    "mmproj": "mmproj-Qwen3.8-27B-Q8_0.gguf, nur in einer Konfiguration je Slotzahl",
+    "Build neu": "b11177 (0.5.0-dev), Mainline Vulkan",
+    "Build alt": "b10909 (0.4.0-dev), Unsloth-Fork, vulkan-mtp"
+   },
+   "method": {
+    "Kontext": "262144 (nicht gefuellt), cache-type-k/v q8_0, flash-attn on",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf, je Konfiguration ein Lauf",
+    "Kennzahl": "Median der Einzelwerte",
+    "Spekulation": "draft-mtp, spec-draft-n-max 2"
+   },
+   "cmdline": "llama-server -m Qwen3.8-27B-UD-Q6_K.gguf --device Vulkan0 --ctx-size 262144 --flash-attn on --cache-type-k q8_0 --cache-type-v q8_0 --parallel N [--kv-unified] [--mmproj ...] --spec-type draft-mtp --spec-draft-n-max 2",
+   "backends": {
+    "new-p1": {
+     "label": "Neu, 1 Slot",
+     "device": "Vulkan0",
+     "detail": "b11177, --parallel 1, ohne mmproj. Enthaelt auch die Baseline ohne MTP."
+    },
+    "new-p1-kvu": {
+     "label": "Neu, 1 Slot, kv-unified",
+     "device": "Vulkan0",
+     "detail": "b11177, --parallel 1 --kv-unified."
+    },
+    "new-p2": {
+     "label": "Neu, 2 Slots",
+     "device": "Vulkan0",
+     "detail": "b11177, --parallel 2 --kv-unified, ohne mmproj."
+    },
+    "new-p2-preset": {
+     "label": "Neu, 2 Slots, mmproj",
+     "device": "Vulkan0",
+     "detail": "b11177, --parallel 2 --kv-unified --mmproj, entspricht dem Preset seit 2026-09-29."
+    },
+    "new-p3-nokvu": {
+     "label": "Neu, 3 Slots, ohne kv-unified",
+     "device": "Vulkan0",
+     "detail": "b11177, --parallel 3, ohne --kv-unified, ohne mmproj."
+    },
+    "new-p3-kvu": {
+     "label": "Neu, 3 Slots",
+     "device": "Vulkan0",
+     "detail": "b11177, --parallel 3 --kv-unified, ohne mmproj."
+    },
+    "new-p3-preset": {
+     "label": "Neu, 3 Slots, mmproj",
+     "device": "Vulkan0",
+     "detail": "b11177, --parallel 3 --kv-unified --mmproj, entsprach dem Preset vor der Umstellung."
+    },
+    "old-p1": {
+     "label": "Alt, 1 Slot",
+     "device": "Vulkan0",
+     "detail": "b10909 (Fork), --parallel 1, ohne mmproj."
+    },
+    "old-p3": {
+     "label": "Alt, 3 Slots",
+     "device": "Vulkan0",
+     "detail": "b10909 (Fork), --parallel 3 --kv-unified, ohne mmproj."
+    }
+   },
+   "configs": {
+    "baseline": {
+     "label": "ohne MTP",
+     "order": 0
+    },
+    "mtp2": {
+     "label": "MTP n-max 2",
+     "order": 1
+    }
+   },
+   "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+   },
+   "notes": [
+    "Median mtp2 in t/s: neu 1 Slot 42,5; neu 2 Slots 31,9 (mit mmproj 27,8); neu 3 Slots 27,9 (ohne kv-unified 30,7, mit mmproj 24,5); alt 1 Slot 46,2; alt 3 Slots 27,6. Baseline ohne MTP neu, 1 Slot: 25,1.",
+    "Die Slotzahl ist der Hauptgrund fuer den Einbruch. Schon der zweite Slot kostet rund 25 Prozent (42,5 auf 31,9), der dritte nur noch wenig. Das gilt fuer beide Builds: bei 3 Slots 27,9 neu gegen 27,6 alt.",
+    "Ein leerer Slot kostet nur bei Draft-Laengen ueber 1. Die Baseline und mtp n-max 1 waren im Lauf vom 2026-09-14 von der Slotzahl unberuehrt. Die Ursache ist weiterhin nicht belegt; vermutet wird der Pfad, der mehrere Draft-Tokens gleichzeitig verifiziert (SSM-Zustand pro Sequenz beim Hybridmodell), nicht bewiesen.",
+    "--kv-unified ist bei einem Slot ohne Wirkung (42,46 gegen 42,51 t/s). Bei drei Slots kostet es rund 9 Prozent (30,7 ohne, 27,9 mit). Ohne kv-unified halbiert llama-server allerdings den Kontext pro Slot, sobald --parallel explizit gesetzt ist, der Gewinn ist also nicht ohne Nachteil zu haben.",
+    "Der mmproj kostet zusaetzlich rund 12 Prozent bei 3 Slots (27,9 auf 24,5) und rund 13 Prozent bei 2 Slots (31,9 auf 27,8). Die Bereiche der Einzelmessungen ueberlappen nicht. Warum, ist nicht untersucht.",
+    "Der Buildwechsel kostet bei einem Slot rund 8 Prozent (46,2 auf 42,5), bei drei Slots nichts. Die Akzeptanz liegt neu bei 0,60 gegen 0,69 alt, der Unterschied im Durchsatz kommt also aus schlechteren Drafts, nicht aus einem langsameren Vorwaertslauf.",
+    "Das Preset vor der Umstellung (3 Slots, kv-unified, mmproj) lief mit 24,5 t/s auf dem Niveau der Baseline ohne MTP (25,1). Der MTP-Gewinn war praktisch weg. Mit 2 Slots und mmproj sind es 27,8 t/s, mit einem Slot ohne mmproj 42,5 t/s.",
+    "Grenzen der Reihe: je Konfiguration nur ein Lauf, Prompts mit 92 Tokens, der Kontext war nicht gefuellt. Aussagen zu tiefem Kontext, etwa 200k Tokens, sind daraus nicht ableitbar. Die Beschriftung 'alt' bezieht sich auf den Fork b10909 mit eingebettetem Head, die Zahlen vom 2026-09-14 mit externem -md-Head (46,23 bei 1 Slot, 32,30 bei 3 Slots) sind damit nicht direkt vergleichbar.",
+    "mtp-bench.sh in diesem Ordner ist gegenueber dem Skript vom 2026-09-14 angepasst: kein -md, dafuer die Umgebungsvariablen KVU (yes, no, auto) und MMPROJ. Die Matrix laeuft ueber serie.sh und serie2.sh."
+   ],
+   "results": {
+    "new-p1": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": 28.36,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 25.14,
+        "median": 25.15,
+        "max": 25.17,
+        "mean": 25.15,
+        "spread_pct": 0.1,
+        "values": [
+         25.17,
+         25.17,
+         25.14,
+         25.14
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 280.5,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 25.1,
+        "median": 25.12,
+        "max": 25.13,
+        "mean": 25.12,
+        "spread_pct": 0.1,
+        "values": [
+         25.11,
+         25.13,
+         25.12,
+         25.1
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 281.2,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 25.09,
+        "median": 25.09,
+        "max": 25.1,
+        "mean": 25.09,
+        "spread_pct": 0.1,
+        "values": [
+         25.09,
+         25.09,
+         25.09,
+         25.1
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 352.2,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 25.09,
+       "median": 25.12,
+       "max": 25.17,
+       "mean": 25.12,
+       "spread_pct": 0.3,
+       "values": [
+        25.17,
+        25.17,
+        25.14,
+        25.14,
+        25.11,
+        25.13,
+        25.12,
+        25.1,
+        25.09,
+        25.09,
+        25.09,
+        25.1
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 30.3,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 41.35,
+        "median": 41.38,
+        "max": 41.48,
+        "mean": 41.4,
+        "spread_pct": 0.3,
+        "values": [
+         41.35,
+         41.35,
+         41.48,
+         41.4
+        ],
+        "acceptance": 57.4,
+        "mean_len": 2.13,
+        "pred_n": 256,
+        "prompt_tps": 264.5,
+        "speedup": 1.645
+       },
+       "prosa": {
+        "n": 4,
+        "min": 42.38,
+        "median": 42.51,
+        "max": 42.55,
+        "mean": 42.49,
+        "spread_pct": 0.4,
+        "values": [
+         42.52,
+         42.55,
+         42.49,
+         42.38
+        ],
+        "acceptance": 60.2,
+        "mean_len": 2.19,
+        "pred_n": 256,
+        "prompt_tps": 267.0,
+        "speedup": 1.692
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 49.02,
+        "median": 49.06,
+        "max": 49.09,
+        "mean": 49.06,
+        "spread_pct": 0.2,
+        "values": [
+         49.02,
+         49.08,
+         49.03,
+         49.09
+        ],
+        "acceptance": 77.5,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 336.3,
+        "speedup": 1.955
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 41.35,
+       "median": 42.51,
+       "max": 49.09,
+       "mean": 44.31,
+       "spread_pct": 18.2,
+       "values": [
+        41.35,
+        41.35,
+        41.48,
+        41.4,
+        42.52,
+        42.55,
+        42.49,
+        42.38,
+        49.02,
+        49.08,
+        49.03,
+        49.09
+       ],
+       "acceptance": 64.4,
+       "mean_len": 2.27
+      },
+      "speedup": 1.692
+     }
+    },
+    "new-p1-kvu": {
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 30.3,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 41.5,
+        "median": 41.52,
+        "max": 41.58,
+        "mean": 41.53,
+        "spread_pct": 0.2,
+        "values": [
+         41.51,
+         41.52,
+         41.58,
+         41.5
+        ],
+        "acceptance": 57.4,
+        "mean_len": 2.13,
+        "pred_n": 256,
+        "prompt_tps": 265.5,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 42.45,
+        "median": 42.46,
+        "max": 42.55,
+        "mean": 42.48,
+        "spread_pct": 0.2,
+        "values": [
+         42.55,
+         42.45,
+         42.46,
+         42.47
+        ],
+        "acceptance": 60.2,
+        "mean_len": 2.19,
+        "pred_n": 256,
+        "prompt_tps": 264.6,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 49.04,
+        "median": 49.13,
+        "max": 49.17,
+        "mean": 49.11,
+        "spread_pct": 0.3,
+        "values": [
+         49.16,
+         49.04,
+         49.17,
+         49.09
+        ],
+        "acceptance": 77.5,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 332.6,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 41.5,
+       "median": 42.46,
+       "max": 49.17,
+       "mean": 44.37,
+       "spread_pct": 18.1,
+       "values": [
+        41.51,
+        41.52,
+        41.58,
+        41.5,
+        42.55,
+        42.45,
+        42.46,
+        42.47,
+        49.16,
+        49.04,
+        49.17,
+        49.09
+       ],
+       "acceptance": 64.4,
+       "mean_len": 2.27
+      },
+      "speedup": null
+     }
+    },
+    "new-p2": {
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 29.85,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 30.82,
+        "median": 30.85,
+        "max": 30.94,
+        "mean": 30.86,
+        "spread_pct": 0.4,
+        "values": [
+         30.84,
+         30.86,
+         30.94,
+         30.82
+        ],
+        "acceptance": 58.3,
+        "mean_len": 2.15,
+        "pred_n": 256,
+        "prompt_tps": 171.3,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 31.91,
+        "median": 31.93,
+        "max": 31.97,
+        "mean": 31.93,
+        "spread_pct": 0.2,
+        "values": [
+         31.92,
+         31.97,
+         31.91,
+         31.94
+        ],
+        "acceptance": 62.1,
+        "mean_len": 2.23,
+        "pred_n": 256,
+        "prompt_tps": 178.1,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 36.38,
+        "median": 36.4,
+        "max": 36.42,
+        "mean": 36.4,
+        "spread_pct": 0.1,
+        "values": [
+         36.4,
+         36.42,
+         36.4,
+         36.38
+        ],
+        "acceptance": 77.9,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 225.8,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 30.82,
+       "median": 31.93,
+       "max": 36.42,
+       "mean": 33.07,
+       "spread_pct": 17.5,
+       "values": [
+        30.84,
+        30.86,
+        30.94,
+        30.82,
+        31.92,
+        31.97,
+        31.91,
+        31.94,
+        36.4,
+        36.42,
+        36.4,
+        36.38
+       ],
+       "acceptance": 65.5,
+       "mean_len": 2.29
+      },
+      "speedup": null
+     }
+    },
+    "new-p2-preset": {
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 29.77,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 27.71,
+        "median": 27.79,
+        "max": 27.84,
+        "mean": 27.78,
+        "spread_pct": 0.5,
+        "values": [
+         27.71,
+         27.84,
+         27.77,
+         27.81
+        ],
+        "acceptance": 64.7,
+        "mean_len": 2.27,
+        "pred_n": 256,
+        "prompt_tps": 150.8,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 27.25,
+        "median": 27.29,
+        "max": 27.39,
+        "mean": 27.3,
+        "spread_pct": 0.5,
+        "values": [
+         27.39,
+         27.29,
+         27.29,
+         27.25
+        ],
+        "acceptance": 62.4,
+        "mean_len": 2.23,
+        "pred_n": 256,
+        "prompt_tps": 150.5,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 30.66,
+        "median": 30.7,
+        "max": 30.73,
+        "mean": 30.7,
+        "spread_pct": 0.2,
+        "values": [
+         30.73,
+         30.7,
+         30.66,
+         30.7
+        ],
+        "acceptance": 76.6,
+        "mean_len": 2.51,
+        "pred_n": 256,
+        "prompt_tps": 195.1,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 27.25,
+       "median": 27.79,
+       "max": 30.73,
+       "mean": 28.59,
+       "spread_pct": 12.5,
+       "values": [
+        27.71,
+        27.84,
+        27.77,
+        27.81,
+        27.39,
+        27.29,
+        27.29,
+        27.25,
+        30.73,
+        30.7,
+        30.66,
+        30.7
+       ],
+       "acceptance": 67.6,
+       "mean_len": 2.33
+      },
+      "speedup": null
+     }
+    },
+    "new-p3-kvu": {
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 29.34,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 27.85,
+        "median": 27.9,
+        "max": 27.99,
+        "mean": 27.91,
+        "spread_pct": 0.5,
+        "values": [
+         27.85,
+         27.87,
+         27.93,
+         27.99
+        ],
+        "acceptance": 64.7,
+        "mean_len": 2.27,
+        "pred_n": 256,
+        "prompt_tps": 152.5,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 27.36,
+        "median": 27.38,
+        "max": 27.56,
+        "mean": 27.42,
+        "spread_pct": 0.7,
+        "values": [
+         27.56,
+         27.36,
+         27.4,
+         27.36
+        ],
+        "acceptance": 62.4,
+        "mean_len": 2.23,
+        "pred_n": 256,
+        "prompt_tps": 155.4,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 30.72,
+        "median": 30.79,
+        "max": 30.82,
+        "mean": 30.78,
+        "spread_pct": 0.3,
+        "values": [
+         30.77,
+         30.82,
+         30.72,
+         30.82
+        ],
+        "acceptance": 76.6,
+        "mean_len": 2.51,
+        "pred_n": 256,
+        "prompt_tps": 197.1,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 27.36,
+       "median": 27.9,
+       "max": 30.82,
+       "mean": 28.7,
+       "spread_pct": 12.4,
+       "values": [
+        27.85,
+        27.87,
+        27.93,
+        27.99,
+        27.56,
+        27.36,
+        27.4,
+        27.36,
+        30.77,
+        30.82,
+        30.72,
+        30.82
+       ],
+       "acceptance": 67.6,
+       "mean_len": 2.33
+      },
+      "speedup": null
+     }
+    },
+    "new-p3-nokvu": {
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 29.33,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 28.3,
+        "median": 28.32,
+        "max": 28.35,
+        "mean": 28.32,
+        "spread_pct": 0.2,
+        "values": [
+         28.35,
+         28.33,
+         28.32,
+         28.3
+        ],
+        "acceptance": 59.7,
+        "mean_len": 2.17,
+        "pred_n": 256,
+        "prompt_tps": 163.7,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 30.55,
+        "median": 30.65,
+        "max": 30.71,
+        "mean": 30.64,
+        "spread_pct": 0.5,
+        "values": [
+         30.55,
+         30.71,
+         30.61,
+         30.69
+        ],
+        "acceptance": 68.1,
+        "mean_len": 2.35,
+        "pred_n": 256,
+        "prompt_tps": 162.7,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 33.07,
+        "median": 33.09,
+        "max": 33.11,
+        "mean": 33.09,
+        "spread_pct": 0.1,
+        "values": [
+         33.07,
+         33.11,
+         33.08,
+         33.1
+        ],
+        "acceptance": 77.9,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 206.4,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 28.3,
+       "median": 30.65,
+       "max": 33.11,
+       "mean": 30.68,
+       "spread_pct": 15.7,
+       "values": [
+        28.35,
+        28.33,
+        28.32,
+        28.3,
+        30.55,
+        30.71,
+        30.61,
+        30.69,
+        33.07,
+        33.11,
+        33.08,
+        33.1
+       ],
+       "acceptance": 68.1,
+       "mean_len": 2.34
+      },
+      "speedup": null
+     }
+    },
+    "new-p3-preset": {
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 29.12,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 23.11,
+        "median": 23.16,
+        "max": 23.36,
+        "mean": 23.2,
+        "spread_pct": 1.1,
+        "values": [
+         23.36,
+         23.12,
+         23.19,
+         23.11
+        ],
+        "acceptance": 63.4,
+        "mean_len": 2.25,
+        "pred_n": 256,
+        "prompt_tps": 140.3,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 24.44,
+        "median": 24.47,
+        "max": 24.52,
+        "mean": 24.48,
+        "spread_pct": 0.3,
+        "values": [
+         24.47,
+         24.44,
+         24.52,
+         24.47
+        ],
+        "acceptance": 69.2,
+        "mean_len": 2.37,
+        "pred_n": 256,
+        "prompt_tps": 141.4,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 26.08,
+        "median": 26.2,
+        "max": 26.26,
+        "mean": 26.19,
+        "spread_pct": 0.7,
+        "values": [
+         26.19,
+         26.26,
+         26.22,
+         26.08
+        ],
+        "acceptance": 77.9,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 181.5,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 23.11,
+       "median": 24.47,
+       "max": 26.26,
+       "mean": 24.62,
+       "spread_pct": 12.8,
+       "values": [
+        23.36,
+        23.12,
+        23.19,
+        23.11,
+        24.47,
+        24.44,
+        24.52,
+        24.47,
+        26.19,
+        26.26,
+        26.22,
+        26.08
+       ],
+       "acceptance": 69.8,
+       "mean_len": 2.38
+      },
+      "speedup": null
+     }
+    },
+    "old-p1": {
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 30.3,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 41.47,
+        "median": 41.55,
+        "max": 41.6,
+        "mean": 41.54,
+        "spread_pct": 0.3,
+        "values": [
+         41.47,
+         41.52,
+         41.6,
+         41.58
+        ],
+        "acceptance": 57.4,
+        "mean_len": 2.13,
+        "pred_n": 256,
+        "prompt_tps": 251.3,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 46.18,
+        "median": 46.21,
+        "max": 46.25,
+        "mean": 46.21,
+        "spread_pct": 0.1,
+        "values": [
+         46.18,
+         46.25,
+         46.19,
+         46.23
+        ],
+        "acceptance": 69.2,
+        "mean_len": 2.37,
+        "pred_n": 256,
+        "prompt_tps": 254.9,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 48.77,
+        "median": 48.8,
+        "max": 48.81,
+        "mean": 48.8,
+        "spread_pct": 0.1,
+        "values": [
+         48.8,
+         48.77,
+         48.81,
+         48.8
+        ],
+        "acceptance": 76.6,
+        "mean_len": 2.51,
+        "pred_n": 256,
+        "prompt_tps": 333.5,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 41.47,
+       "median": 46.21,
+       "max": 48.81,
+       "mean": 45.52,
+       "spread_pct": 15.9,
+       "values": [
+        41.47,
+        41.52,
+        41.6,
+        41.58,
+        46.18,
+        46.25,
+        46.19,
+        46.23,
+        48.8,
+        48.77,
+        48.81,
+        48.8
+       ],
+       "acceptance": 67.2,
+       "mean_len": 2.33
+      },
+      "speedup": null
+     }
+    },
+    "old-p3": {
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 29.34,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 27.34,
+        "median": 27.39,
+        "max": 27.46,
+        "mean": 27.4,
+        "spread_pct": 0.4,
+        "values": [
+         27.39,
+         27.46,
+         27.39,
+         27.34
+        ],
+        "acceptance": 62.1,
+        "mean_len": 2.23,
+        "pred_n": 256,
+        "prompt_tps": 146.3,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 27.56,
+        "median": 27.62,
+        "max": 27.76,
+        "mean": 27.64,
+        "spread_pct": 0.7,
+        "values": [
+         27.76,
+         27.56,
+         27.66,
+         27.57
+        ],
+        "acceptance": 63.1,
+        "mean_len": 2.25,
+        "pred_n": 256,
+        "prompt_tps": 148.7,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 30.79,
+        "median": 30.86,
+        "max": 30.9,
+        "mean": 30.85,
+        "spread_pct": 0.3,
+        "values": [
+         30.79,
+         30.83,
+         30.88,
+         30.9
+        ],
+        "acceptance": 76.6,
+        "mean_len": 2.51,
+        "pred_n": 256,
+        "prompt_tps": 195.5,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 27.34,
+       "median": 27.62,
+       "max": 30.9,
+       "mean": 28.63,
+       "spread_pct": 12.9,
+       "values": [
+        27.39,
+        27.46,
+        27.39,
+        27.34,
+        27.76,
+        27.56,
+        27.66,
+        27.57,
+        30.79,
+        30.83,
+        30.88,
+        30.9
+       ],
+       "acceptance": 66.9,
+       "mean_len": 2.32
+      },
+      "speedup": null
+     }
+    }
+   }
+  },
   {
    "id": "2026-09-14-qwen38-27b-mtp",
    "title": "MTP-Speculative-Decoding, Qwen3.8-27B (dicht, qwen35)",

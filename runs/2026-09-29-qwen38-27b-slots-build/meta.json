@@ -1,0 +1,100 @@
+{
+  "id": "2026-09-29-qwen38-27b-slots-build",
+  "title": "Slotzahl, kv-unified, mmproj und Build, Qwen3.8-27B mit MTP",
+  "date": "2026-09-29",
+  "question": "Warum fuehlt sich das Preset qwen3.8-27b-code (ctx 262144) nach dem llama.cpp-Update langsam an: Build, Slotzahl, --kv-unified oder mmproj?",
+  "machine": {
+    "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "61 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0"
+  },
+  "model": {
+    "Modell": "Qwen3.8-27B-UD-Q6_K (20,5 GiB, qwen35, dicht)",
+    "Draft-Head": "eingebettet (blk.64), kein -md",
+    "mmproj": "mmproj-Qwen3.8-27B-Q8_0.gguf, nur in einer Konfiguration je Slotzahl",
+    "Build neu": "b11177 (0.5.0-dev), Mainline Vulkan",
+    "Build alt": "b10909 (0.4.0-dev), Unsloth-Fork, vulkan-mtp"
+  },
+  "method": {
+    "Kontext": "262144 (nicht gefuellt), cache-type-k/v q8_0, flash-attn on",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf, je Konfiguration ein Lauf",
+    "Kennzahl": "Median der Einzelwerte",
+    "Spekulation": "draft-mtp, spec-draft-n-max 2"
+  },
+  "cmdline": "llama-server -m Qwen3.8-27B-UD-Q6_K.gguf --device Vulkan0 --ctx-size 262144 --flash-attn on --cache-type-k q8_0 --cache-type-v q8_0 --parallel N [--kv-unified] [--mmproj ...] --spec-type draft-mtp --spec-draft-n-max 2",
+  "backends": {
+    "new-p1": {
+      "label": "Neu, 1 Slot",
+      "device": "Vulkan0",
+      "detail": "b11177, --parallel 1, ohne mmproj. Enthaelt auch die Baseline ohne MTP."
+    },
+    "new-p1-kvu": {
+      "label": "Neu, 1 Slot, kv-unified",
+      "device": "Vulkan0",
+      "detail": "b11177, --parallel 1 --kv-unified."
+    },
+    "new-p2": {
+      "label": "Neu, 2 Slots",
+      "device": "Vulkan0",
+      "detail": "b11177, --parallel 2 --kv-unified, ohne mmproj."
+    },
+    "new-p2-preset": {
+      "label": "Neu, 2 Slots, mmproj",
+      "device": "Vulkan0",
+      "detail": "b11177, --parallel 2 --kv-unified --mmproj, entspricht dem Preset seit 2026-09-29."
+    },
+    "new-p3-nokvu": {
+      "label": "Neu, 3 Slots, ohne kv-unified",
+      "device": "Vulkan0",
+      "detail": "b11177, --parallel 3, ohne --kv-unified, ohne mmproj."
+    },
+    "new-p3-kvu": {
+      "label": "Neu, 3 Slots",
+      "device": "Vulkan0",
+      "detail": "b11177, --parallel 3 --kv-unified, ohne mmproj."
+    },
+    "new-p3-preset": {
+      "label": "Neu, 3 Slots, mmproj",
+      "device": "Vulkan0",
+      "detail": "b11177, --parallel 3 --kv-unified --mmproj, entsprach dem Preset vor der Umstellung."
+    },
+    "old-p1": {
+      "label": "Alt, 1 Slot",
+      "device": "Vulkan0",
+      "detail": "b10909 (Fork), --parallel 1, ohne mmproj."
+    },
+    "old-p3": {
+      "label": "Alt, 3 Slots",
+      "device": "Vulkan0",
+      "detail": "b10909 (Fork), --parallel 3 --kv-unified, ohne mmproj."
+    }
+  },
+  "configs": {
+    "baseline": {
+      "label": "ohne MTP",
+      "order": 0
+    },
+    "mtp2": {
+      "label": "MTP n-max 2",
+      "order": 1
+    }
+  },
+  "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+  },
+  "notes": [
+    "Median mtp2 in t/s: neu 1 Slot 42,5; neu 2 Slots 31,9 (mit mmproj 27,8); neu 3 Slots 27,9 (ohne kv-unified 30,7, mit mmproj 24,5); alt 1 Slot 46,2; alt 3 Slots 27,6. Baseline ohne MTP neu, 1 Slot: 25,1.",
+    "Die Slotzahl ist der Hauptgrund fuer den Einbruch. Schon der zweite Slot kostet rund 25 Prozent (42,5 auf 31,9), der dritte nur noch wenig. Das gilt fuer beide Builds: bei 3 Slots 27,9 neu gegen 27,6 alt.",
+    "Ein leerer Slot kostet nur bei Draft-Laengen ueber 1. Die Baseline und mtp n-max 1 waren im Lauf vom 2026-09-14 von der Slotzahl unberuehrt. Die Ursache ist weiterhin nicht belegt; vermutet wird der Pfad, der mehrere Draft-Tokens gleichzeitig verifiziert (SSM-Zustand pro Sequenz beim Hybridmodell), nicht bewiesen.",
+    "--kv-unified ist bei einem Slot ohne Wirkung (42,46 gegen 42,51 t/s). Bei drei Slots kostet es rund 9 Prozent (30,7 ohne, 27,9 mit). Ohne kv-unified halbiert llama-server allerdings den Kontext pro Slot, sobald --parallel explizit gesetzt ist, der Gewinn ist also nicht ohne Nachteil zu haben.",
+    "Der mmproj kostet zusaetzlich rund 12 Prozent bei 3 Slots (27,9 auf 24,5) und rund 13 Prozent bei 2 Slots (31,9 auf 27,8). Die Bereiche der Einzelmessungen ueberlappen nicht. Warum, ist nicht untersucht.",
+    "Der Buildwechsel kostet bei einem Slot rund 8 Prozent (46,2 auf 42,5), bei drei Slots nichts. Die Akzeptanz liegt neu bei 0,60 gegen 0,69 alt, der Unterschied im Durchsatz kommt also aus schlechteren Drafts, nicht aus einem langsameren Vorwaertslauf.",
+    "Das Preset vor der Umstellung (3 Slots, kv-unified, mmproj) lief mit 24,5 t/s auf dem Niveau der Baseline ohne MTP (25,1). Der MTP-Gewinn war praktisch weg. Mit 2 Slots und mmproj sind es 27,8 t/s, mit einem Slot ohne mmproj 42,5 t/s.",
+    "Grenzen der Reihe: je Konfiguration nur ein Lauf, Prompts mit 92 Tokens, der Kontext war nicht gefuellt. Aussagen zu tiefem Kontext, etwa 200k Tokens, sind daraus nicht ableitbar. Die Beschriftung 'alt' bezieht sich auf den Fork b10909 mit eingebettetem Head, die Zahlen vom 2026-09-14 mit externem -md-Head (46,23 bei 1 Slot, 32,30 bei 3 Slots) sind damit nicht direkt vergleichbar.",
+    "mtp-bench.sh in diesem Ordner ist gegenueber dem Skript vom 2026-09-14 angepasst: kein -md, dafuer die Umgebungsvariablen KVU (yes, no, auto) und MMPROJ. Die Matrix laeuft ueber serie.sh und serie2.sh."
+  ]
+}
