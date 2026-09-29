@@ -1,0 +1,33 @@
+### baseline: starte Server
+### baseline: bereit, VRAM 30,75 GiB
+  baseline code rep1: 25.03 t/s (256 tok)
+  baseline code rep2: 24.84 t/s (256 tok)
+  baseline code rep3: 20.71 t/s (256 tok)
+  baseline code rep4: 22.39 t/s (256 tok)
+  baseline prosa rep1: 24.90 t/s (256 tok)
+  baseline prosa rep2: 22.57 t/s (256 tok)
+  baseline prosa rep3: 25.44 t/s (256 tok)
+  baseline prosa rep4: 22.96 t/s (256 tok)
+  baseline reasoning rep1: 24.36 t/s (256 tok)
+  baseline reasoning rep2: 25.27 t/s (256 tok)
+  baseline reasoning rep3: 18.89 t/s (256 tok)
+  baseline reasoning rep4: 21.23 t/s (256 tok)
+### baseline: geschrieben nach vulkan-p1/baseline.json
+### baseline: fertig (rc=0)
+### mtp2: starte Server
+### mtp2: bereit, VRAM 31,42 GiB
+  mtp2 code rep1: 33.55 t/s (256 tok)
+  mtp2 code rep2: 30.20 t/s (256 tok)
+  mtp2 code rep3: 30.06 t/s (256 tok)
+  mtp2 code rep4: 34.62 t/s (256 tok)
+  mtp2 prosa rep1: 31.31 t/s (256 tok)
+  mtp2 prosa rep2: 32.79 t/s (256 tok)
+  mtp2 prosa rep3: 29.14 t/s (256 tok)
+  mtp2 prosa rep4: 32.45 t/s (256 tok)
+  mtp2 reasoning rep1: 38.37 t/s (256 tok)
+  mtp2 reasoning rep2: 39.57 t/s (256 tok)
+  mtp2 reasoning rep3: 40.21 t/s (256 tok)
+  mtp2 reasoning rep4: 29.51 t/s (256 tok)
+### mtp2: geschrieben nach vulkan-p1/mtp2.json
+### mtp2: fertig (rc=0)
+ALLES-FERTIG

@@ -1,0 +1,14 @@
+Ladezeit inkl. Warmlauf: 44 s
+  mtp2 code rep1: 33.94 t/s
+  mtp2 code rep2: 27.61 t/s
+  mtp2 code rep3: 33.18 t/s
+  mtp2 code rep4: 27.36 t/s
+  mtp2 prosa rep1: 29.68 t/s
+  mtp2 prosa rep2: 29.12 t/s
+  mtp2 prosa rep3: 32.40 t/s
+  mtp2 prosa rep4: 29.55 t/s
+  mtp2 reasoning rep1: 37.04 t/s
+  mtp2 reasoning rep2: 29.31 t/s
+  mtp2 reasoning rep3: 27.80 t/s
+  mtp2 reasoning rep4: 37.65 t/s
+mem: {"min_avail_gib": 90.11, "max_vram_gib": 31.85, "max_gtt_gib": 27.35}

@@ -1,0 +1,61 @@
+{
+  "id": "2026-09-29-qwen38-flashnext-router",
+  "title": "Flash-Next nach dem Update, Router-Preset gegen 1 Slot",
+  "date": "2026-09-29",
+  "question": "Ist Qwen3.8-Flash-Next nach dem llama.cpp-Update und dem RAM-Upgrade (61 auf 123 GiB) langsamer geworden, und was kostet das Router-Preset mit 3 Slots gegenueber der Reihe vom 2026-09-13?",
+  "machine": {
+    "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB nutzbar (vorher 61 GiB)",
+    "OS": "Ubuntu 26.04, Kernel 7.0"
+  },
+  "model": {
+    "Modell": "Qwen3.8-Flash-Next UD-Q2_K_XL (177B MoE, qwen4exp)",
+    "Draft-Head": "externer Shared-Head mtp-...-Q8_0.gguf (-md)",
+    "Build": "vulkan-mtp b10909 (Unsloth-Fork), unveraendert seit 2026-09-13"
+  },
+  "method": {
+    "Kontext": "262144, cache-type-k/v q8_0, --fit on, --load-mode none",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf, je Konfiguration ein Lauf",
+    "Kennzahl": "Median der Einzelwerte",
+    "Router": "Preset server-vulkan-mtp, --cache-ram 65536, Katalogoptionen parallel 3 und kv-unified, mtp2"
+  },
+  "cmdline": "vulkan-p1: llama-server -m ...Flash-Next-UD-Q2_K_XL-00001-of-00003.gguf --ctx-size 262144 --fit on --cache-type-k q8_0 --cache-type-v q8_0 --load-mode none --parallel 1 [-md MTP/... --spec-type draft-mtp --spec-draft-n-max 2]. router: llama-launcher start server-vulkan-mtp, Abfrage ueber /completion mit model=qwen3.8-flash-next.",
+  "backends": {
+    "vulkan-p1": {
+      "label": "Standalone, 1 Slot",
+      "device": "Vulkan0",
+      "detail": "Gleiches Skript wie 2026-09-13, heute nachgemessen. Bezug fuer den Speedup."
+    },
+    "router": {
+      "label": "Router-Preset, 3 Slots",
+      "device": "Vulkan0",
+      "detail": "server-vulkan-mtp mit parallel 3 und kv-unified, ueber Port 8898 abgefragt."
+    }
+  },
+  "configs": {
+    "baseline": {
+      "label": "ohne MTP",
+      "order": 0
+    },
+    "mtp2": {
+      "label": "MTP n-max 2",
+      "order": 1
+    }
+  },
+  "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+  },
+  "notes": [
+    "Flash-Next ist nicht langsamer geworden. Standalone mit 1 Slot heute: 23,7 t/s ohne MTP und 32,6 t/s mit mtp2 (1,38x). Am 2026-09-13 waren es 21,3 und 31,4 t/s. Der Build ist derselbe (b10909), die Abweichung von +11 und +4 Prozent liegt im Streubereich der Reihe.",
+    "Das Router-Preset mit 3 Slots kommt auf 29,6 t/s (mtp2), also rund 9 Prozent unter dem Lauf mit 1 Slot. Der Einbruch ist damit deutlich kleiner als beim dichten Qwen3.8-27B, wo 3 Slots rund 35 Prozent kosteten. Beim MoE spielt die Verifikation mit Draft-Tokens vermutlich eine kleinere Rolle, weil die Gewichte ohnehin teils ueber die CPU laufen; belegt ist das nicht.",
+    "Akzeptanz der Drafts ist gleich (0,68 bei 1 Slot, 0,70 im Router), der Unterschied kommt also nicht aus schlechteren Drafts.",
+    "Speicherbild im Router-Lauf: VRAM-Spitze 31,85 GiB (Karte voll), GTT-Spitze 27,35 GiB, freier RAM nie unter 90 GiB. Das RAM-Upgrade war fuer Flash-Next nicht noetig, ein Vorteil im Durchsatz ist nicht messbar.",
+    "Der Vergleich mit dem RAM-Upgrade ist nicht sauber getrennt: gemessen wurde nur vorher und nachher, ohne zu wissen, ob die Bestueckung (Kanaele, Takt) sich ausserdem geaendert hat. dmidecode braucht sudo und wurde nicht ausgefuehrt.",
+    "Gleichzeitig wurde in beiden Router-Presets --cache-ram von 24576 auf 65536 gesetzt. Ein Geschwindigkeitsgewinn dadurch ist mit diesen Kurzprompts nicht messbar, denn der Cache greift erst bei langen Sitzungen mit Prompt-Wechsel. Im Router-Log stand siebenmal 'prompt state size ... exceeds cache size limit, skipping' bei Zustaenden von 18 bis 33 GiB (27b-code, ctx 262144).",
+    "Grenzen: je Konfiguration ein Lauf, Prompts mit unter 100 Tokens, Kontext nicht gefuellt. Aussagen zu tiefem Kontext sind daraus nicht ableitbar. bench-router.py misst ueber den Router, mtp-bench.sh startet den Server standalone."
+  ]
+}

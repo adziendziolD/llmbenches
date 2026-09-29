@@ -1,6 +1,337 @@
 {
- "generated": "2026-09-29T14:18:26+02:00",
+ "generated": "2026-09-29T14:53:27+02:00",
  "runs": [
+  {
+   "id": "2026-09-29-qwen38-flashnext-router",
+   "title": "Flash-Next nach dem Update, Router-Preset gegen 1 Slot",
+   "date": "2026-09-29",
+   "question": "Ist Qwen3.8-Flash-Next nach dem llama.cpp-Update und dem RAM-Upgrade (61 auf 123 GiB) langsamer geworden, und was kostet das Router-Preset mit 3 Slots gegenueber der Reihe vom 2026-09-13?",
+   "machine": {
+    "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB nutzbar (vorher 61 GiB)",
+    "OS": "Ubuntu 26.04, Kernel 7.0"
+   },
+   "model": {
+    "Modell": "Qwen3.8-Flash-Next UD-Q2_K_XL (177B MoE, qwen4exp)",
+    "Draft-Head": "externer Shared-Head mtp-...-Q8_0.gguf (-md)",
+    "Build": "vulkan-mtp b10909 (Unsloth-Fork), unveraendert seit 2026-09-13"
+   },
+   "method": {
+    "Kontext": "262144, cache-type-k/v q8_0, --fit on, --load-mode none",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf, je Konfiguration ein Lauf",
+    "Kennzahl": "Median der Einzelwerte",
+    "Router": "Preset server-vulkan-mtp, --cache-ram 65536, Katalogoptionen parallel 3 und kv-unified, mtp2"
+   },
+   "cmdline": "vulkan-p1: llama-server -m ...Flash-Next-UD-Q2_K_XL-00001-of-00003.gguf --ctx-size 262144 --fit on --cache-type-k q8_0 --cache-type-v q8_0 --load-mode none --parallel 1 [-md MTP/... --spec-type draft-mtp --spec-draft-n-max 2]. router: llama-launcher start server-vulkan-mtp, Abfrage ueber /completion mit model=qwen3.8-flash-next.",
+   "backends": {
+    "vulkan-p1": {
+     "label": "Standalone, 1 Slot",
+     "device": "Vulkan0",
+     "detail": "Gleiches Skript wie 2026-09-13, heute nachgemessen. Bezug fuer den Speedup."
+    },
+    "router": {
+     "label": "Router-Preset, 3 Slots",
+     "device": "Vulkan0",
+     "detail": "server-vulkan-mtp mit parallel 3 und kv-unified, ueber Port 8898 abgefragt."
+    }
+   },
+   "configs": {
+    "baseline": {
+     "label": "ohne MTP",
+     "order": 0
+    },
+    "mtp2": {
+     "label": "MTP n-max 2",
+     "order": 1
+    }
+   },
+   "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+   },
+   "notes": [
+    "Flash-Next ist nicht langsamer geworden. Standalone mit 1 Slot heute: 23,7 t/s ohne MTP und 32,6 t/s mit mtp2 (1,38x). Am 2026-09-13 waren es 21,3 und 31,4 t/s. Der Build ist derselbe (b10909), die Abweichung von +11 und +4 Prozent liegt im Streubereich der Reihe.",
+    "Das Router-Preset mit 3 Slots kommt auf 29,6 t/s (mtp2), also rund 9 Prozent unter dem Lauf mit 1 Slot. Der Einbruch ist damit deutlich kleiner als beim dichten Qwen3.8-27B, wo 3 Slots rund 35 Prozent kosteten. Beim MoE spielt die Verifikation mit Draft-Tokens vermutlich eine kleinere Rolle, weil die Gewichte ohnehin teils ueber die CPU laufen; belegt ist das nicht.",
+    "Akzeptanz der Drafts ist gleich (0,68 bei 1 Slot, 0,70 im Router), der Unterschied kommt also nicht aus schlechteren Drafts.",
+    "Speicherbild im Router-Lauf: VRAM-Spitze 31,85 GiB (Karte voll), GTT-Spitze 27,35 GiB, freier RAM nie unter 90 GiB. Das RAM-Upgrade war fuer Flash-Next nicht noetig, ein Vorteil im Durchsatz ist nicht messbar.",
+    "Der Vergleich mit dem RAM-Upgrade ist nicht sauber getrennt: gemessen wurde nur vorher und nachher, ohne zu wissen, ob die Bestueckung (Kanaele, Takt) sich ausserdem geaendert hat. dmidecode braucht sudo und wurde nicht ausgefuehrt.",
+    "Gleichzeitig wurde in beiden Router-Presets --cache-ram von 24576 auf 65536 gesetzt. Ein Geschwindigkeitsgewinn dadurch ist mit diesen Kurzprompts nicht messbar, denn der Cache greift erst bei langen Sitzungen mit Prompt-Wechsel. Im Router-Log stand siebenmal 'prompt state size ... exceeds cache size limit, skipping' bei Zustaenden von 18 bis 33 GiB (27b-code, ctx 262144).",
+    "Grenzen: je Konfiguration ein Lauf, Prompts mit unter 100 Tokens, Kontext nicht gefuellt. Aussagen zu tiefem Kontext sind daraus nicht ableitbar. bench-router.py misst ueber den Router, mtp-bench.sh startet den Server standalone."
+   ],
+   "results": {
+    "router": {
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 27.36,
+        "median": 30.39,
+        "max": 33.94,
+        "mean": 30.52,
+        "spread_pct": 21.7,
+        "values": [
+         33.94,
+         27.61,
+         33.18,
+         27.36
+        ],
+        "acceptance": 69.5,
+        "mean_len": 2.37,
+        "pred_n": 256,
+        "prompt_tps": 101.6,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 29.12,
+        "median": 29.61,
+        "max": 32.4,
+        "mean": 30.19,
+        "spread_pct": 11.1,
+        "values": [
+         29.68,
+         29.12,
+         32.4,
+         29.55
+        ],
+        "acceptance": 60.2,
+        "mean_len": 2.19,
+        "pred_n": 256,
+        "prompt_tps": 101.0,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 27.8,
+        "median": 33.18,
+        "max": 37.65,
+        "mean": 32.95,
+        "spread_pct": 29.7,
+        "values": [
+         37.04,
+         29.31,
+         27.8,
+         37.65
+        ],
+        "acceptance": 79.2,
+        "mean_len": 2.56,
+        "pred_n": 256,
+        "prompt_tps": 123.3,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 27.36,
+       "median": 29.61,
+       "max": 37.65,
+       "mean": 31.22,
+       "spread_pct": 34.8,
+       "values": [
+        33.94,
+        27.61,
+        33.18,
+        27.36,
+        29.68,
+        29.12,
+        32.4,
+        29.55,
+        37.04,
+        29.31,
+        27.8,
+        37.65
+       ],
+       "acceptance": 69.1,
+       "mean_len": 2.36
+      },
+      "speedup": null
+     }
+    },
+    "vulkan-p1": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": 30.75,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 20.71,
+        "median": 23.61,
+        "max": 25.03,
+        "mean": 23.24,
+        "spread_pct": 18.3,
+        "values": [
+         25.03,
+         24.84,
+         20.71,
+         22.39
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 112.3,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 22.57,
+        "median": 23.93,
+        "max": 25.44,
+        "mean": 23.97,
+        "spread_pct": 12.0,
+        "values": [
+         24.9,
+         22.57,
+         25.44,
+         22.96
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 112.3,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 18.89,
+        "median": 22.79,
+        "max": 25.27,
+        "mean": 22.44,
+        "spread_pct": 28.0,
+        "values": [
+         24.36,
+         25.27,
+         18.89,
+         21.23
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 137.0,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 18.89,
+       "median": 23.66,
+       "max": 25.44,
+       "mean": 23.22,
+       "spread_pct": 27.7,
+       "values": [
+        25.03,
+        24.84,
+        20.71,
+        22.39,
+        24.9,
+        22.57,
+        25.44,
+        22.96,
+        24.36,
+        25.27,
+        18.89,
+        21.23
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": 31.42,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 30.06,
+        "median": 31.87,
+        "max": 34.62,
+        "mean": 32.11,
+        "spread_pct": 14.3,
+        "values": [
+         33.55,
+         30.2,
+         30.06,
+         34.62
+        ],
+        "acceptance": 67.6,
+        "mean_len": 2.33,
+        "pred_n": 256,
+        "prompt_tps": 108.6,
+        "speedup": 1.35
+       },
+       "prosa": {
+        "n": 4,
+        "min": 29.14,
+        "median": 31.88,
+        "max": 32.79,
+        "mean": 31.42,
+        "spread_pct": 11.4,
+        "values": [
+         31.31,
+         32.79,
+         29.14,
+         32.45
+        ],
+        "acceptance": 60.2,
+        "mean_len": 2.18,
+        "pred_n": 256,
+        "prompt_tps": 109.5,
+        "speedup": 1.332
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 29.51,
+        "median": 38.97,
+        "max": 40.21,
+        "mean": 36.92,
+        "spread_pct": 27.5,
+        "values": [
+         38.37,
+         39.57,
+         40.21,
+         29.51
+        ],
+        "acceptance": 85.6,
+        "mean_len": 2.67,
+        "pred_n": 256,
+        "prompt_tps": 133.7,
+        "speedup": 1.71
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 29.14,
+       "median": 32.62,
+       "max": 40.21,
+       "mean": 33.48,
+       "spread_pct": 33.9,
+       "values": [
+        33.55,
+        30.2,
+        30.06,
+        34.62,
+        31.31,
+        32.79,
+        29.14,
+        32.45,
+        38.37,
+        39.57,
+        40.21,
+        29.51
+       ],
+       "acceptance": 70.2,
+       "mean_len": 2.38
+      },
+      "speedup": 1.379
+     }
+    }
+   }
+  },
   {
    "id": "2026-09-29-qwen38-27b-slots-build",
    "title": "Slotzahl, kv-unified, mmproj und Build, Qwen3.8-27B mit MTP",
