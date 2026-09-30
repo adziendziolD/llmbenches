@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-30T13:46:06+02:00",
+ "generated": "2026-09-30T15:36:13+02:00",
  "runs": [
   {
    "id": "2026-09-30-qwen38-27b-tensorsplit",
@@ -2337,6 +2337,430 @@
        "mean_len": 2.37
       },
       "speedup": 1.727
+     }
+    }
+   }
+  },
+  {
+   "id": "2026-09-30-parallelbetrieb-coder-agent",
+   "title": "Parallelbetrieb Coding-Modell und Agenten-Modell, zwei R9700",
+   "date": "2026-09-30",
+   "question": "Wie stark bremsen sich qwen3.8-27b-code und ornstein-hermes-27b aus, wenn beide im selben Router geladen sind und gleichzeitig generieren, und kostet das reine Geladensein Tempo?",
+   "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0",
+    "ROCm": "7.2.4"
+   },
+   "model": {
+    "Coder": "Qwen3.8-27B-UD-Q6_K, ROCm0,ROCm1, Tensor-Split, MTP n-max 2, ctx 262144",
+    "Agent": "Ornstein-Hermes-3.6-27b-SABER-Q5_K_M (19,2 GB), ROCm0,ROCm1, Layer-Split, kein MTP, ctx 131072",
+    "Build": "b11177 (0.5.0-dev), Mainline ROCm, server-multi mit --models-max 2"
+   },
+   "method": {
+    "Aufbau": "beide Modelle im Router geladen, je 1 Slot",
+    "Einzeln": "Anfragen nacheinander, das andere Modell geladen, aber untaetig",
+    "Gleichzeitig": "beide Anfragen im selben Moment gestartet",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false, Thinking aus",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf, ein Lauf",
+    "Kennzahl": "Median der Einzelwerte",
+    "Weg": "HTTP ueber den Router auf Port 8898, /v1/chat/completions"
+   },
+   "cmdline": "llama-launcher start server-multi (--models-max 2 --cache-ram 32768), Modelle per Router geladen; Skript parallel-bench.py",
+   "backends": {
+    "einzeln": {
+     "label": "einzeln (anderes Modell idle)",
+     "device": "ROCm0,ROCm1",
+     "detail": "Beide Modelle geladen, die Anfragen laufen nacheinander."
+    },
+    "gleichzeitig": {
+     "label": "gleichzeitig",
+     "device": "ROCm0,ROCm1",
+     "detail": "Beide Modelle generieren im selben Moment."
+    }
+   },
+   "configs": {
+    "coder": {
+     "label": "Coder (Q6_K, MTP)",
+     "order": 0
+    },
+    "agent": {
+     "label": "Agent (Q5_K_M, ohne MTP)",
+     "order": 1
+    }
+   },
+   "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+   },
+   "notes": [
+    "Median in t/s (einzeln / gleichzeitig): Coder 56,6 / 30,6 (minus 46 Prozent), Agent 25,5 / 20,1 (minus 21 Prozent). Beide Modelle bremsen sich also gegenseitig, der Coder deutlich staerker.",
+    "Geladensein allein kostet kein messbares Tempo: die Werte 'einzeln' wurden mit dem ruhenden anderen Modell im VRAM gemessen. Der Coder liegt dort mit 56,6 t/s (code 56,6, prosa 52,2, reasoning 60,1) auf oder ueber dem Niveau der Laeufe ohne Agenten (Q6_K, Tensor-Split, mtp2: 52,0). Das ist ein Vergleich gegen einen anderen Lauf vom selben Tag, kein Bestandteil dieser Reihe.",
+    "Der Einbruch tritt nur auf, wenn beide gleichzeitig generieren. Bei einem Agenten, der zwischen Tool-Aufrufen wartet, ueberschneiden sich die Phasen oft nur teilweise.",
+    "Der Agent ohne MTP und mit Layer-Split ist mit 25,5 t/s einzeln deutlich langsamer als der Coder. Das passt zur Baseline ohne MTP beim Q6_K auf ROCm (24,0 t/s im Lauf 2026-09-30-qwen38-27b-rocm-p2p).",
+    "Die Draft-Akzeptanz des Coders liegt mit 0,719 in beiden Bedingungen gleich: MTP ist von der Konkurrenz nicht betroffen, nur das Tempo des Vorwaertslaufs.",
+    "VRAM (GiB, beide Modelle geladen): card0 28,87, card1 29,71 von je 31,86. Frei bleiben 3,0 und 2,1 GiB, der Wert war nach der Messung unveraendert. Der Kontext des Agenten (131072) ist damit ausgereizt.",
+    "Abweichung zu einer ersten Schnellmessung am selben Tag (Coder 52,4 einzeln, 29,7 gleichzeitig, Agent 23,9 und 19,6, nur Code-Prompt, ohne top_k und seed): die Werte dieser Reihe liegen leicht darueber. Die Ursache ist nicht untersucht, die Aussage (Coder halbiert, Agent verliert rund ein Fuenftel) bleibt gleich.",
+    "Nicht gemessen: Tempo bei gefuelltem Kontext, mehr als ein Slot je Modell, andere Quants. Der Agent ist nur auf Tool-Calling mit einer Funktion getestet, kein mehrstufiger Agentenlauf, und hat keine Verweigerungs-Leitplanken (SABER).",
+    "Grenzen: ein Lauf je Bedingung, kurze Prompts, Kontext nicht gefuellt."
+   ],
+   "results": {
+    "einzeln": {
+     "agent": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 24.23,
+        "median": 24.99,
+        "max": 26.57,
+        "mean": 25.2,
+        "spread_pct": 9.3,
+        "values": [
+         24.64,
+         26.57,
+         24.23,
+         25.34
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 271.2,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 25.59,
+        "median": 25.81,
+        "max": 26.25,
+        "mean": 25.87,
+        "spread_pct": 2.6,
+        "values": [
+         26.25,
+         25.89,
+         25.59,
+         25.73
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 275.4,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 24.12,
+        "median": 24.28,
+        "max": 26.5,
+        "mean": 24.79,
+        "spread_pct": 9.8,
+        "values": [
+         24.2,
+         24.12,
+         26.5,
+         24.36
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 379.3,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 24.12,
+       "median": 25.46,
+       "max": 26.57,
+       "mean": 25.29,
+       "spread_pct": 9.6,
+       "values": [
+        24.64,
+        26.57,
+        24.23,
+        25.34,
+        26.25,
+        25.89,
+        25.59,
+        25.73,
+        24.2,
+        24.12,
+        26.5,
+        24.36
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": null
+     },
+     "coder": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 54.5,
+        "median": 56.58,
+        "max": 61.33,
+        "mean": 57.25,
+        "spread_pct": 12.1,
+        "values": [
+         54.5,
+         61.33,
+         56.77,
+         56.39
+        ],
+        "acceptance": 78.3,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 141.6,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 51.89,
+        "median": 52.19,
+        "max": 52.45,
+        "mean": 52.18,
+        "spread_pct": 1.1,
+        "values": [
+         52.3,
+         52.45,
+         51.89,
+         52.07
+        ],
+        "acceptance": 59.5,
+        "mean_len": 2.17,
+        "pred_n": 256,
+        "prompt_tps": 159.1,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 57.5,
+        "median": 60.14,
+        "max": 62.45,
+        "mean": 60.06,
+        "spread_pct": 8.2,
+        "values": [
+         57.5,
+         57.97,
+         62.45,
+         62.31
+        ],
+        "acceptance": 80.1,
+        "mean_len": 2.59,
+        "pred_n": 256,
+        "prompt_tps": 221.5,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 51.89,
+       "median": 56.58,
+       "max": 62.45,
+       "mean": 56.49,
+       "spread_pct": 18.7,
+       "values": [
+        54.5,
+        61.33,
+        56.77,
+        56.39,
+        52.3,
+        52.45,
+        51.89,
+        52.07,
+        57.5,
+        57.97,
+        62.45,
+        62.31
+       ],
+       "acceptance": 71.9,
+       "mean_len": 2.42
+      },
+      "speedup": null
+     }
+    },
+    "gleichzeitig": {
+     "agent": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 20.01,
+        "median": 20.16,
+        "max": 20.94,
+        "mean": 20.32,
+        "spread_pct": 4.6,
+        "values": [
+         20.94,
+         20.01,
+         20.02,
+         20.31
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 257.9,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 19.53,
+        "median": 19.71,
+        "max": 20.21,
+        "mean": 19.79,
+        "spread_pct": 3.4,
+        "values": [
+         20.21,
+         19.53,
+         19.73,
+         19.68
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 247.1,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 19.8,
+        "median": 20.4,
+        "max": 21.0,
+        "mean": 20.4,
+        "spread_pct": 5.9,
+        "values": [
+         20.22,
+         20.59,
+         21.0,
+         19.8
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 326.4,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 19.53,
+       "median": 20.11,
+       "max": 21.0,
+       "mean": 20.17,
+       "spread_pct": 7.3,
+       "values": [
+        20.94,
+        20.01,
+        20.02,
+        20.31,
+        20.21,
+        19.53,
+        19.73,
+        19.68,
+        20.22,
+        20.59,
+        21.0,
+        19.8
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": null
+     },
+     "coder": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 30.07,
+        "median": 30.63,
+        "max": 31.11,
+        "mean": 30.61,
+        "spread_pct": 3.4,
+        "values": [
+         31.11,
+         30.07,
+         30.55,
+         30.7
+        ],
+        "acceptance": 78.3,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 72.1,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 26.05,
+        "median": 26.3,
+        "max": 26.71,
+        "mean": 26.34,
+        "spread_pct": 2.5,
+        "values": [
+         26.71,
+         26.05,
+         26.23,
+         26.38
+        ],
+        "acceptance": 59.5,
+        "mean_len": 2.17,
+        "pred_n": 256,
+        "prompt_tps": 70.2,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 30.67,
+        "median": 31.05,
+        "max": 31.73,
+        "mean": 31.12,
+        "spread_pct": 3.4,
+        "values": [
+         31.29,
+         30.67,
+         31.73,
+         30.81
+        ],
+        "acceptance": 80.1,
+        "mean_len": 2.59,
+        "pred_n": 256,
+        "prompt_tps": 108.6,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 26.05,
+       "median": 30.61,
+       "max": 31.73,
+       "mean": 29.36,
+       "spread_pct": 18.6,
+       "values": [
+        31.11,
+        30.07,
+        30.55,
+        30.7,
+        26.71,
+        26.05,
+        26.23,
+        26.38,
+        31.29,
+        30.67,
+        31.73,
+        30.81
+       ],
+       "acceptance": 71.9,
+       "mean_len": 2.42
+      },
+      "speedup": null
      }
     }
    }

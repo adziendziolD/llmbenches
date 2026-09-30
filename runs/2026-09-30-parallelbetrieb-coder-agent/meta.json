@@ -1,0 +1,66 @@
+{
+  "id": "2026-09-30-parallelbetrieb-coder-agent",
+  "title": "Parallelbetrieb Coding-Modell und Agenten-Modell, zwei R9700",
+  "date": "2026-09-30",
+  "question": "Wie stark bremsen sich qwen3.8-27b-code und ornstein-hermes-27b aus, wenn beide im selben Router geladen sind und gleichzeitig generieren, und kostet das reine Geladensein Tempo?",
+  "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0",
+    "ROCm": "7.2.4"
+  },
+  "model": {
+    "Coder": "Qwen3.8-27B-UD-Q6_K, ROCm0,ROCm1, Tensor-Split, MTP n-max 2, ctx 262144",
+    "Agent": "Ornstein-Hermes-3.6-27b-SABER-Q5_K_M (19,2 GB), ROCm0,ROCm1, Layer-Split, kein MTP, ctx 131072",
+    "Build": "b11177 (0.5.0-dev), Mainline ROCm, server-multi mit --models-max 2"
+  },
+  "method": {
+    "Aufbau": "beide Modelle im Router geladen, je 1 Slot",
+    "Einzeln": "Anfragen nacheinander, das andere Modell geladen, aber untaetig",
+    "Gleichzeitig": "beide Anfragen im selben Moment gestartet",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false, Thinking aus",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf, ein Lauf",
+    "Kennzahl": "Median der Einzelwerte",
+    "Weg": "HTTP ueber den Router auf Port 8898, /v1/chat/completions"
+  },
+  "cmdline": "llama-launcher start server-multi (--models-max 2 --cache-ram 32768), Modelle per Router geladen; Skript parallel-bench.py",
+  "backends": {
+    "einzeln": {
+      "label": "einzeln (anderes Modell idle)",
+      "device": "ROCm0,ROCm1",
+      "detail": "Beide Modelle geladen, die Anfragen laufen nacheinander."
+    },
+    "gleichzeitig": {
+      "label": "gleichzeitig",
+      "device": "ROCm0,ROCm1",
+      "detail": "Beide Modelle generieren im selben Moment."
+    }
+  },
+  "configs": {
+    "coder": {
+      "label": "Coder (Q6_K, MTP)",
+      "order": 0
+    },
+    "agent": {
+      "label": "Agent (Q5_K_M, ohne MTP)",
+      "order": 1
+    }
+  },
+  "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+  },
+  "notes": [
+    "Median in t/s (einzeln / gleichzeitig): Coder 56,6 / 30,6 (minus 46 Prozent), Agent 25,5 / 20,1 (minus 21 Prozent). Beide Modelle bremsen sich also gegenseitig, der Coder deutlich staerker.",
+    "Geladensein allein kostet kein messbares Tempo: die Werte 'einzeln' wurden mit dem ruhenden anderen Modell im VRAM gemessen. Der Coder liegt dort mit 56,6 t/s (code 56,6, prosa 52,2, reasoning 60,1) auf oder ueber dem Niveau der Laeufe ohne Agenten (Q6_K, Tensor-Split, mtp2: 52,0). Das ist ein Vergleich gegen einen anderen Lauf vom selben Tag, kein Bestandteil dieser Reihe.",
+    "Der Einbruch tritt nur auf, wenn beide gleichzeitig generieren. Bei einem Agenten, der zwischen Tool-Aufrufen wartet, ueberschneiden sich die Phasen oft nur teilweise.",
+    "Der Agent ohne MTP und mit Layer-Split ist mit 25,5 t/s einzeln deutlich langsamer als der Coder. Das passt zur Baseline ohne MTP beim Q6_K auf ROCm (24,0 t/s im Lauf 2026-09-30-qwen38-27b-rocm-p2p).",
+    "Die Draft-Akzeptanz des Coders liegt mit 0,719 in beiden Bedingungen gleich: MTP ist von der Konkurrenz nicht betroffen, nur das Tempo des Vorwaertslaufs.",
+    "VRAM (GiB, beide Modelle geladen): card0 28,87, card1 29,71 von je 31,86. Frei bleiben 3,0 und 2,1 GiB, der Wert war nach der Messung unveraendert. Der Kontext des Agenten (131072) ist damit ausgereizt.",
+    "Abweichung zu einer ersten Schnellmessung am selben Tag (Coder 52,4 einzeln, 29,7 gleichzeitig, Agent 23,9 und 19,6, nur Code-Prompt, ohne top_k und seed): die Werte dieser Reihe liegen leicht darueber. Die Ursache ist nicht untersucht, die Aussage (Coder halbiert, Agent verliert rund ein Fuenftel) bleibt gleich.",
+    "Nicht gemessen: Tempo bei gefuelltem Kontext, mehr als ein Slot je Modell, andere Quants. Der Agent ist nur auf Tool-Calling mit einer Funktion getestet, kein mehrstufiger Agentenlauf, und hat keine Verweigerungs-Leitplanken (SABER).",
+    "Grenzen: ein Lauf je Bedingung, kurze Prompts, Kontext nicht gefuellt."
+  ]
+}

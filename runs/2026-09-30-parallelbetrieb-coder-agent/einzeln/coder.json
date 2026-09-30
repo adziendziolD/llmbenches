@@ -1,0 +1,134 @@
+[
+  {
+    "cfg": "coder",
+    "prompt": "code",
+    "rep": 1,
+    "pred_n": 256,
+    "tps": 54.50018733103606,
+    "prompt_n": 52,
+    "prompt_tps": 133.63555528143132,
+    "draft_n": 198,
+    "draft_accepted": 155
+  },
+  {
+    "cfg": "coder",
+    "prompt": "code",
+    "rep": 2,
+    "pred_n": 256,
+    "tps": 61.334774580271706,
+    "prompt_n": 52,
+    "prompt_tps": 160.6425702811245,
+    "draft_n": 198,
+    "draft_accepted": 155
+  },
+  {
+    "cfg": "coder",
+    "prompt": "code",
+    "rep": 3,
+    "pred_n": 256,
+    "tps": 56.77035456537173,
+    "prompt_n": 52,
+    "prompt_tps": 142.17750314431018,
+    "draft_n": 198,
+    "draft_accepted": 155
+  },
+  {
+    "cfg": "coder",
+    "prompt": "code",
+    "rep": 4,
+    "pred_n": 256,
+    "tps": 56.389618206903016,
+    "prompt_n": 52,
+    "prompt_tps": 140.9248464054679,
+    "draft_n": 198,
+    "draft_accepted": 155
+  },
+  {
+    "cfg": "coder",
+    "prompt": "prosa",
+    "rep": 1,
+    "pred_n": 256,
+    "tps": 52.304677412440434,
+    "prompt_n": 53,
+    "prompt_tps": 159.11663249161637,
+    "draft_n": 232,
+    "draft_accepted": 138
+  },
+  {
+    "cfg": "coder",
+    "prompt": "prosa",
+    "rep": 2,
+    "pred_n": 256,
+    "tps": 52.44619329075388,
+    "prompt_n": 53,
+    "prompt_tps": 159.03069292373428,
+    "draft_n": 232,
+    "draft_accepted": 138
+  },
+  {
+    "cfg": "coder",
+    "prompt": "prosa",
+    "rep": 3,
+    "pred_n": 256,
+    "tps": 51.88896169170224,
+    "prompt_n": 53,
+    "prompt_tps": 144.6767157839567,
+    "draft_n": 232,
+    "draft_accepted": 138
+  },
+  {
+    "cfg": "coder",
+    "prompt": "prosa",
+    "rep": 4,
+    "pred_n": 256,
+    "tps": 52.073590806948694,
+    "prompt_n": 53,
+    "prompt_tps": 159.2734725523724,
+    "draft_n": 232,
+    "draft_accepted": 138
+  },
+  {
+    "cfg": "coder",
+    "prompt": "reasoning",
+    "rep": 1,
+    "pred_n": 256,
+    "tps": 57.4992688573362,
+    "prompt_n": 84,
+    "prompt_tps": 193.98642095053347,
+    "draft_n": 196,
+    "draft_accepted": 157
+  },
+  {
+    "cfg": "coder",
+    "prompt": "reasoning",
+    "rep": 2,
+    "pred_n": 256,
+    "tps": 57.96849741790126,
+    "prompt_n": 84,
+    "prompt_tps": 209.20554195442804,
+    "draft_n": 196,
+    "draft_accepted": 157
+  },
+  {
+    "cfg": "coder",
+    "prompt": "reasoning",
+    "rep": 3,
+    "pred_n": 256,
+    "tps": 62.44898468971303,
+    "prompt_n": 84,
+    "prompt_tps": 238.26204854305593,
+    "draft_n": 196,
+    "draft_accepted": 157
+  },
+  {
+    "cfg": "coder",
+    "prompt": "reasoning",
+    "rep": 4,
+    "pred_n": 256,
+    "tps": 62.30652906452977,
+    "prompt_n": 84,
+    "prompt_tps": 233.88360949233336,
+    "draft_n": 196,
+    "draft_accepted": 157
+  }
+]

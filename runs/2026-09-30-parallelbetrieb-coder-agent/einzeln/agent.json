@@ -1,0 +1,134 @@
+[
+  {
+    "cfg": "agent",
+    "prompt": "code",
+    "rep": 1,
+    "pred_n": 256,
+    "tps": 24.644624514500894,
+    "prompt_n": 52,
+    "prompt_tps": 237.23385327086174,
+    "draft_n": null,
+    "draft_accepted": null
+  },
+  {
+    "cfg": "agent",
+    "prompt": "code",
+    "rep": 2,
+    "pred_n": 256,
+    "tps": 26.570440686909453,
+    "prompt_n": 52,
+    "prompt_tps": 277.7243692452306,
+    "draft_n": null,
+    "draft_accepted": null
+  },
+  {
+    "cfg": "agent",
+    "prompt": "code",
+    "rep": 3,
+    "pred_n": 256,
+    "tps": 24.234056509258075,
+    "prompt_n": 52,
+    "prompt_tps": 267.72383256963394,
+    "draft_n": null,
+    "draft_accepted": null
+  },
+  {
+    "cfg": "agent",
+    "prompt": "code",
+    "rep": 4,
+    "pred_n": 256,
+    "tps": 25.33762635526492,
+    "prompt_n": 52,
+    "prompt_tps": 274.5860087867523,
+    "draft_n": null,
+    "draft_accepted": null
+  },
+  {
+    "cfg": "agent",
+    "prompt": "prosa",
+    "rep": 1,
+    "pred_n": 256,
+    "tps": 26.254420781146237,
+    "prompt_n": 53,
+    "prompt_tps": 271.34958017612126,
+    "draft_n": null,
+    "draft_accepted": null
+  },
+  {
+    "cfg": "agent",
+    "prompt": "prosa",
+    "rep": 2,
+    "pred_n": 256,
+    "tps": 25.89334581629534,
+    "prompt_n": 53,
+    "prompt_tps": 279.4827986247337,
+    "draft_n": null,
+    "draft_accepted": null
+  },
+  {
+    "cfg": "agent",
+    "prompt": "prosa",
+    "rep": 3,
+    "pred_n": 256,
+    "tps": 25.58717807441735,
+    "prompt_n": 53,
+    "prompt_tps": 260.61130561346914,
+    "draft_n": null,
+    "draft_accepted": null
+  },
+  {
+    "cfg": "agent",
+    "prompt": "prosa",
+    "rep": 4,
+    "pred_n": 256,
+    "tps": 25.733453893723862,
+    "prompt_n": 53,
+    "prompt_tps": 284.5194573730802,
+    "draft_n": null,
+    "draft_accepted": null
+  },
+  {
+    "cfg": "agent",
+    "prompt": "reasoning",
+    "rep": 1,
+    "pred_n": 256,
+    "tps": 24.196183796868954,
+    "prompt_n": 84,
+    "prompt_tps": 362.195421677396,
+    "draft_n": null,
+    "draft_accepted": null
+  },
+  {
+    "cfg": "agent",
+    "prompt": "reasoning",
+    "rep": 2,
+    "pred_n": 256,
+    "tps": 24.11764416581892,
+    "prompt_n": 84,
+    "prompt_tps": 367.93047866003224,
+    "draft_n": null,
+    "draft_accepted": null
+  },
+  {
+    "cfg": "agent",
+    "prompt": "reasoning",
+    "rep": 3,
+    "pred_n": 256,
+    "tps": 26.49834915284778,
+    "prompt_n": 84,
+    "prompt_tps": 398.1231337978103,
+    "draft_n": null,
+    "draft_accepted": null
+  },
+  {
+    "cfg": "agent",
+    "prompt": "reasoning",
+    "rep": 4,
+    "pred_n": 256,
+    "tps": 24.36456497929155,
+    "prompt_n": 84,
+    "prompt_tps": 390.65043297089653,
+    "draft_n": null,
+    "draft_accepted": null
+  }
+]
