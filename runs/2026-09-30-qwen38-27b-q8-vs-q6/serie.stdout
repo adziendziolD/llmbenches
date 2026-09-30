@@ -1,0 +1,65 @@
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 20,00 + 20,10 GiB
+  mtp2 code rep1: 50.01 t/s (256 tok)
+  mtp2 code rep2: 50.66 t/s (256 tok)
+  mtp2 code rep3: 53.35 t/s (256 tok)
+  mtp2 code rep4: 53.34 t/s (256 tok)
+  mtp2 prosa rep1: 45.19 t/s (256 tok)
+  mtp2 prosa rep2: 45.97 t/s (256 tok)
+  mtp2 prosa rep3: 47.87 t/s (256 tok)
+  mtp2 prosa rep4: 47.68 t/s (256 tok)
+  mtp2 reasoning rep1: 51.80 t/s (256 tok)
+  mtp2 reasoning rep2: 53.04 t/s (256 tok)
+  mtp2 reasoning rep3: 54.45 t/s (256 tok)
+  mtp2 reasoning rep4: 55.49 t/s (256 tok)
+### mtp2: geschrieben nach q8/mtp2.json
+### mtp2: fertig (rc=0)
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 16,84 + 16,95 GiB
+  mtp2 code rep1: 47.88 t/s (256 tok)
+  mtp2 code rep2: 49.14 t/s (256 tok)
+  mtp2 code rep3: 52.07 t/s (256 tok)
+  mtp2 code rep4: 51.75 t/s (256 tok)
+  mtp2 prosa rep1: 50.68 t/s (256 tok)
+  mtp2 prosa rep2: 49.53 t/s (256 tok)
+  mtp2 prosa rep3: 51.91 t/s (256 tok)
+  mtp2 prosa rep4: 52.60 t/s (256 tok)
+  mtp2 reasoning rep1: 56.68 t/s (256 tok)
+  mtp2 reasoning rep2: 56.94 t/s (256 tok)
+  mtp2 reasoning rep3: 57.40 t/s (256 tok)
+  mtp2 reasoning rep4: 60.94 t/s (256 tok)
+### mtp2: geschrieben nach q6/mtp2.json
+### mtp2: fertig (rc=0)
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 18,78 + 18,89 GiB
+  baseline code rep1: 28.92 t/s (256 tok)
+  baseline code rep2: 29.55 t/s (256 tok)
+  baseline code rep3: 29.89 t/s (256 tok)
+  baseline code rep4: 29.88 t/s (256 tok)
+  baseline prosa rep1: 29.20 t/s (256 tok)
+  baseline prosa rep2: 29.46 t/s (256 tok)
+  baseline prosa rep3: 29.79 t/s (256 tok)
+  baseline prosa rep4: 29.79 t/s (256 tok)
+  baseline reasoning rep1: 29.20 t/s (256 tok)
+  baseline reasoning rep2: 29.45 t/s (256 tok)
+  baseline reasoning rep3: 29.83 t/s (256 tok)
+  baseline reasoning rep4: 29.79 t/s (256 tok)
+### baseline: geschrieben nach q8/baseline.json
+### baseline: fertig (rc=0)
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 15,68 + 15,79 GiB
+  baseline code rep1: 33.42 t/s (256 tok)
+  baseline code rep2: 34.25 t/s (256 tok)
+  baseline code rep3: 35.00 t/s (256 tok)
+  baseline code rep4: 34.92 t/s (256 tok)
+  baseline prosa rep1: 33.93 t/s (256 tok)
+  baseline prosa rep2: 34.05 t/s (256 tok)
+  baseline prosa rep3: 34.79 t/s (256 tok)
+  baseline prosa rep4: 34.82 t/s (256 tok)
+  baseline reasoning rep1: 33.77 t/s (256 tok)
+  baseline reasoning rep2: 34.09 t/s (256 tok)
+  baseline reasoning rep3: 34.84 t/s (256 tok)
+  baseline reasoning rep4: 34.86 t/s (256 tok)
+### baseline: geschrieben nach q6/baseline.json
+### baseline: fertig (rc=0)
+ALLES-FERTIG
