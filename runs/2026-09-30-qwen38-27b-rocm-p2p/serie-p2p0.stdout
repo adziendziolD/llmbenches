@@ -1,0 +1,17 @@
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 16,84 + 17,22 GiB
+  mtp2 code rep1: 50.64 t/s (256 tok)
+  mtp2 code rep2: 52.23 t/s (256 tok)
+  mtp2 code rep3: 52.20 t/s (256 tok)
+  mtp2 code rep4: 52.20 t/s (256 tok)
+  mtp2 prosa rep1: 53.35 t/s (256 tok)
+  mtp2 prosa rep2: 52.83 t/s (256 tok)
+  mtp2 prosa rep3: 52.88 t/s (256 tok)
+  mtp2 prosa rep4: 52.74 t/s (256 tok)
+  mtp2 reasoning rep1: 60.79 t/s (256 tok)
+  mtp2 reasoning rep2: 60.74 t/s (256 tok)
+  mtp2 reasoning rep3: 60.97 t/s (256 tok)
+  mtp2 reasoning rep4: 60.91 t/s (256 tok)
+### mtp2: geschrieben nach tensor-p2p0/mtp2.json
+### mtp2: fertig (rc=0)
+FERTIG

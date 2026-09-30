@@ -1,0 +1,85 @@
+{
+  "id": "2026-09-30-qwen38-27b-rocm-p2p",
+  "title": "Split-Mode und P2P auf ROCm mit zwei R9700, Qwen3.8-27B mit MTP",
+  "date": "2026-09-30",
+  "question": "Wie verhalten sich Layer- und Tensor-Split auf dem ROCm-Backend, und bringt GGML_CUDA_P2P=1 (Peer-Access zwischen den Karten) etwas?",
+  "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "Anbindung": "je Karte eigener Root-Port am Threadripper, 32-GiB-BAR",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0",
+    "ROCm": "7.2.4"
+  },
+  "model": {
+    "Modell": "Qwen3.8-27B-UD-Q6_K (20,5 GiB, qwen35, dicht)",
+    "Draft-Head": "eingebettet (blk.64), kein -md",
+    "Build": "b11177 (0.5.0-dev), Mainline ROCm"
+  },
+  "method": {
+    "Kontext": "262144 (nicht gefuellt), cache-type-k/v q8_0, flash-attn on, 1 Slot",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf, je Konfiguration ein Lauf",
+    "Kennzahl": "Median der Einzelwerte",
+    "Spekulation": "draft-mtp, spec-draft-n-max 2"
+  },
+  "cmdline": "[GGML_CUDA_P2P=1] llama-server -m Qwen3.8-27B-UD-Q6_K.gguf --device ROCm0[,ROCm1] --split-mode none|layer|tensor --ctx-size 262144 --flash-attn on --cache-type-k q8_0 --cache-type-v q8_0 --parallel 1 [--spec-type draft-mtp --spec-draft-n-max 2]",
+  "backends": {
+    "single": {
+      "label": "1 Karte (none)",
+      "device": "ROCm0",
+      "detail": "--split-mode none, nur ROCm0."
+    },
+    "layer": {
+      "label": "2 Karten, Layer-Split",
+      "device": "ROCm0,ROCm1",
+      "detail": "--split-mode layer, ohne GGML_CUDA_P2P."
+    },
+    "layer-p2p": {
+      "label": "2 Karten, Layer-Split, P2P",
+      "device": "ROCm0,ROCm1",
+      "detail": "--split-mode layer, GGML_CUDA_P2P=1."
+    },
+    "tensor": {
+      "label": "2 Karten, Tensor-Split",
+      "device": "ROCm0,ROCm1",
+      "detail": "--split-mode tensor (experimentell), ohne GGML_CUDA_P2P."
+    },
+    "tensor-p2p": {
+      "label": "2 Karten, Tensor-Split, P2P",
+      "device": "ROCm0,ROCm1",
+      "detail": "--split-mode tensor, GGML_CUDA_P2P=1."
+    },
+    "tensor-p2p0": {
+      "label": "2 Karten, Tensor-Split, P2P=0",
+      "device": "ROCm0,ROCm1",
+      "detail": "--split-mode tensor, GGML_CUDA_P2P=0 (Gegenprobe), nur mtp2."
+    }
+  },
+  "configs": {
+    "baseline": {
+      "label": "ohne MTP",
+      "order": 0
+    },
+    "mtp2": {
+      "label": "MTP n-max 2",
+      "order": 1
+    }
+  },
+  "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+  },
+  "notes": [
+    "Median in t/s (mtp2 / ohne MTP): 1 Karte 30,8 / 24,0; Layer-Split 38,0 / 24,0; Tensor-Split 52,8 / 34,8. Auf ROCm ist Tensor-Split die schnellste Variante, rund 71 Prozent ueber einer Karte mit MTP und rund 45 Prozent ohne MTP. Auf Vulkan (Lauf 2026-09-30-qwen38-27b-tensorsplit) war es umgekehrt: 25,5 / 13,1, die langsamste.",
+    "Gegen die beste Vulkan-Variante (eine Karte, 38,7 t/s mit MTP, gleicher Tag, gleiche Flags) sind ROCm mit Tensor-Split und MTP rund 36 Prozent schneller (52,8 gegen 38,7).",
+    "GGML_CUDA_P2P=1 hat keine messbare Wirkung: Tensor 52,75 ohne, 52,76 mit, 52,86 mit P2P=0 (Gegenprobe); Layer 37,95 ohne, 37,85 mit. Die Werte liegen innerhalb der Streuung. Im Serverlog steht zu P2P nichts, ob Peer-Access tatsaechlich aktiv ist, ist deshalb nicht belegt. Denkbar ist, dass die Tensor-Parallelisierung ihn ohnehin nutzt oder der Schalter in diesem Build nichts aendert. libggml-hip enthaelt GGML_CUDA_P2P und hipDeviceEnablePeerAccess, der Schalter existiert also.",
+    "Die Ausnahme ist Layer mit P2P ohne MTP (22,7 gegen 24,0, Minimum 21,08). Bei einem Lauf je Konfiguration wird das als Streuung gewertet, nicht als Effekt.",
+    "MTP bringt auf ROCm 1 Karte 1,28x, Layer 1,58x, Tensor 1,51x. Die Draft-Akzeptanz ist in allen Varianten gleich (0,639 bis 0,649).",
+    "Die Einzelkarte ist auf ROCm mit MTP langsamer als auf Vulkan (30,8 gegen 38,7 t/s; ohne MTP 24,0 gegen 25,1). Das Modell belegt dort 30,34 GiB von 31,86, die Ursache des Einbruchs ist nicht untersucht. Dadurch faellt der Vorsprung der Mehrkartenvarianten gegenueber 'einer Karte' auf ROCm groesser aus, als er es gegenueber Vulkan waere.",
+    "Prompt-Verarbeitung (Median in t/s): ohne MTP single 363, Layer 361, Tensor 263; mit MTP single 229, Layer 271, Tensor 252. Beim Prefill ist Tensor-Split ohne MTP also langsamer als eine Karte, beim Generieren schneller.",
+    "VRAM-Belegung in GiB (mtp2): single 30,34 + 0,21; Layer 15,91 + 19,78; Tensor 16,84 + 16,95.",
+    "Grenzen: je Konfiguration nur ein Lauf, Prompts mit rund 90 Tokens, Kontext nicht gefuellt, nur ein Slot. Tensor-Split ist in llama.cpp als EXPERIMENTAL gekennzeichnet; Stabilitaet ueber lange Sitzungen und tiefen Kontext ist nicht geprueft. Nicht gemessen: Mehrfach-Slots und Modelle, die nicht auf eine Karte passen."
+  ]
+}

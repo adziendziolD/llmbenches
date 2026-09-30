@@ -1,0 +1,161 @@
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 30,34 + 0,21 GiB
+  mtp2 code rep1: 28.28 t/s (256 tok)
+  mtp2 code rep2: 30.26 t/s (256 tok)
+  mtp2 code rep3: 30.75 t/s (256 tok)
+  mtp2 code rep4: 30.85 t/s (256 tok)
+  mtp2 prosa rep1: 30.80 t/s (256 tok)
+  mtp2 prosa rep2: 30.54 t/s (256 tok)
+  mtp2 prosa rep3: 30.38 t/s (256 tok)
+  mtp2 prosa rep4: 30.49 t/s (256 tok)
+  mtp2 reasoning rep1: 35.56 t/s (256 tok)
+  mtp2 reasoning rep2: 36.12 t/s (256 tok)
+  mtp2 reasoning rep3: 36.18 t/s (256 tok)
+  mtp2 reasoning rep4: 36.14 t/s (256 tok)
+### mtp2: geschrieben nach single/mtp2.json
+### mtp2: fertig (rc=0)
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 15,91 + 19,78 GiB
+  mtp2 code rep1: 33.28 t/s (256 tok)
+  mtp2 code rep2: 35.46 t/s (256 tok)
+  mtp2 code rep3: 37.93 t/s (256 tok)
+  mtp2 code rep4: 37.93 t/s (256 tok)
+  mtp2 prosa rep1: 37.97 t/s (256 tok)
+  mtp2 prosa rep2: 37.99 t/s (256 tok)
+  mtp2 prosa rep3: 37.93 t/s (256 tok)
+  mtp2 prosa rep4: 37.91 t/s (256 tok)
+  mtp2 reasoning rep1: 44.10 t/s (256 tok)
+  mtp2 reasoning rep2: 44.10 t/s (256 tok)
+  mtp2 reasoning rep3: 43.25 t/s (256 tok)
+  mtp2 reasoning rep4: 44.10 t/s (256 tok)
+### mtp2: geschrieben nach layer/mtp2.json
+### mtp2: fertig (rc=0)
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 15,91 + 19,78 GiB
+  mtp2 code rep1: 32.75 t/s (256 tok)
+  mtp2 code rep2: 36.00 t/s (256 tok)
+  mtp2 code rep3: 37.83 t/s (256 tok)
+  mtp2 code rep4: 37.81 t/s (256 tok)
+  mtp2 prosa rep1: 37.23 t/s (256 tok)
+  mtp2 prosa rep2: 37.85 t/s (256 tok)
+  mtp2 prosa rep3: 37.84 t/s (256 tok)
+  mtp2 prosa rep4: 37.86 t/s (256 tok)
+  mtp2 reasoning rep1: 44.04 t/s (256 tok)
+  mtp2 reasoning rep2: 44.04 t/s (256 tok)
+  mtp2 reasoning rep3: 44.06 t/s (256 tok)
+  mtp2 reasoning rep4: 44.07 t/s (256 tok)
+### mtp2: geschrieben nach layer-p2p/mtp2.json
+### mtp2: fertig (rc=0)
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 16,84 + 16,95 GiB
+  mtp2 code rep1: 48.10 t/s (256 tok)
+  mtp2 code rep2: 49.21 t/s (256 tok)
+  mtp2 code rep3: 52.13 t/s (256 tok)
+  mtp2 code rep4: 52.12 t/s (256 tok)
+  mtp2 prosa rep1: 53.10 t/s (256 tok)
+  mtp2 prosa rep2: 52.75 t/s (256 tok)
+  mtp2 prosa rep3: 52.74 t/s (256 tok)
+  mtp2 prosa rep4: 52.47 t/s (256 tok)
+  mtp2 reasoning rep1: 60.99 t/s (256 tok)
+  mtp2 reasoning rep2: 61.06 t/s (256 tok)
+  mtp2 reasoning rep3: 60.96 t/s (256 tok)
+  mtp2 reasoning rep4: 61.21 t/s (256 tok)
+### mtp2: geschrieben nach tensor/mtp2.json
+### mtp2: fertig (rc=0)
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 16,84 + 16,95 GiB
+  mtp2 code rep1: 47.52 t/s (256 tok)
+  mtp2 code rep2: 49.09 t/s (256 tok)
+  mtp2 code rep3: 52.17 t/s (256 tok)
+  mtp2 code rep4: 52.14 t/s (256 tok)
+  mtp2 prosa rep1: 53.32 t/s (256 tok)
+  mtp2 prosa rep2: 52.77 t/s (256 tok)
+  mtp2 prosa rep3: 52.62 t/s (256 tok)
+  mtp2 prosa rep4: 52.74 t/s (256 tok)
+  mtp2 reasoning rep1: 60.78 t/s (256 tok)
+  mtp2 reasoning rep2: 60.70 t/s (256 tok)
+  mtp2 reasoning rep3: 61.14 t/s (256 tok)
+  mtp2 reasoning rep4: 61.22 t/s (256 tok)
+### mtp2: geschrieben nach tensor-p2p/mtp2.json
+### mtp2: fertig (rc=0)
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 29,51 + 0,22 GiB
+  baseline code rep1: 23.49 t/s (256 tok)
+  baseline code rep2: 23.06 t/s (256 tok)
+  baseline code rep3: 23.99 t/s (256 tok)
+  baseline code rep4: 24.03 t/s (256 tok)
+  baseline prosa rep1: 24.04 t/s (256 tok)
+  baseline prosa rep2: 24.04 t/s (256 tok)
+  baseline prosa rep3: 24.04 t/s (256 tok)
+  baseline prosa rep4: 24.04 t/s (256 tok)
+  baseline reasoning rep1: 24.03 t/s (256 tok)
+  baseline reasoning rep2: 24.04 t/s (256 tok)
+  baseline reasoning rep3: 24.03 t/s (256 tok)
+  baseline reasoning rep4: 24.03 t/s (256 tok)
+### baseline: geschrieben nach single/baseline.json
+### baseline: fertig (rc=0)
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 15,76 + 17,13 GiB
+  baseline code rep1: 21.89 t/s (256 tok)
+  baseline code rep2: 24.03 t/s (256 tok)
+  baseline code rep3: 24.03 t/s (256 tok)
+  baseline code rep4: 24.02 t/s (256 tok)
+  baseline prosa rep1: 24.02 t/s (256 tok)
+  baseline prosa rep2: 23.80 t/s (256 tok)
+  baseline prosa rep3: 24.02 t/s (256 tok)
+  baseline prosa rep4: 24.01 t/s (256 tok)
+  baseline reasoning rep1: 22.95 t/s (256 tok)
+  baseline reasoning rep2: 22.79 t/s (256 tok)
+  baseline reasoning rep3: 23.81 t/s (256 tok)
+  baseline reasoning rep4: 24.00 t/s (256 tok)
+### baseline: geschrieben nach layer/baseline.json
+### baseline: fertig (rc=0)
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 15,76 + 17,13 GiB
+  baseline code rep1: 21.84 t/s (256 tok)
+  baseline code rep2: 24.02 t/s (256 tok)
+  baseline code rep3: 23.92 t/s (256 tok)
+  baseline code rep4: 23.94 t/s (256 tok)
+  baseline prosa rep1: 24.01 t/s (256 tok)
+  baseline prosa rep2: 23.56 t/s (256 tok)
+  baseline prosa rep3: 24.00 t/s (256 tok)
+  baseline prosa rep4: 21.46 t/s (256 tok)
+  baseline reasoning rep1: 21.18 t/s (256 tok)
+  baseline reasoning rep2: 21.08 t/s (256 tok)
+  baseline reasoning rep3: 21.53 t/s (256 tok)
+  baseline reasoning rep4: 21.48 t/s (256 tok)
+### baseline: geschrieben nach layer-p2p/baseline.json
+### baseline: fertig (rc=0)
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 15,68 + 16,07 GiB
+  baseline code rep1: 32.77 t/s (256 tok)
+  baseline code rep2: 34.93 t/s (256 tok)
+  baseline code rep3: 34.89 t/s (256 tok)
+  baseline code rep4: 34.80 t/s (256 tok)
+  baseline prosa rep1: 34.86 t/s (256 tok)
+  baseline prosa rep2: 34.86 t/s (256 tok)
+  baseline prosa rep3: 34.86 t/s (256 tok)
+  baseline prosa rep4: 34.79 t/s (256 tok)
+  baseline reasoning rep1: 34.84 t/s (256 tok)
+  baseline reasoning rep2: 34.85 t/s (256 tok)
+  baseline reasoning rep3: 34.83 t/s (256 tok)
+  baseline reasoning rep4: 34.13 t/s (256 tok)
+### baseline: geschrieben nach tensor/baseline.json
+### baseline: fertig (rc=0)
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 15,68 + 16,06 GiB
+  baseline code rep1: 33.19 t/s (256 tok)
+  baseline code rep2: 34.30 t/s (256 tok)
+  baseline code rep3: 35.08 t/s (256 tok)
+  baseline code rep4: 35.04 t/s (256 tok)
+  baseline prosa rep1: 35.01 t/s (256 tok)
+  baseline prosa rep2: 34.94 t/s (256 tok)
+  baseline prosa rep3: 34.82 t/s (256 tok)
+  baseline prosa rep4: 34.86 t/s (256 tok)
+  baseline reasoning rep1: 34.74 t/s (256 tok)
+  baseline reasoning rep2: 34.88 t/s (256 tok)
+  baseline reasoning rep3: 34.78 t/s (256 tok)
+  baseline reasoning rep4: 34.86 t/s (256 tok)
+### baseline: geschrieben nach tensor-p2p/baseline.json
+### baseline: fertig (rc=0)
+ALLES-FERTIG

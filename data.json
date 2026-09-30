@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-30T13:05:39+02:00",
+ "generated": "2026-09-30T13:28:34+02:00",
  "runs": [
   {
    "id": "2026-09-30-qwen38-27b-tensorsplit",
@@ -601,6 +601,1073 @@
        "mean_len": 2.27
       },
       "speedup": 1.946
+     }
+    }
+   }
+  },
+  {
+   "id": "2026-09-30-qwen38-27b-rocm-p2p",
+   "title": "Split-Mode und P2P auf ROCm mit zwei R9700, Qwen3.8-27B mit MTP",
+   "date": "2026-09-30",
+   "question": "Wie verhalten sich Layer- und Tensor-Split auf dem ROCm-Backend, und bringt GGML_CUDA_P2P=1 (Peer-Access zwischen den Karten) etwas?",
+   "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "Anbindung": "je Karte eigener Root-Port am Threadripper, 32-GiB-BAR",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0",
+    "ROCm": "7.2.4"
+   },
+   "model": {
+    "Modell": "Qwen3.8-27B-UD-Q6_K (20,5 GiB, qwen35, dicht)",
+    "Draft-Head": "eingebettet (blk.64), kein -md",
+    "Build": "b11177 (0.5.0-dev), Mainline ROCm"
+   },
+   "method": {
+    "Kontext": "262144 (nicht gefuellt), cache-type-k/v q8_0, flash-attn on, 1 Slot",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf, je Konfiguration ein Lauf",
+    "Kennzahl": "Median der Einzelwerte",
+    "Spekulation": "draft-mtp, spec-draft-n-max 2"
+   },
+   "cmdline": "[GGML_CUDA_P2P=1] llama-server -m Qwen3.8-27B-UD-Q6_K.gguf --device ROCm0[,ROCm1] --split-mode none|layer|tensor --ctx-size 262144 --flash-attn on --cache-type-k q8_0 --cache-type-v q8_0 --parallel 1 [--spec-type draft-mtp --spec-draft-n-max 2]",
+   "backends": {
+    "single": {
+     "label": "1 Karte (none)",
+     "device": "ROCm0",
+     "detail": "--split-mode none, nur ROCm0."
+    },
+    "layer": {
+     "label": "2 Karten, Layer-Split",
+     "device": "ROCm0,ROCm1",
+     "detail": "--split-mode layer, ohne GGML_CUDA_P2P."
+    },
+    "layer-p2p": {
+     "label": "2 Karten, Layer-Split, P2P",
+     "device": "ROCm0,ROCm1",
+     "detail": "--split-mode layer, GGML_CUDA_P2P=1."
+    },
+    "tensor": {
+     "label": "2 Karten, Tensor-Split",
+     "device": "ROCm0,ROCm1",
+     "detail": "--split-mode tensor (experimentell), ohne GGML_CUDA_P2P."
+    },
+    "tensor-p2p": {
+     "label": "2 Karten, Tensor-Split, P2P",
+     "device": "ROCm0,ROCm1",
+     "detail": "--split-mode tensor, GGML_CUDA_P2P=1."
+    },
+    "tensor-p2p0": {
+     "label": "2 Karten, Tensor-Split, P2P=0",
+     "device": "ROCm0,ROCm1",
+     "detail": "--split-mode tensor, GGML_CUDA_P2P=0 (Gegenprobe), nur mtp2."
+    }
+   },
+   "configs": {
+    "baseline": {
+     "label": "ohne MTP",
+     "order": 0
+    },
+    "mtp2": {
+     "label": "MTP n-max 2",
+     "order": 1
+    }
+   },
+   "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+   },
+   "notes": [
+    "Median in t/s (mtp2 / ohne MTP): 1 Karte 30,8 / 24,0; Layer-Split 38,0 / 24,0; Tensor-Split 52,8 / 34,8. Auf ROCm ist Tensor-Split die schnellste Variante, rund 71 Prozent ueber einer Karte mit MTP und rund 45 Prozent ohne MTP. Auf Vulkan (Lauf 2026-09-30-qwen38-27b-tensorsplit) war es umgekehrt: 25,5 / 13,1, die langsamste.",
+    "Gegen die beste Vulkan-Variante (eine Karte, 38,7 t/s mit MTP, gleicher Tag, gleiche Flags) sind ROCm mit Tensor-Split und MTP rund 36 Prozent schneller (52,8 gegen 38,7).",
+    "GGML_CUDA_P2P=1 hat keine messbare Wirkung: Tensor 52,75 ohne, 52,76 mit, 52,86 mit P2P=0 (Gegenprobe); Layer 37,95 ohne, 37,85 mit. Die Werte liegen innerhalb der Streuung. Im Serverlog steht zu P2P nichts, ob Peer-Access tatsaechlich aktiv ist, ist deshalb nicht belegt. Denkbar ist, dass die Tensor-Parallelisierung ihn ohnehin nutzt oder der Schalter in diesem Build nichts aendert. libggml-hip enthaelt GGML_CUDA_P2P und hipDeviceEnablePeerAccess, der Schalter existiert also.",
+    "Die Ausnahme ist Layer mit P2P ohne MTP (22,7 gegen 24,0, Minimum 21,08). Bei einem Lauf je Konfiguration wird das als Streuung gewertet, nicht als Effekt.",
+    "MTP bringt auf ROCm 1 Karte 1,28x, Layer 1,58x, Tensor 1,51x. Die Draft-Akzeptanz ist in allen Varianten gleich (0,639 bis 0,649).",
+    "Die Einzelkarte ist auf ROCm mit MTP langsamer als auf Vulkan (30,8 gegen 38,7 t/s; ohne MTP 24,0 gegen 25,1). Das Modell belegt dort 30,34 GiB von 31,86, die Ursache des Einbruchs ist nicht untersucht. Dadurch faellt der Vorsprung der Mehrkartenvarianten gegenueber 'einer Karte' auf ROCm groesser aus, als er es gegenueber Vulkan waere.",
+    "Prompt-Verarbeitung (Median in t/s): ohne MTP single 363, Layer 361, Tensor 263; mit MTP single 229, Layer 271, Tensor 252. Beim Prefill ist Tensor-Split ohne MTP also langsamer als eine Karte, beim Generieren schneller.",
+    "VRAM-Belegung in GiB (mtp2): single 30,34 + 0,21; Layer 15,91 + 19,78; Tensor 16,84 + 16,95.",
+    "Grenzen: je Konfiguration nur ein Lauf, Prompts mit rund 90 Tokens, Kontext nicht gefuellt, nur ein Slot. Tensor-Split ist in llama.cpp als EXPERIMENTAL gekennzeichnet; Stabilitaet ueber lange Sitzungen und tiefen Kontext ist nicht geprueft. Nicht gemessen: Mehrfach-Slots und Modelle, die nicht auf eine Karte passen."
+   ],
+   "results": {
+    "layer": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 21.89,
+        "median": 24.03,
+        "max": 24.03,
+        "mean": 23.49,
+        "spread_pct": 8.9,
+        "values": [
+         21.89,
+         24.03,
+         24.03,
+         24.02
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 340.2,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 23.8,
+        "median": 24.01,
+        "max": 24.02,
+        "mean": 23.96,
+        "spread_pct": 0.9,
+        "values": [
+         24.02,
+         23.8,
+         24.02,
+         24.01
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 361.1,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 22.79,
+        "median": 23.38,
+        "max": 24.0,
+        "mean": 23.39,
+        "spread_pct": 5.2,
+        "values": [
+         22.95,
+         22.79,
+         23.81,
+         24.0
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 420.8,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 21.89,
+       "median": 24.01,
+       "max": 24.03,
+       "mean": 23.61,
+       "spread_pct": 8.9,
+       "values": [
+        21.89,
+        24.03,
+        24.03,
+        24.02,
+        24.02,
+        23.8,
+        24.02,
+        24.01,
+        22.95,
+        22.79,
+        23.81,
+        24.0
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 33.28,
+        "median": 36.7,
+        "max": 37.93,
+        "mean": 36.15,
+        "spread_pct": 12.7,
+        "values": [
+         33.28,
+         35.46,
+         37.93,
+         37.93
+        ],
+        "acceptance": 59.2,
+        "mean_len": 2.17,
+        "pred_n": 256,
+        "prompt_tps": 240.4,
+        "speedup": 1.527
+       },
+       "prosa": {
+        "n": 4,
+        "min": 37.91,
+        "median": 37.95,
+        "max": 37.99,
+        "mean": 37.95,
+        "spread_pct": 0.2,
+        "values": [
+         37.97,
+         37.99,
+         37.93,
+         37.91
+        ],
+        "acceptance": 59.5,
+        "mean_len": 2.17,
+        "pred_n": 256,
+        "prompt_tps": 270.8,
+        "speedup": 1.581
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 43.25,
+        "median": 44.1,
+        "max": 44.1,
+        "mean": 43.89,
+        "spread_pct": 1.9,
+        "values": [
+         44.1,
+         44.1,
+         43.25,
+         44.1
+        ],
+        "acceptance": 77.9,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 324.0,
+        "speedup": 1.886
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 33.28,
+       "median": 37.95,
+       "max": 44.1,
+       "mean": 39.33,
+       "spread_pct": 28.5,
+       "values": [
+        33.28,
+        35.46,
+        37.93,
+        37.93,
+        37.97,
+        37.99,
+        37.93,
+        37.91,
+        44.1,
+        44.1,
+        43.25,
+        44.1
+       ],
+       "acceptance": 64.9,
+       "mean_len": 2.28
+      },
+      "speedup": 1.581
+     }
+    },
+    "layer-p2p": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 21.84,
+        "median": 23.93,
+        "max": 24.02,
+        "mean": 23.43,
+        "spread_pct": 9.1,
+        "values": [
+         21.84,
+         24.02,
+         23.92,
+         23.94
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 326.7,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 21.46,
+        "median": 23.78,
+        "max": 24.01,
+        "mean": 23.26,
+        "spread_pct": 10.7,
+        "values": [
+         24.01,
+         23.56,
+         24.0,
+         21.46
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 357.9,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 21.08,
+        "median": 21.33,
+        "max": 21.53,
+        "mean": 21.32,
+        "spread_pct": 2.1,
+        "values": [
+         21.18,
+         21.08,
+         21.53,
+         21.48
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 364.8,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 21.08,
+       "median": 22.7,
+       "max": 24.02,
+       "mean": 22.67,
+       "spread_pct": 12.9,
+       "values": [
+        21.84,
+        24.02,
+        23.92,
+        23.94,
+        24.01,
+        23.56,
+        24.0,
+        21.46,
+        21.18,
+        21.08,
+        21.53,
+        21.48
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 32.75,
+        "median": 36.9,
+        "max": 37.83,
+        "mean": 36.1,
+        "spread_pct": 13.8,
+        "values": [
+         32.75,
+         36.0,
+         37.83,
+         37.81
+        ],
+        "acceptance": 59.2,
+        "mean_len": 2.17,
+        "pred_n": 256,
+        "prompt_tps": 238.9,
+        "speedup": 1.542
+       },
+       "prosa": {
+        "n": 4,
+        "min": 37.23,
+        "median": 37.85,
+        "max": 37.86,
+        "mean": 37.7,
+        "spread_pct": 1.7,
+        "values": [
+         37.23,
+         37.85,
+         37.84,
+         37.86
+        ],
+        "acceptance": 59.5,
+        "mean_len": 2.17,
+        "pred_n": 256,
+        "prompt_tps": 268.9,
+        "speedup": 1.592
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 44.04,
+        "median": 44.05,
+        "max": 44.07,
+        "mean": 44.05,
+        "spread_pct": 0.1,
+        "values": [
+         44.04,
+         44.04,
+         44.06,
+         44.07
+        ],
+        "acceptance": 77.9,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 321.0,
+        "speedup": 2.065
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 32.75,
+       "median": 37.85,
+       "max": 44.07,
+       "mean": 39.28,
+       "spread_pct": 29.9,
+       "values": [
+        32.75,
+        36.0,
+        37.83,
+        37.81,
+        37.23,
+        37.85,
+        37.84,
+        37.86,
+        44.04,
+        44.04,
+        44.06,
+        44.07
+       ],
+       "acceptance": 64.9,
+       "mean_len": 2.28
+      },
+      "speedup": 1.667
+     }
+    },
+    "single": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 23.06,
+        "median": 23.74,
+        "max": 24.03,
+        "mean": 23.64,
+        "spread_pct": 4.1,
+        "values": [
+         23.49,
+         23.06,
+         23.99,
+         24.03
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 345.6,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 24.04,
+        "median": 24.04,
+        "max": 24.04,
+        "mean": 24.04,
+        "spread_pct": 0.0,
+        "values": [
+         24.04,
+         24.04,
+         24.04,
+         24.04
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 363.2,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 24.03,
+        "median": 24.03,
+        "max": 24.04,
+        "mean": 24.03,
+        "spread_pct": 0.0,
+        "values": [
+         24.03,
+         24.04,
+         24.03,
+         24.03
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 423.3,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 23.06,
+       "median": 24.03,
+       "max": 24.04,
+       "mean": 23.9,
+       "spread_pct": 4.1,
+       "values": [
+        23.49,
+        23.06,
+        23.99,
+        24.03,
+        24.04,
+        24.04,
+        24.04,
+        24.04,
+        24.03,
+        24.04,
+        24.03,
+        24.03
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 28.28,
+        "median": 30.51,
+        "max": 30.85,
+        "mean": 30.04,
+        "spread_pct": 8.4,
+        "values": [
+         28.28,
+         30.26,
+         30.75,
+         30.85
+        ],
+        "acceptance": 58.3,
+        "mean_len": 2.15,
+        "pred_n": 256,
+        "prompt_tps": 214.9,
+        "speedup": 1.285
+       },
+       "prosa": {
+        "n": 4,
+        "min": 30.38,
+        "median": 30.52,
+        "max": 30.8,
+        "mean": 30.55,
+        "spread_pct": 1.4,
+        "values": [
+         30.8,
+         30.54,
+         30.38,
+         30.49
+        ],
+        "acceptance": 57.7,
+        "mean_len": 2.14,
+        "pred_n": 256,
+        "prompt_tps": 228.4,
+        "speedup": 1.27
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 35.56,
+        "median": 36.13,
+        "max": 36.18,
+        "mean": 36.0,
+        "spread_pct": 1.7,
+        "values": [
+         35.56,
+         36.12,
+         36.18,
+         36.14
+        ],
+        "acceptance": 77.9,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 277.3,
+        "speedup": 1.504
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 28.28,
+       "median": 30.78,
+       "max": 36.18,
+       "mean": 32.2,
+       "spread_pct": 25.7,
+       "values": [
+        28.28,
+        30.26,
+        30.75,
+        30.85,
+        30.8,
+        30.54,
+        30.38,
+        30.49,
+        35.56,
+        36.12,
+        36.18,
+        36.14
+       ],
+       "acceptance": 63.9,
+       "mean_len": 2.26
+      },
+      "speedup": 1.281
+     }
+    },
+    "tensor": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 32.77,
+        "median": 34.84,
+        "max": 34.93,
+        "mean": 34.35,
+        "spread_pct": 6.2,
+        "values": [
+         32.77,
+         34.93,
+         34.89,
+         34.8
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 262.2,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 34.79,
+        "median": 34.86,
+        "max": 34.86,
+        "mean": 34.84,
+        "spread_pct": 0.2,
+        "values": [
+         34.86,
+         34.86,
+         34.86,
+         34.79
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 263.4,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 34.13,
+        "median": 34.83,
+        "max": 34.85,
+        "mean": 34.66,
+        "spread_pct": 2.1,
+        "values": [
+         34.84,
+         34.85,
+         34.83,
+         34.13
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 268.3,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 32.77,
+       "median": 34.84,
+       "max": 34.93,
+       "mean": 34.62,
+       "spread_pct": 6.2,
+       "values": [
+        32.77,
+        34.93,
+        34.89,
+        34.8,
+        34.86,
+        34.86,
+        34.86,
+        34.79,
+        34.84,
+        34.85,
+        34.83,
+        34.13
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 48.1,
+        "median": 50.67,
+        "max": 52.13,
+        "mean": 50.39,
+        "spread_pct": 8.0,
+        "values": [
+         48.1,
+         49.21,
+         52.13,
+         52.12
+        ],
+        "acceptance": 58.6,
+        "mean_len": 2.15,
+        "pred_n": 256,
+        "prompt_tps": 220.5,
+        "speedup": 1.454
+       },
+       "prosa": {
+        "n": 4,
+        "min": 52.47,
+        "median": 52.75,
+        "max": 53.1,
+        "mean": 52.77,
+        "spread_pct": 1.2,
+        "values": [
+         53.1,
+         52.75,
+         52.74,
+         52.47
+        ],
+        "acceptance": 59.7,
+        "mean_len": 2.17,
+        "pred_n": 256,
+        "prompt_tps": 251.5,
+        "speedup": 1.513
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 60.96,
+        "median": 61.03,
+        "max": 61.21,
+        "mean": 61.06,
+        "spread_pct": 0.4,
+        "values": [
+         60.99,
+         61.06,
+         60.96,
+         61.21
+        ],
+        "acceptance": 77.9,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 256.3,
+        "speedup": 1.752
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 48.1,
+       "median": 52.75,
+       "max": 61.21,
+       "mean": 54.74,
+       "spread_pct": 24.9,
+       "values": [
+        48.1,
+        49.21,
+        52.13,
+        52.12,
+        53.1,
+        52.75,
+        52.74,
+        52.47,
+        60.99,
+        61.06,
+        60.96,
+        61.21
+       ],
+       "acceptance": 64.8,
+       "mean_len": 2.27
+      },
+      "speedup": 1.514
+     }
+    },
+    "tensor-p2p": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 33.19,
+        "median": 34.67,
+        "max": 35.08,
+        "mean": 34.4,
+        "spread_pct": 5.5,
+        "values": [
+         33.19,
+         34.3,
+         35.08,
+         35.04
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 231.7,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 34.82,
+        "median": 34.9,
+        "max": 35.01,
+        "mean": 34.91,
+        "spread_pct": 0.6,
+        "values": [
+         35.01,
+         34.94,
+         34.82,
+         34.86
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 264.9,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 34.74,
+        "median": 34.82,
+        "max": 34.88,
+        "mean": 34.81,
+        "spread_pct": 0.4,
+        "values": [
+         34.74,
+         34.88,
+         34.78,
+         34.86
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 269.6,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 33.19,
+       "median": 34.86,
+       "max": 35.08,
+       "mean": 34.71,
+       "spread_pct": 5.4,
+       "values": [
+        33.19,
+        34.3,
+        35.08,
+        35.04,
+        35.01,
+        34.94,
+        34.82,
+        34.86,
+        34.74,
+        34.88,
+        34.78,
+        34.86
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 47.52,
+        "median": 50.62,
+        "max": 52.17,
+        "mean": 50.23,
+        "spread_pct": 9.2,
+        "values": [
+         47.52,
+         49.09,
+         52.17,
+         52.14
+        ],
+        "acceptance": 58.6,
+        "mean_len": 2.15,
+        "pred_n": 256,
+        "prompt_tps": 221.0,
+        "speedup": 1.46
+       },
+       "prosa": {
+        "n": 4,
+        "min": 52.62,
+        "median": 52.76,
+        "max": 53.32,
+        "mean": 52.86,
+        "spread_pct": 1.3,
+        "values": [
+         53.32,
+         52.77,
+         52.62,
+         52.74
+        ],
+        "acceptance": 59.7,
+        "mean_len": 2.17,
+        "pred_n": 256,
+        "prompt_tps": 252.5,
+        "speedup": 1.512
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 60.7,
+        "median": 60.96,
+        "max": 61.22,
+        "mean": 60.96,
+        "spread_pct": 0.8,
+        "values": [
+         60.78,
+         60.7,
+         61.14,
+         61.22
+        ],
+        "acceptance": 77.9,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 256.6,
+        "speedup": 1.751
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 47.52,
+       "median": 52.76,
+       "max": 61.22,
+       "mean": 54.68,
+       "spread_pct": 26.0,
+       "values": [
+        47.52,
+        49.09,
+        52.17,
+        52.14,
+        53.32,
+        52.77,
+        52.62,
+        52.74,
+        60.78,
+        60.7,
+        61.14,
+        61.22
+       ],
+       "acceptance": 64.8,
+       "mean_len": 2.27
+      },
+      "speedup": 1.513
+     }
+    },
+    "tensor-p2p0": {
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 50.64,
+        "median": 52.2,
+        "max": 52.23,
+        "mean": 51.82,
+        "spread_pct": 3.0,
+        "values": [
+         50.64,
+         52.23,
+         52.2,
+         52.2
+        ],
+        "acceptance": 58.6,
+        "mean_len": 2.15,
+        "pred_n": 256,
+        "prompt_tps": 251.6,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 52.74,
+        "median": 52.86,
+        "max": 53.35,
+        "mean": 52.95,
+        "spread_pct": 1.1,
+        "values": [
+         53.35,
+         52.83,
+         52.88,
+         52.74
+        ],
+        "acceptance": 59.7,
+        "mean_len": 2.17,
+        "pred_n": 256,
+        "prompt_tps": 252.0,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 60.74,
+        "median": 60.85,
+        "max": 60.97,
+        "mean": 60.85,
+        "spread_pct": 0.4,
+        "values": [
+         60.79,
+         60.74,
+         60.97,
+         60.91
+        ],
+        "acceptance": 77.9,
+        "mean_len": 2.53,
+        "pred_n": 256,
+        "prompt_tps": 256.3,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 50.64,
+       "median": 52.86,
+       "max": 60.97,
+       "mean": 55.21,
+       "spread_pct": 19.6,
+       "values": [
+        50.64,
+        52.23,
+        52.2,
+        52.2,
+        53.35,
+        52.83,
+        52.88,
+        52.74,
+        60.79,
+        60.74,
+        60.97,
+        60.91
+       ],
+       "acceptance": 64.8,
+       "mean_len": 2.27
+      },
+      "speedup": null
      }
     }
    }
