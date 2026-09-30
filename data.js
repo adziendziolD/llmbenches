@@ -1,6 +1,6 @@
 // erzeugt von tools/collect.py, nicht von Hand aendern
 window.BENCH_DATA = {
- "generated": "2026-09-30T15:56:56+02:00",
+ "generated": "2026-09-30T16:51:32+02:00",
  "runs": [
   {
    "id": "2026-09-30-qwen38-27b-tensorsplit",
@@ -2982,6 +2982,628 @@ window.BENCH_DATA = {
        ],
        "acceptance": 71.9,
        "mean_len": 2.42
+      },
+      "speedup": null
+     }
+    }
+   }
+  },
+  {
+   "id": "2026-09-30-gemma4-heretic-split",
+   "title": "Gemma-4-31B Heretic: Split-Mode, ROCm gegen Vulkan, MTP, Q6_K und Q8_0",
+   "date": "2026-09-30",
+   "question": "Ist ROCm mit Tensor-Split auch bei Gemma-4-31B Heretic schneller als das bisherige Vulkan-Preset, bringt MTP etwas, und was kostet Q8_0 gegenueber Q6_K?",
+   "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0",
+    "ROCm": "7.2.4"
+   },
+   "model": {
+    "Q6_K": "gemma-4-31B-it-uncensored-heretic-Q6_K.gguf (25,2 GB)",
+    "Q8_0": "gemma-4-31B-it-uncensored-heretic-Q8_0.gguf (32,6 GB), SHA256 geprueft",
+    "mmproj": "gemma-4-31B-it-mmproj-BF16.gguf, in allen Laeufen geladen",
+    "Draft": "mtp-gemma-4-31B-it.gguf (Assistant der HauhauCS-Variante), das Heretic-Modell hat keinen eingebetteten Head",
+    "Build": "b11177 (0.5.0-dev), Mainline ROCm und Vulkan"
+   },
+   "method": {
+    "Kontext": "131072 auf zwei Karten, ausser Vulkan Einzelkarte mit 65536 (bisheriges Preset)",
+    "Slots": "1, cache-type-k/v q8_0, flash-attn on",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf, ein Lauf je Konfiguration",
+    "Kennzahl": "Median der Einzelwerte",
+    "Prefill": "nicht aussagekraeftig, die Prompts hatten nur 55 Token"
+   },
+   "cmdline": "llama-server -m <Q6_K|Q8_0>.gguf --mmproj gemma-4-31B-it-mmproj-BF16.gguf --device ROCm0,ROCm1 --split-mode tensor --ctx-size 131072 --flash-attn on --cache-type-k q8_0 --cache-type-v q8_0 --parallel 1 [--model-draft mtp-gemma-4-31B-it.gguf --spec-type draft-mtp --spec-draft-n-max 2]",
+   "backends": {
+    "q6-vulkan-single": {
+     "label": "Q6_K, Vulkan, 1 Karte",
+     "device": "Vulkan0",
+     "detail": "Bisheriges Preset, ctx 65536."
+    },
+    "q6-vulkan-layer": {
+     "label": "Q6_K, Vulkan, Layer-Split",
+     "device": "Vulkan0,Vulkan1",
+     "detail": "--split-mode layer, ctx 131072."
+    },
+    "q6-rocm-layer": {
+     "label": "Q6_K, ROCm, Layer-Split",
+     "device": "ROCm0,ROCm1",
+     "detail": "--split-mode layer, ctx 131072."
+    },
+    "q6-rocm-tensor": {
+     "label": "Q6_K, ROCm, Tensor-Split",
+     "device": "ROCm0,ROCm1",
+     "detail": "--split-mode tensor, ctx 131072. Enthaelt auch mtp2."
+    },
+    "q8-rocm-tensor": {
+     "label": "Q8_0, ROCm, Tensor-Split",
+     "device": "ROCm0,ROCm1",
+     "detail": "--split-mode tensor, ctx 131072, nur mtp2 gemessen."
+    }
+   },
+   "configs": {
+    "baseline": {
+     "label": "ohne MTP",
+     "order": 0
+    },
+    "mtp2": {
+     "label": "MTP n-max 2 (Assistant-Draft)",
+     "order": 1
+    }
+   },
+   "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+   },
+   "notes": [
+    "Median in t/s, Q6_K ohne MTP: Vulkan 1 Karte 21,95; Vulkan Layer 19,23; ROCm Layer 20,05; ROCm Tensor 30,76. ROCm mit Tensor-Split ist rund 40 Prozent schneller als das bisherige Preset und 53 Prozent schneller als ROCm Layer.",
+    "Layer-Split bremst bei Gemma wie bei Qwen gegenueber der Einzelkarte, auf ROCm (20,05) etwas weniger als auf Vulkan (19,23).",
+    "MTP mit dem Assistant-Draft der HauhauCS-Variante funktioniert auch beim Heretic-Modell: Q6_K ROCm Tensor 48,49 gegen 30,76 t/s ohne MTP (plus 58 Prozent), Akzeptanz 0,639. Bei HauhauCS selbst lag sie laut Katalog bei 0,69 bis 0,80.",
+    "Q8_0 mit MTP (ROCm, Tensor, ctx 131072): 42,91 t/s, Akzeptanz 0,617, also rund 11 Prozent unter Q6_K mit MTP (48,49). Je Prompt Q8_0: code 42,9, prosa 35,6, reasoning 45,0; Q6_K: code 48,8, prosa 41,8, reasoning 50,2.",
+    "VRAM beider Karten in GiB: Q6_K ohne MTP 18,16 + 17,48; Q6_K mit Draft 19,60 + 18,93; Q8_0 mit Draft 23,24 + 22,57 (zusammen 45,8 von 63,7). Vulkan Einzelkarte 28,95 bei ctx 65536.",
+    "Q8_0 laeuft damit nicht neben dem Coder (Q8_0, 40,3 GiB) und auch nicht neben dem Agenten (rund 22 GiB, zusammen rund 68 GiB). Das Modell kann nur allein laden.",
+    "Nicht gemessen: Q8_0 ohne MTP, Q8_0 auf Vulkan (Layer-Split ueber beide Karten) und Q8_0 mit Layer-Split auf ROCm. Die Frage, ob ROCm bei Q8_0 schneller ist als Vulkan, ist damit nur ueber die Q6_K-Werte belegt.",
+    "Nicht gemessen ist auch die Qualitaet. Laut Katalog ist Gemma 4 QAT-trainiert fuer 4-Bit, und die Modellkarte der HauhauCS-Variante sieht bei hoeheren Quants keinen Qualitaetsgewinn. Ob das fuer die Heretic-Variante gilt, ist offen.",
+    "Grenzen: ein Lauf je Konfiguration, kurze Prompts, Kontext nicht gefuellt, ein Slot. Tensor-Split ist in llama.cpp als EXPERIMENTAL gekennzeichnet."
+   ],
+   "results": {
+    "q6-rocm-layer": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 19.18,
+        "median": 20.06,
+        "max": 20.64,
+        "mean": 19.99,
+        "spread_pct": 7.3,
+        "values": [
+         19.18,
+         20.64,
+         19.96,
+         20.16
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 228.0,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 19.32,
+        "median": 19.99,
+        "max": 20.3,
+        "mean": 19.9,
+        "spread_pct": 4.9,
+        "values": [
+         19.32,
+         20.3,
+         19.84,
+         20.14
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 258.9,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 18.89,
+        "median": 19.93,
+        "max": 20.7,
+        "mean": 19.86,
+        "spread_pct": 9.1,
+        "values": [
+         18.89,
+         19.63,
+         20.7,
+         20.22
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 246.2,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 18.89,
+       "median": 20.05,
+       "max": 20.7,
+       "mean": 19.91,
+       "spread_pct": 9.0,
+       "values": [
+        19.18,
+        20.64,
+        19.96,
+        20.16,
+        19.32,
+        20.3,
+        19.84,
+        20.14,
+        18.89,
+        19.63,
+        20.7,
+        20.22
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     }
+    },
+    "q6-rocm-tensor": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 29.95,
+        "median": 30.76,
+        "max": 31.09,
+        "mean": 30.64,
+        "spread_pct": 3.7,
+        "values": [
+         29.95,
+         30.51,
+         31.01,
+         31.09
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 246.4,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 30.3,
+        "median": 30.76,
+        "max": 31.15,
+        "mean": 30.74,
+        "spread_pct": 2.8,
+        "values": [
+         30.68,
+         30.3,
+         31.15,
+         30.84
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 284.1,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 30.42,
+        "median": 30.7,
+        "max": 31.01,
+        "mean": 30.7,
+        "spread_pct": 1.9,
+        "values": [
+         30.42,
+         30.44,
+         31.01,
+         30.95
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 284.9,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 29.95,
+       "median": 30.76,
+       "max": 31.15,
+       "mean": 30.7,
+       "spread_pct": 3.9,
+       "values": [
+        29.95,
+        30.51,
+        31.01,
+        31.09,
+        30.68,
+        30.3,
+        31.15,
+        30.84,
+        30.42,
+        30.44,
+        31.01,
+        30.95
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 46.93,
+        "median": 48.81,
+        "max": 50.09,
+        "mean": 48.66,
+        "spread_pct": 6.5,
+        "values": [
+         46.93,
+         47.73,
+         49.89,
+         50.09
+        ],
+        "acceptance": 69.5,
+        "mean_len": 2.37,
+        "pred_n": 256,
+        "prompt_tps": 207.0,
+        "speedup": 1.587
+       },
+       "prosa": {
+        "n": 4,
+        "min": 40.61,
+        "median": 41.76,
+        "max": 42.2,
+        "mean": 41.58,
+        "spread_pct": 3.8,
+        "values": [
+         41.71,
+         40.61,
+         41.81,
+         42.2
+        ],
+        "acceptance": 50.6,
+        "mean_len": 2.0,
+        "pred_n": 256,
+        "prompt_tps": 258.0,
+        "speedup": 1.358
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 49.24,
+        "median": 50.2,
+        "max": 50.62,
+        "mean": 50.06,
+        "spread_pct": 2.8,
+        "values": [
+         50.62,
+         49.24,
+         49.96,
+         50.43
+        ],
+        "acceptance": 74.5,
+        "mean_len": 2.46,
+        "pred_n": 256,
+        "prompt_tps": 244.2,
+        "speedup": 1.635
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 40.61,
+       "median": 48.49,
+       "max": 50.62,
+       "mean": 46.77,
+       "spread_pct": 20.6,
+       "values": [
+        46.93,
+        47.73,
+        49.89,
+        50.09,
+        41.71,
+        40.61,
+        41.81,
+        42.2,
+        50.62,
+        49.24,
+        49.96,
+        50.43
+       ],
+       "acceptance": 63.9,
+       "mean_len": 2.26
+      },
+      "speedup": 1.576
+     }
+    },
+    "q6-vulkan-layer": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 18.92,
+        "median": 19.05,
+        "max": 19.19,
+        "mean": 19.05,
+        "spread_pct": 1.5,
+        "values": [
+         19.07,
+         18.92,
+         19.19,
+         19.03
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 200.0,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 19.1,
+        "median": 19.33,
+        "max": 19.61,
+        "mean": 19.34,
+        "spread_pct": 2.6,
+        "values": [
+         19.26,
+         19.61,
+         19.1,
+         19.39
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 195.1,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 19.14,
+        "median": 19.33,
+        "max": 19.44,
+        "mean": 19.31,
+        "spread_pct": 1.6,
+        "values": [
+         19.39,
+         19.44,
+         19.14,
+         19.28
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 271.8,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 18.92,
+       "median": 19.23,
+       "max": 19.61,
+       "mean": 19.23,
+       "spread_pct": 3.6,
+       "values": [
+        19.07,
+        18.92,
+        19.19,
+        19.03,
+        19.26,
+        19.61,
+        19.1,
+        19.39,
+        19.39,
+        19.44,
+        19.14,
+        19.28
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     }
+    },
+    "q6-vulkan-single": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 21.97,
+        "median": 21.99,
+        "max": 21.99,
+        "mean": 21.98,
+        "spread_pct": 0.1,
+        "values": [
+         21.97,
+         21.99,
+         21.99,
+         21.98
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 287.9,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 21.92,
+        "median": 21.95,
+        "max": 21.95,
+        "mean": 21.94,
+        "spread_pct": 0.2,
+        "values": [
+         21.95,
+         21.92,
+         21.95,
+         21.95
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 273.4,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 21.82,
+        "median": 21.91,
+        "max": 21.92,
+        "mean": 21.89,
+        "spread_pct": 0.4,
+        "values": [
+         21.82,
+         21.9,
+         21.92,
+         21.92
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 376.9,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 21.82,
+       "median": 21.95,
+       "max": 21.99,
+       "mean": 21.94,
+       "spread_pct": 0.8,
+       "values": [
+        21.97,
+        21.99,
+        21.99,
+        21.98,
+        21.95,
+        21.92,
+        21.95,
+        21.95,
+        21.82,
+        21.9,
+        21.92,
+        21.92
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     }
+    },
+    "q8-rocm-tensor": {
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 39.78,
+        "median": 42.91,
+        "max": 43.68,
+        "mean": 42.32,
+        "spread_pct": 9.1,
+        "values": [
+         39.78,
+         42.72,
+         43.1,
+         43.68
+        ],
+        "acceptance": 67.3,
+        "mean_len": 2.33,
+        "pred_n": 256,
+        "prompt_tps": 261.8,
+        "speedup": null
+       },
+       "prosa": {
+        "n": 4,
+        "min": 33.86,
+        "median": 35.59,
+        "max": 36.14,
+        "mean": 35.3,
+        "spread_pct": 6.4,
+        "values": [
+         33.86,
+         35.68,
+         35.51,
+         36.14
+        ],
+        "acceptance": 47.1,
+        "mean_len": 1.92,
+        "pred_n": 256,
+        "prompt_tps": 297.8,
+        "speedup": null
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 43.52,
+        "median": 44.96,
+        "max": 45.35,
+        "mean": 44.7,
+        "spread_pct": 4.1,
+        "values": [
+         43.52,
+         44.82,
+         45.35,
+         45.1
+        ],
+        "acceptance": 74.5,
+        "mean_len": 2.46,
+        "pred_n": 256,
+        "prompt_tps": 291.8,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 33.86,
+       "median": 42.91,
+       "max": 45.35,
+       "mean": 40.77,
+       "spread_pct": 26.8,
+       "values": [
+        39.78,
+        42.72,
+        43.1,
+        43.68,
+        33.86,
+        35.68,
+        35.51,
+        36.14,
+        43.52,
+        44.82,
+        45.35,
+        45.1
+       ],
+       "acceptance": 61.7,
+       "mean_len": 2.21
       },
       "speedup": null
      }

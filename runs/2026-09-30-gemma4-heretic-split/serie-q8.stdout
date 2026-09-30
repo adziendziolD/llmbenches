@@ -1,0 +1,17 @@
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 23,24 + 22,57 GiB
+  mtp2 code rep1: 39.78 t/s (256 tok)
+  mtp2 code rep2: 42.72 t/s (256 tok)
+  mtp2 code rep3: 43.10 t/s (256 tok)
+  mtp2 code rep4: 43.68 t/s (256 tok)
+  mtp2 prosa rep1: 33.86 t/s (256 tok)
+  mtp2 prosa rep2: 35.68 t/s (256 tok)
+  mtp2 prosa rep3: 35.51 t/s (256 tok)
+  mtp2 prosa rep4: 36.14 t/s (256 tok)
+  mtp2 reasoning rep1: 43.52 t/s (256 tok)
+  mtp2 reasoning rep2: 44.82 t/s (256 tok)
+  mtp2 reasoning rep3: 45.35 t/s (256 tok)
+  mtp2 reasoning rep4: 45.10 t/s (256 tok)
+### mtp2: geschrieben nach q8-rocm-tensor/mtp2.json
+### mtp2: fertig (rc=0)
+ALLES-FERTIG

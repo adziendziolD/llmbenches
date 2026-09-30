@@ -1,0 +1,65 @@
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 0,10 + 28,95 GiB
+  baseline code rep1: 21.97 t/s (256 tok)
+  baseline code rep2: 21.99 t/s (256 tok)
+  baseline code rep3: 21.99 t/s (256 tok)
+  baseline code rep4: 21.98 t/s (256 tok)
+  baseline prosa rep1: 21.95 t/s (256 tok)
+  baseline prosa rep2: 21.92 t/s (256 tok)
+  baseline prosa rep3: 21.95 t/s (256 tok)
+  baseline prosa rep4: 21.95 t/s (256 tok)
+  baseline reasoning rep1: 21.82 t/s (256 tok)
+  baseline reasoning rep2: 21.90 t/s (256 tok)
+  baseline reasoning rep3: 21.92 t/s (256 tok)
+  baseline reasoning rep4: 21.92 t/s (256 tok)
+### baseline: geschrieben nach q6-vulkan-single/baseline.json
+### baseline: fertig (rc=0)
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 15,67 + 17,21 GiB
+  baseline code rep1: 19.07 t/s (256 tok)
+  baseline code rep2: 18.92 t/s (256 tok)
+  baseline code rep3: 19.19 t/s (256 tok)
+  baseline code rep4: 19.03 t/s (256 tok)
+  baseline prosa rep1: 19.26 t/s (256 tok)
+  baseline prosa rep2: 19.61 t/s (256 tok)
+  baseline prosa rep3: 19.10 t/s (256 tok)
+  baseline prosa rep4: 19.39 t/s (256 tok)
+  baseline reasoning rep1: 19.39 t/s (256 tok)
+  baseline reasoning rep2: 19.44 t/s (256 tok)
+  baseline reasoning rep3: 19.14 t/s (256 tok)
+  baseline reasoning rep4: 19.28 t/s (256 tok)
+### baseline: geschrieben nach q6-vulkan-layer/baseline.json
+### baseline: fertig (rc=0)
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 17,83 + 17,45 GiB
+  baseline code rep1: 19.18 t/s (256 tok)
+  baseline code rep2: 20.64 t/s (256 tok)
+  baseline code rep3: 19.96 t/s (256 tok)
+  baseline code rep4: 20.16 t/s (256 tok)
+  baseline prosa rep1: 19.32 t/s (256 tok)
+  baseline prosa rep2: 20.30 t/s (256 tok)
+  baseline prosa rep3: 19.84 t/s (256 tok)
+  baseline prosa rep4: 20.14 t/s (256 tok)
+  baseline reasoning rep1: 18.89 t/s (256 tok)
+  baseline reasoning rep2: 19.63 t/s (256 tok)
+  baseline reasoning rep3: 20.70 t/s (256 tok)
+  baseline reasoning rep4: 20.22 t/s (256 tok)
+### baseline: geschrieben nach q6-rocm-layer/baseline.json
+### baseline: fertig (rc=0)
+### baseline (parallel=1): starte Server
+### baseline: bereit, VRAM 18,16 + 17,48 GiB
+  baseline code rep1: 29.95 t/s (256 tok)
+  baseline code rep2: 30.51 t/s (256 tok)
+  baseline code rep3: 31.01 t/s (256 tok)
+  baseline code rep4: 31.09 t/s (256 tok)
+  baseline prosa rep1: 30.68 t/s (256 tok)
+  baseline prosa rep2: 30.30 t/s (256 tok)
+  baseline prosa rep3: 31.15 t/s (256 tok)
+  baseline prosa rep4: 30.84 t/s (256 tok)
+  baseline reasoning rep1: 30.42 t/s (256 tok)
+  baseline reasoning rep2: 30.44 t/s (256 tok)
+  baseline reasoning rep3: 31.01 t/s (256 tok)
+  baseline reasoning rep4: 30.95 t/s (256 tok)
+### baseline: geschrieben nach q6-rocm-tensor/baseline.json
+### baseline: fertig (rc=0)
+ALLES-FERTIG
