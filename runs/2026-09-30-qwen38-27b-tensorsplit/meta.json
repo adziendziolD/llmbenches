@@ -1,0 +1,68 @@
+{
+  "id": "2026-09-30-qwen38-27b-tensorsplit",
+  "title": "Split-Mode none/layer/tensor mit zwei R9700, Qwen3.8-27B mit MTP",
+  "date": "2026-09-30",
+  "question": "Ist qwen3.8-27b-code mit --split-mode tensor ueber zwei R9700 schneller als auf einer Karte oder mit Layer-Split?",
+  "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0"
+  },
+  "model": {
+    "Modell": "Qwen3.8-27B-UD-Q6_K (20,5 GiB, qwen35, dicht)",
+    "Draft-Head": "eingebettet (blk.64), kein -md",
+    "Build": "b11177 (0.5.0-dev), Mainline Vulkan"
+  },
+  "method": {
+    "Kontext": "262144 (nicht gefuellt), cache-type-k/v q8_0, flash-attn on, 1 Slot",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf, je Konfiguration ein Lauf",
+    "Kennzahl": "Median der Einzelwerte",
+    "Spekulation": "draft-mtp, spec-draft-n-max 2"
+  },
+  "cmdline": "llama-server -m Qwen3.8-27B-UD-Q6_K.gguf --device Vulkan0[,Vulkan1] --split-mode none|layer|tensor --ctx-size 262144 --flash-attn on --cache-type-k q8_0 --cache-type-v q8_0 --parallel 1 [--spec-type draft-mtp --spec-draft-n-max 2]",
+  "backends": {
+    "single": {
+      "label": "1 Karte (none)",
+      "device": "Vulkan0",
+      "detail": "--split-mode none, nur Vulkan0. Entspricht dem bisherigen Preset."
+    },
+    "layer": {
+      "label": "2 Karten, Layer-Split",
+      "device": "Vulkan0,Vulkan1",
+      "detail": "--split-mode layer (Default), Gewichte und KV schichtweise, pipelined."
+    },
+    "tensor": {
+      "label": "2 Karten, Tensor-Split",
+      "device": "Vulkan0,Vulkan1",
+      "detail": "--split-mode tensor (experimentell), Gewichte und KV parallelisiert."
+    }
+  },
+  "configs": {
+    "baseline": {
+      "label": "ohne MTP",
+      "order": 0
+    },
+    "mtp2": {
+      "label": "MTP n-max 2",
+      "order": 1
+    }
+  },
+  "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+  },
+  "notes": [
+    "Median in t/s (mtp2 / ohne MTP): 1 Karte 38,7 / 25,1; Layer-Split 36,1 / 20,7; Tensor-Split 25,5 / 13,1. Tensor-Split ist damit die langsamste Variante, rund 34 Prozent unter einer Karte mit MTP und rund 48 Prozent ohne MTP.",
+    "Das Modell (20,5 GiB) passt samt KV bei ctx 262144 auf eine Karte (30,25 GiB belegt). Eine zweite Karte bringt hier keine Bandbreite, nur Synchronisationskosten zwischen den Karten.",
+    "Der Layer-Split kostet gegenueber einer Karte rund 7 Prozent mit MTP und rund 18 Prozent ohne MTP. Tensor-Split zusaetzlich ein Vielfaches davon.",
+    "Die Draft-Akzeptanz ist in allen drei Varianten gleich (0,637 bis 0,644). Der Unterschied im Durchsatz kommt aus dem Vorwaertslauf, nicht aus den Drafts.",
+    "Prompt-Verarbeitung (Median in t/s, mtp2): 1 Karte 247, Layer 221, Tensor 158.",
+    "VRAM-Belegung je Karte in GiB (mtp2): 1 Karte 30,25 + 0,10; Layer 18,48 + 14,98; Tensor 15,54 + 15,79. Tensor verteilt gleichmaessig, Layer ungleich.",
+    "Die Messung ist mit einem Slot gelaufen. Ob Tensor-Split bei mehreren parallelen Slots oder bei einem Modell, das nicht auf eine Karte passt (z. B. qwen3.8-flash-next), anders aussieht, ist nicht gemessen.",
+    "Der Median mtp2 fuer eine Karte liegt mit 38,7 unter den 42,5 t/s der Reihe vom 2026-09-29 (gleiche Flags, gleicher Build). Die Einzelwerte streuen stark (36,7 bis 45,3, je nach Prompt: reasoning am schnellsten). Die Ursache der Abweichung ist nicht untersucht.",
+    "Grenzen: je Konfiguration nur ein Lauf, Prompts mit rund 90 Tokens, Kontext nicht gefuellt. Tiefer Kontext ist nicht gemessen. mtp-bench.sh ist gegenueber dem Skript vom 2026-09-29 um SPLIT und Summen-VRAM beider Karten erweitert."
+  ]
+}
