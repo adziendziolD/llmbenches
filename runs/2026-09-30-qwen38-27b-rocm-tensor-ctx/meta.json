@@ -1,0 +1,66 @@
+{
+  "id": "2026-09-30-qwen38-27b-rocm-tensor-ctx",
+  "title": "Kontextstufen 64k bis 256k, ROCm Tensor-Split, Qwen3.8-27B mit MTP",
+  "date": "2026-09-30",
+  "question": "Haelt die Empfehlung (ROCm, Tensor-Split ueber beide R9700, MTP n-max 2) ihre Geschwindigkeit, wenn der reservierte Kontext von 64k auf 256k waechst und der Prompt lang ist (ca. 3,5k Token)?",
+  "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0",
+    "ROCm": "7.2.4"
+  },
+  "model": {
+    "Modell": "Qwen3.8-27B-UD-Q6_K (20,5 GiB, qwen35, dicht)",
+    "Draft-Head": "eingebettet (blk.64), kein -md",
+    "Build": "b11177 (0.5.0-dev), Mainline ROCm"
+  },
+  "method": {
+    "Kontext": "--ctx-size 65536, 131072, 196608, 262144; Kontext nicht gefuellt",
+    "Prompt": "ein langer Prompt, 3549 Token (3601 mit Chat-Template), Zusammenfassungsaufgabe",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false",
+    "Messung": "1 Prompt x 4 Wiederholungen, 256 Tokens, ein Warmlauf, je Stufe ein Lauf",
+    "Kennzahl": "Median der Einzelwerte",
+    "Spekulation": "draft-mtp, spec-draft-n-max 2, 1 Slot, Tensor-Split"
+  },
+  "cmdline": "llama-server -m Qwen3.8-27B-UD-Q6_K.gguf --device ROCm0,ROCm1 --split-mode tensor --ctx-size N --flash-attn on --cache-type-k q8_0 --cache-type-v q8_0 --parallel 1 --spec-type draft-mtp --spec-draft-n-max 2",
+  "backends": {
+    "ctx64k": {
+      "label": "Kontext 64k",
+      "device": "ROCm0,ROCm1",
+      "detail": "--ctx-size 65536"
+    },
+    "ctx128k": {
+      "label": "Kontext 128k",
+      "device": "ROCm0,ROCm1",
+      "detail": "--ctx-size 131072"
+    },
+    "ctx192k": {
+      "label": "Kontext 192k",
+      "device": "ROCm0,ROCm1",
+      "detail": "--ctx-size 196608"
+    },
+    "ctx256k": {
+      "label": "Kontext 256k",
+      "device": "ROCm0,ROCm1",
+      "detail": "--ctx-size 262144"
+    }
+  },
+  "configs": {
+    "mtp2": {
+      "label": "MTP n-max 2",
+      "order": 1
+    }
+  },
+  "prompts": {
+    "lang": "Rund 3,5k Token Text zu WEG-Abrechnung, Ruecklage und Wasserkosten mit Bitte um zehn Stichpunkte samt wichtigster Zahl"
+  },
+  "notes": [
+    "Median Generierung in t/s: 64k 63,2; 128k 62,5; 192k 62,5; 256k 62,1. Der reservierte Kontext kostet nur rund 2 Prozent, die Geschwindigkeit ist praktisch flach.",
+    "Prefill des 3,5k-Prompts: 892, 883, 888, 887 t/s, ebenfalls unabhaengig von der Kontextgroesse. Das sind rund 4 s fuer den Prompt.",
+    "VRAM je Karte in GiB: 64k 12,16 + 12,26; 128k 13,72 + 13,82; 192k 15,28 + 15,38; 256k 16,84 + 16,95. Je 64k Kontext kommen rund 1,56 GiB je Karte dazu. Auch bei 256k bleiben rund 15 GiB je Karte frei.",
+    "Die Draft-Akzeptanz liegt mit 0,838 deutlich ueber den 0,64 der Kurzprompts (Lauf 2026-09-30-qwen38-27b-rocm-p2p). Der Prompt fordert eine Zusammenfassung mit Zahlen aus dem Text, die Antwort ist also stark vom Prompt abgeleitet und leicht zu raten. Die 62 bis 63 t/s sind deshalb eine Obergrenze und nicht mit den 52,8 t/s der Kurzprompts vergleichbar. Die Kontextstufen untereinander sind vergleichbar.",
+    "Was die Reihe nicht zeigt: Der Kontext war nicht gefuellt, nur 3,5k Token lagen an. Ob die Generierung bei 64k, 128k oder 256k tatsaechlich belegten Tokens einbricht, ist nicht gemessen. Das betrifft vor allem den Attention-Teil im Tensor-Split und die Kommunikation zwischen den Karten.",
+    "Grenzen: je Stufe nur ein Lauf, ein Prompt, ein Slot. Tensor-Split ist in llama.cpp als EXPERIMENTAL gekennzeichnet."
+  ]
+}

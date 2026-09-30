@@ -1,0 +1,102 @@
+[
+  {
+    "cfg": "mtp2",
+    "prompt": "lang",
+    "rep": 1,
+    "pred_n": 256,
+    "pred_ms": 4431.151,
+    "tps": 57.547124889221784,
+    "prompt_n": 3601,
+    "prompt_tps": 782.5086606172366,
+    "draft_n": 191,
+    "draft_accepted": 158,
+    "timings_raw": {
+      "cache_n": 0,
+      "prompt_n": 3601,
+      "prompt_ms": 4601.866,
+      "prompt_per_token_ms": 1.277941127464593,
+      "prompt_per_second": 782.5086606172366,
+      "predicted_n": 256,
+      "predicted_ms": 4431.151,
+      "predicted_per_token_ms": 17.377062745098037,
+      "predicted_per_second": 57.547124889221784,
+      "draft_n": 191,
+      "draft_n_accepted": 158
+    }
+  },
+  {
+    "cfg": "mtp2",
+    "prompt": "lang",
+    "rep": 2,
+    "pred_n": 256,
+    "pred_ms": 4082.777,
+    "tps": 62.457489106066774,
+    "prompt_n": 3601,
+    "prompt_tps": 877.7210938242656,
+    "draft_n": 189,
+    "draft_accepted": 159,
+    "timings_raw": {
+      "cache_n": 0,
+      "prompt_n": 3601,
+      "prompt_ms": 4102.67,
+      "prompt_per_token_ms": 1.1393140794223826,
+      "prompt_per_second": 877.7210938242656,
+      "predicted_n": 256,
+      "predicted_ms": 4082.777,
+      "predicted_per_token_ms": 16.01089019607843,
+      "predicted_per_second": 62.457489106066774,
+      "draft_n": 189,
+      "draft_n_accepted": 159
+    }
+  },
+  {
+    "cfg": "mtp2",
+    "prompt": "lang",
+    "rep": 3,
+    "pred_n": 256,
+    "pred_ms": 4100.017,
+    "tps": 62.19486407007581,
+    "prompt_n": 3601,
+    "prompt_tps": 897.4058963629517,
+    "draft_n": 189,
+    "draft_accepted": 159,
+    "timings_raw": {
+      "cache_n": 0,
+      "prompt_n": 3601,
+      "prompt_ms": 4012.677,
+      "prompt_per_token_ms": 1.1143229658428215,
+      "prompt_per_second": 897.4058963629517,
+      "predicted_n": 256,
+      "predicted_ms": 4100.017,
+      "predicted_per_token_ms": 16.078498039215685,
+      "predicted_per_second": 62.19486407007581,
+      "draft_n": 189,
+      "draft_n_accepted": 159
+    }
+  },
+  {
+    "cfg": "mtp2",
+    "prompt": "lang",
+    "rep": 4,
+    "pred_n": 256,
+    "pred_ms": 4109.281,
+    "tps": 62.05465140982084,
+    "prompt_n": 3601,
+    "prompt_tps": 896.421161115585,
+    "draft_n": 189,
+    "draft_accepted": 159,
+    "timings_raw": {
+      "cache_n": 0,
+      "prompt_n": 3601,
+      "prompt_ms": 4017.085,
+      "prompt_per_token_ms": 1.1155470702582615,
+      "prompt_per_second": 896.421161115585,
+      "predicted_n": 256,
+      "predicted_ms": 4109.281,
+      "predicted_per_token_ms": 16.114827450980393,
+      "predicted_per_second": 62.05465140982084,
+      "draft_n": 189,
+      "draft_n_accepted": 159
+    }
+  }
+]

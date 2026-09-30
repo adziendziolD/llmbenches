@@ -1,0 +1,37 @@
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 12,16 + 12,26 GiB
+  Prompt: 3549 Token
+  mtp2 lang rep1: 57.78 t/s (256 tok)
+  mtp2 lang rep2: 63.19 t/s (256 tok)
+  mtp2 lang rep3: 63.20 t/s (256 tok)
+  mtp2 lang rep4: 63.13 t/s (256 tok)
+### mtp2: geschrieben nach ctx64k/mtp2.json
+### mtp2: fertig (rc=0)
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 13,72 + 13,82 GiB
+  Prompt: 3549 Token
+  mtp2 lang rep1: 57.84 t/s (256 tok)
+  mtp2 lang rep2: 62.91 t/s (256 tok)
+  mtp2 lang rep3: 62.97 t/s (256 tok)
+  mtp2 lang rep4: 62.09 t/s (256 tok)
+### mtp2: geschrieben nach ctx128k/mtp2.json
+### mtp2: fertig (rc=0)
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 15,28 + 15,38 GiB
+  Prompt: 3549 Token
+  mtp2 lang rep1: 57.66 t/s (256 tok)
+  mtp2 lang rep2: 62.59 t/s (256 tok)
+  mtp2 lang rep3: 62.59 t/s (256 tok)
+  mtp2 lang rep4: 62.41 t/s (256 tok)
+### mtp2: geschrieben nach ctx192k/mtp2.json
+### mtp2: fertig (rc=0)
+### mtp2 (parallel=1): starte Server
+### mtp2: bereit, VRAM 16,84 + 16,95 GiB
+  Prompt: 3549 Token
+  mtp2 lang rep1: 57.55 t/s (256 tok)
+  mtp2 lang rep2: 62.46 t/s (256 tok)
+  mtp2 lang rep3: 62.19 t/s (256 tok)
+  mtp2 lang rep4: 62.05 t/s (256 tok)
+### mtp2: geschrieben nach ctx256k/mtp2.json
+### mtp2: fertig (rc=0)
+ALLES-FERTIG
