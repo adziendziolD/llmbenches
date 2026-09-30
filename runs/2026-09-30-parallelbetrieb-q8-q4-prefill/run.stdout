@@ -1,0 +1,9 @@
+Warmlauf coder: 129.1 Token je Block, 23 Bloecke fuer Ziel 3000
+Warmlauf agent: 110.5 Token je Block, 108 Bloecke fuer Ziel 12000
+VRAM nach Warmlauf (GiB, card0 card1): [29.67, 30.64]
+  rep1 einzeln      coder pp 1026 t/s (3010 tok) gen 49.3 | agent pp 1860 t/s (12071 tok) gen 24.9
+  rep1 gleichzeitig coder pp 423 t/s (3010 tok) gen 26.8 | agent pp 1469 t/s (12071 tok) gen 20.9
+  rep2 einzeln      coder pp 1080 t/s (3010 tok) gen 52.0 | agent pp 1824 t/s (12071 tok) gen 25.4
+  rep2 gleichzeitig coder pp 555 t/s (3010 tok) gen 16.7 | agent pp 1503 t/s (12071 tok) gen 16.4
+VRAM am Ende (GiB, card0 card1): [29.66, 30.79]
+### fertig

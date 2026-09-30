@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-30T15:36:13+02:00",
+ "generated": "2026-09-30T15:56:56+02:00",
  "runs": [
   {
    "id": "2026-09-30-qwen38-27b-tensorsplit",
@@ -2337,6 +2337,228 @@
        "mean_len": 2.37
       },
       "speedup": 1.727
+     }
+    }
+   }
+  },
+  {
+   "id": "2026-09-30-parallelbetrieb-q8-q4-prefill",
+   "title": "Parallelbetrieb Coder Q8_0 und Agent Q4_K_M, Prompt-Processing",
+   "date": "2026-09-30",
+   "question": "Wie verhalten sich Prompt-Processing und Generierung, wenn der Coder (Q8_0, ca. 3k-Prompt) und der Agent (Q4_K_M, ca. 12k-Prompt) einzeln und gleichzeitig laufen?",
+   "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0",
+    "ROCm": "7.2.4"
+   },
+   "model": {
+    "Coder": "Qwen3.8-27B-Q8_0, ROCm0,ROCm1, Tensor-Split, MTP n-max 2, ctx 262144",
+    "Agent": "Ornstein-Hermes-3.6-27b-SABER-Q4_K_M (16,5 GB), ROCm0,ROCm1, Layer-Split, kein MTP, ctx 81920",
+    "Build": "b11177 (0.5.0-dev), Mainline ROCm, server-multi mit --models-max 2"
+   },
+   "method": {
+    "Prompts": "Coder 3010 Token (Python-Code mit Bitte um Review), Agent 12071 Token (WEG-Text mit Bitte um Zusammenfassung)",
+    "Einzeln": "Anfragen nacheinander, das andere Modell geladen, aber untaetig",
+    "Gleichzeitig": "beide Anfragen im selben Moment gestartet",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42), cache_prompt false, Thinking aus",
+    "Messung": "je Bedingung 2 Wiederholungen, 256 Tokens, ein kurzer Warmlauf je Modell",
+    "Kennzahl": "Einzelwerte, bei n=2 kein Median",
+    "Weg": "HTTP ueber den Router auf Port 8898"
+   },
+   "cmdline": "llama-launcher start server-multi (--models-max 2 --cache-ram 32768); Skript pp-bench.py, REPS=2",
+   "backends": {
+    "einzeln": {
+     "label": "einzeln (anderes Modell idle)",
+     "device": "ROCm0,ROCm1",
+     "detail": "Beide Modelle geladen, die Anfragen laufen nacheinander."
+    },
+    "gleichzeitig": {
+     "label": "gleichzeitig",
+     "device": "ROCm0,ROCm1",
+     "detail": "Beide Anfragen im selben Moment, die Phasen ueberlappen sich je nach Laenge der Prompts."
+    }
+   },
+   "configs": {
+    "coder": {
+     "label": "Coder (Q8_0, 3k-Prompt, MTP)",
+     "order": 0
+    },
+    "agent": {
+     "label": "Agent (Q4_K_M, 12k-Prompt, ohne MTP)",
+     "order": 1
+    }
+   },
+   "prompts": {
+    "lang": "Coder: 3010 Token Python-Code, Agent: 12071 Token Fliesstext, je mit Aufgabe am Ende"
+   },
+   "notes": [
+    "Prompt-Processing in t/s (Rep 1 / Rep 2): Coder einzeln 1026 / 1080, gleichzeitig 423 / 555; Agent einzeln 1860 / 1824, gleichzeitig 1469 / 1503. Der Coder verliert beim Prefill 49 bis 59 Prozent, der Agent 18 bis 21 Prozent.",
+    "Generierung in t/s (Rep 1 / Rep 2): Coder einzeln 49,3 / 52,0, gleichzeitig 26,8 / 16,7; Agent einzeln 24,9 / 25,4, gleichzeitig 20,9 / 16,4.",
+    "Die Streuung im gleichzeitigen Betrieb ist gross (Coder 26,8 gegen 16,7, Agent 20,9 gegen 16,4) und mit zwei Wiederholungen nicht belastbar. Im frueheren Lauf 2026-09-30-parallelbetrieb-coder-agent mit kurzen Prompts lagen die Werte gleichzeitig bei 30,6 (Coder) und 20,1 (Agent). Der Unterschied kommt vermutlich daher, dass hier der lange 12k-Prefill des Agenten (rund 7 bis 8 s) mit der Generierung des Coders ueberlappt. Prefill ist rechenintensiv und bremst das gleichzeitig laufende Decoding stark. Das ist eine Vermutung, nicht getrennt gemessen.",
+    "Der Agent verarbeitet seinen Prompt einzeln rund 1,7-mal so schnell wie der Coder (1840 gegen 1050 t/s). Denkbare Gruende sind der kleinere Quant (Q4_K_M gegen Q8_0), der Layer-Split ohne Synchronisation je Schicht und der laengere Prompt mit besserer Auslastung. Nicht getrennt gemessen.",
+    "Die Generierung ohne Konkurrenz entspricht den frueheren Laeufen: Coder rund 50 t/s mit Q8_0 (Q6_K: rund 52 bis 56), Agent rund 25 t/s (Q5_K_M: 23,9 bis 25,5).",
+    "VRAM (GiB, beide Modelle geladen): card0 29,67, card1 30,64 nach dem Warmlauf, am Ende 29,66 und 30,79 von je 31,86. Frei bleiben rund 2,2 und 1,1 GiB. Mit ctx 81920 beim Agenten ist der Platz ausgereizt, die Schaetzung von rund 88k Kontext war zu optimistisch.",
+    "Tool-Calling des Agenten mit Q4_K_M geprueft: zwei Anfragen mit get_weather lieferten saubere tool_calls mit korrekten Argumenten (auch unit fahrenheit). Nur eine Funktion, kein mehrstufiger Agentenlauf.",
+    "Der Agent hat keinen MTP-Head: weder die Q5_K_M- noch die Q4_K_M-Datei enthaelt blk.64.nextn-Tensoren oder den Schluessel qwen35.nextn_predict_layers (der Coder schon).",
+    "Grenzen: 2 Wiederholungen je Bedingung, ein Prompt je Modell, Kontext nicht gefuellt, ein Slot je Modell. Der Agent hat keine Verweigerungs-Leitplanken (SABER)."
+   ],
+   "results": {
+    "einzeln": {
+     "agent": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "lang": {
+        "n": 2,
+        "min": 24.88,
+        "median": 25.15,
+        "max": 25.42,
+        "mean": 25.15,
+        "spread_pct": 2.1,
+        "values": [
+         24.88,
+         25.42
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 1842.3,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 2,
+       "min": 24.88,
+       "median": 25.15,
+       "max": 25.42,
+       "mean": 25.15,
+       "spread_pct": 2.1,
+       "values": [
+        24.88,
+        25.42
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": null
+     },
+     "coder": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "lang": {
+        "n": 2,
+        "min": 49.34,
+        "median": 50.68,
+        "max": 52.03,
+        "mean": 50.68,
+        "spread_pct": 5.3,
+        "values": [
+         49.34,
+         52.03
+        ],
+        "acceptance": 75.0,
+        "mean_len": 2.49,
+        "pred_n": 256,
+        "prompt_tps": 1053.4,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 2,
+       "min": 49.34,
+       "median": 50.68,
+       "max": 52.03,
+       "mean": 50.68,
+       "spread_pct": 5.3,
+       "values": [
+        49.34,
+        52.03
+       ],
+       "acceptance": 75.0,
+       "mean_len": 2.49
+      },
+      "speedup": null
+     }
+    },
+    "gleichzeitig": {
+     "agent": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "lang": {
+        "n": 2,
+        "min": 16.39,
+        "median": 18.67,
+        "max": 20.95,
+        "mean": 18.67,
+        "spread_pct": 24.4,
+        "values": [
+         20.95,
+         16.39
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 1486.2,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 2,
+       "min": 16.39,
+       "median": 18.67,
+       "max": 20.95,
+       "mean": 18.67,
+       "spread_pct": 24.4,
+       "values": [
+        20.95,
+        16.39
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": null
+     },
+     "coder": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "lang": {
+        "n": 2,
+        "min": 16.7,
+        "median": 21.74,
+        "max": 26.79,
+        "mean": 21.74,
+        "spread_pct": 46.4,
+        "values": [
+         26.79,
+         16.7
+        ],
+        "acceptance": 75.0,
+        "mean_len": 2.49,
+        "pred_n": 256,
+        "prompt_tps": 488.8,
+        "speedup": null
+       }
+      },
+      "overall": {
+       "n": 2,
+       "min": 16.7,
+       "median": 21.74,
+       "max": 26.79,
+       "mean": 21.74,
+       "spread_pct": 46.4,
+       "values": [
+        26.79,
+        16.7
+       ],
+       "acceptance": 75.0,
+       "mean_len": 2.49
+      },
+      "speedup": null
      }
     }
    }

@@ -1,0 +1,26 @@
+[
+  {
+    "cfg": "coder",
+    "prompt": "lang",
+    "rep": 1,
+    "prompt_n": 3010,
+    "prompt_ms": 2932.513,
+    "prompt_tps": 1026.4234122747282,
+    "pred_n": 256,
+    "tps": 49.33870654420865,
+    "draft_n": 204,
+    "draft_accepted": 153
+  },
+  {
+    "cfg": "coder",
+    "prompt": "lang",
+    "rep": 2,
+    "prompt_n": 3010,
+    "prompt_ms": 2786.28,
+    "prompt_tps": 1080.2934378454427,
+    "pred_n": 256,
+    "tps": 52.027830604728656,
+    "draft_n": 204,
+    "draft_accepted": 153
+  }
+]

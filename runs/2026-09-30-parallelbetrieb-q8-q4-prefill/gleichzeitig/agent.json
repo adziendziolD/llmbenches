@@ -1,0 +1,26 @@
+[
+  {
+    "cfg": "agent",
+    "prompt": "lang",
+    "rep": 1,
+    "prompt_n": 12071,
+    "prompt_ms": 8214.995,
+    "prompt_tps": 1469.3861651772154,
+    "pred_n": 256,
+    "tps": 20.947858562030554,
+    "draft_n": null,
+    "draft_accepted": null
+  },
+  {
+    "cfg": "agent",
+    "prompt": "lang",
+    "rep": 2,
+    "prompt_n": 12071,
+    "prompt_ms": 8030.773,
+    "prompt_tps": 1503.0931642570397,
+    "pred_n": 256,
+    "tps": 16.391888265175755,
+    "draft_n": null,
+    "draft_accepted": null
+  }
+]
