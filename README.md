@@ -1,5 +1,9 @@
 # llmbenches
 
+
+https://adziendziold.github.io/llmbenches/
+
+
 Messergebnisse lokaler LLM-Laeufe und ein kleines Werkzeug, das sie anzeigt.
 
 Der Anspruch ist, dass eine Zahl ohne ihren Kontext wertlos ist. Jeder Lauf traegt deshalb
