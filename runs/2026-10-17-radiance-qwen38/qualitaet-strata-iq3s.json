@@ -1,0 +1,42 @@
+{
+ "code": {
+  "content": "```python\ndef is_valid_ipv4(ip: str) -> bool:\n    \"\"\"\n    Prüft, ob ein String ein gültiges IPv4-Adressformat hat.\n    \n    Eine gültige IPv4-Adresse besteht aus vier Dezimalzahlen (0-255),\n    getrennt durch Punkte. Keine führenden Nullen erlaubt (außer \"0\" selbst).\n    \n    Args:\n        ip: Der zu prüfende String.\n        \n    Returns:\n        True, wenn die Adresse gültig ist, sonst False.\n    \"\"\"\n    if not isinstance(ip, str):\n        return False\n    \n    parts = ip.split('.')\n    \n    # Muss genau 4 Teile haben\n    if len(parts) != 4:\n        return False\n    \n    for part in parts:\n        # Jeder Teil muss nicht leer sein\n        if not part:\n            return False\n        \n        # Jeder Teil muss nur aus Ziffern bestehen\n        if not part.isdigit():\n            return False\n        \n        # Keine führenden Nullen (außer \"0\" selbst)\n        if len(part) > 1 and part[0] == '0':\n            return False\n        \n        # Wert muss zwischen 0 und 255 liegen\n        try:\n            value = int(part)\n        except ValueError:\n            return False\n        \n        if value < 0 or value > 255:\n            return False\n    \n    return True\n```",
+  "reasoning": null,
+  "n": 312
+ },
+ "prosa": {
+  "content": "Das Sonnenlicht besteht aus verschiedenen Farben, die beim Eintritt in die Atmosphäre an Luftmolekülen gestreut werden. Kurzwelliges blaues Licht wird dabei deutlich stärker gestreut als langwelliges rotes Licht, weshalb wir den Himmel tagsüber blau wahrnehmen. Bei Sonnenuntergang durchquert das Licht einen viel längeren Weg durch die Atmosphäre, wobei das blaue Licht fast vollständig herausgestreut wird. Übrig bleibt vor allem das langwellige rote und orange Licht, das direkt zu unseren Augen gelangt und den Himmel in diesen warmen Farben erscheinen lässt.",
+  "reasoning": null,
+  "n": 122
+ },
+ "reasoning": {
+  "content": "Hier ist die schrittweise Berechnung der Ankunftszeiten für beide Züge.\n\n### 1. Erster Zug\n\n**Gegeben:**\n*   Abfahrtszeit: 9:15 Uhr\n*   Fahrzeit: 2 Stunden 50 Minuten\n\n**Berechnung:**\n1.  Addiere die Stunden zur Abfahrtszeit:\n    $9:15 + 2 \\text{ Stunden} = 11:15$\n2.  Addiere die Minuten zur neuen Zeit:\n    $11:15 + 50 \\text{ Minuten}$\n    *   $15 \\text{ Minuten} + 50 \\text{ Minuten} = 65 \\text{ Minuten}$\n    *   Da 65 Minuten gleich 1 Stunde und 5 Minuten sind, addieren wir 1 Stunde zur Stundenangabe und behalten 5 Minuten.\n    *   $11 \\text{ Uhr} + 1 \\text{ Stunde} = 12 \\text{ Uhr}$\n    *   Restliche Minuten: 5\n\n**Ankunftszeit Zug 1:** **12:05 Uhr**\n\n---\n\n### 2. Zweiter Zug\n\n**Gegeben:**\n*   Abfahrtszeit: 10:05 Uhr\n*   Fahrzeit: Der zweite Zug fährt \"1 Stunde 40 Minuten schneller\" bzw. hat eine \"kürzere Fahrzeit von 1:10 h weniger als der erste\".\n    *   *Hinweis zur Aufgabenstellung:* Es gibt hier eine kleine Unstimmigkeit in der Formulierung (\"1 Stunde 40 Minuten schneller\" vs. \"1:10 h weniger\").\n    *   Interpretation A: \"Schneller\" bedeutet kürzere Fahrzeit. Wenn er 1 Stunde 40 Minuten *schneller* ist, dauert die Fahrt 1 Stunde 40 Minuten *weniger*.\n    *   Interpretation B: Der Klammerzusatz \"(kürzere Fahrzeit 1:10 h weniger als der erste)\" widerspricht der ersten Angabe (1h40m vs 1h10m).\n    *   *Logische Annahme:* In solchen Aufgaben ist meist die explizite Differenz in Klammern oder die präzisere Angabe maßgeblich. Allerdings ist \"1 Stunde 40 Minuten schneller\" eine sehr spezifische Angabe. Schauen wir uns den Klammerzusatz an: \"1:10 h weniger\". Das ist 1 Stunde 10 Minuten.\n    *   Oft wird \"schneller fahren\" mit \"weniger Zeit brauchen\" gleichgesetzt. Wenn der Text sagt \"fährt 1 Stunde 40 Minuten schneller\", meint er meist, dass die Fahrzeit um 1 Stunde",
+  "reasoning": null,
+  "n": 600
+ },
+ "math": {
+  "content": "409",
+  "reasoning": null,
+  "n": 4
+ },
+ "fakt": {
+  "content": "Die Hauptstadt von Australien ist Canberra, die im Jahr 1913 gegründet wurde.",
+  "reasoning": null,
+  "n": 19
+ },
+ "sql": {
+  "content": "Hier ist die SQL-Abfrage, die die drei Kunden mit dem höchsten Gesamtumsatz ermittelt:\n\n```sql\nSELECT \n    k.id,\n    k.name,\n    SUM(b.betrag) AS gesamtumsatz\nFROM \n    kunden k\nJOIN \n    bestellungen b ON k.id = b.kunde_id\nGROUP BY \n    k.id, k.name\nORDER BY \n    gesamtumsatz DESC\nLIMIT 3;\n```\n\n### Erklärung:\n1. **`JOIN`**: Verknüpft die Tabellen `kunden` und `bestellungen` über die `id` des Kunden.\n2. **`SUM(b.betrag)`**: Berechnet den Gesamtumsatz pro Kunde.\n3. **`GROUP BY`**: Gruppiert die Ergebnisse nach Kunde, damit die Summe pro Kunde berechnet wird.\n4. **`ORDER BY gesamtumsatz DESC`**: Sortiert die Kunden absteigend nach ihrem Gesamtumsatz.\n5. **`LIMIT 3`**: Begrenzt das Ergebnis auf die Top 3 Kunden.\n\n> **Hinweis**: Falls mehrere Kunden denselben Umsatz haben und du alle mit dem gleichen Rang einbeziehen möchtest, kannst du je nach Datenbank-System `RANK()` oder `DENSE_RANK()` mit einem Fensterfunktion-Ansatz verwenden. Für die einfache Top-3-Auswahl ist `LIMIT 3` jedoch ausreichend.",
+  "reasoning": null,
+  "n": 298
+ },
+ "json": {
+  "content": "{\n  \"name\": \"Max Mustermann\",\n  \"alter\": 34,\n  \"hobbys\": [\n    \"Lesen\",\n    \"Wandern\",\n    \"Kochen\"\n  ]\n}",
+  "reasoning": null,
+  "n": 53
+ },
+ "uebers": {
+  "content": "The quick brown fox jumps over the lazy dog while it rains softly.",
+  "reasoning": null,
+  "n": 15
+ }
+}

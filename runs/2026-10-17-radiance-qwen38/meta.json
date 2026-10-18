@@ -1,0 +1,83 @@
+{
+  "id": "2026-10-17-radiance-qwen38",
+  "title": "Radiance (StillDeadcode) auf 2x R9700: Qwen3.8-27B FP8 und Qwen3.8-Flash-Next, --tp 2",
+  "date": "2026-10-17",
+  "question": "Lohnt Radiance, die reine RDNA4-Engine, als zusaetzliches Backend gegenueber llama.cpp und Strata auf unserer Maschine?",
+  "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0",
+    "ROCm": "7.2.4"
+  },
+  "model": {
+    "27B": "qwen3.8-27b-fp8.rad (28,7 GiB), FP8",
+    "Flash-Next": "qwen3.8-next-flash-fp8-iq4r-moe.rad (113,5 GiB), 4-Bit-Experten, int8-Trunk",
+    "Build": "radiance 1.7.0, Quellen vom Original (HEAD 9112739), selbst gebaut fuer gfx1201, ohne Docker"
+  },
+  "method": {
+    "Parallelitaet": "--tp 2 ueber beide Karten",
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42)",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf, Prompts wie in 2026-09-30-qwen38-27b-q8-vs-q6",
+    "Kennzahl": "Median der Einzelwerte",
+    "Concurrency": "bench_conc.py: c Anfragen gleichzeitig, 256 Tokens, aggregierte t/s (nicht in den Konfigurationen, nur in den Notizen)"
+  },
+  "cmdline": "radiance --model <.rad> --tp 2 [--tp-wire wht6|exact] --max-num-seqs 8 --max-model-len 200000 --placement expert_tiered --host-pool-mib 12288 --kv-cache-dtype fp8 --num-speculative-tokens 3 [--ngram-placement disk]; Umgebung: RADIANCE_HOME, LD_LIBRARY_PATH mit libxml2-Shim",
+  "backends": {
+    "radiance27": {
+      "label": "Radiance 27B-FP8",
+      "device": "ROCm0,ROCm1 (tp 2)",
+      "detail": "qwen3.8-27b-fp8.rad, max-model-len 65536, KV-Cache bf16 (Standard), max-num-seqs 8, --tp-wire exact (Standard)."
+    },
+    "radiance_flashnext": {
+      "label": "Radiance Flash-Next, n-gram im RAM (wht6)",
+      "device": "ROCm0,ROCm1 (tp 2)",
+      "detail": "n-gram-Tabelle 47,7 GiB gepinnt, Start rund 20 min, direkt nach dem Start gemessen (Heat-Engine noch nicht warm)."
+    },
+    "radiance_flashnext_disk": {
+      "label": "Radiance Flash-Next, n-gram disk (wht6)",
+      "device": "ROCm0,ROCm1 (tp 2)",
+      "detail": "--ngram-placement disk, Start 40 s."
+    },
+    "radiance_flashnext_disk_exact": {
+      "label": "Radiance Flash-Next, n-gram disk (exact)",
+      "device": "ROCm0,ROCm1 (tp 2)",
+      "detail": "wie vorher, aber --tp-wire exact statt des verlustbehafteten wht6."
+    },
+    "radiance27_262k": {
+      "label": "Radiance 27B-FP8, Kontext 262144 (fp8-KV)",
+      "device": "ROCm0,ROCm1 (tp 2)",
+      "detail": "qwen3.8-27b-fp8.rad, max-model-len 262144, --kv-cache-dtype fp8, --tp-wire exact, max-num-seqs 8. Das ist die Konfiguration, die der Router (scripts/radiance) startet."
+    }
+  },
+  "configs": {
+    "baseline": {
+      "label": "Standard (Radiance-eigene Spekulation)",
+      "order": 0
+    }
+  },
+  "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+  },
+  "notes": [
+    "Concurrency (aggregierte t/s, pro Strom in Klammern). 27B-FP8: c1 103,6 / c4 348 (87) / c8 495 (62). Flash-Next RAM-Variante: c1 153 / c4 203 (51) / c8 354 (44). Flash-Next disk/wht6: c1 155 / c4 379 (95) / c8 582 (73). Flash-Next disk/exact: c1 155 / c4 391 (98) / c8 588 (74).",
+    "Referenz aus frueheren Laeufen, hier nicht neu gemessen: llama.cpp Qwen3.8-27B Q8_0 ROCm Tensor-Split 29,7 t/s ohne MTP und 51,2 mit MTP n2 (Lauf 2026-09-30-qwen38-27b-q8-vs-q6); Flash-Next mit llama.cpp --fit rund 24 t/s und mit Strata IQ3_S rund 46 t/s (Werte aus frueheren Messungen, nicht in diesem Lauf).",
+    "Start von Flash-Next: Mit n-gram im gepinnten RAM dauerte der Start rund 20 min, davon 977,6 s fuer das Pinnen der 47,7 GiB (Kernel-Treiber, svm_range_set_attr). Platte (3,2 GB/s direkt gemessen) und RAM-Kopie sind es nicht. Mit --ngram-placement disk ist der Server nach 40 s oben und nicht langsamer.",
+    "Warum disk nicht langsamer ist, ist nicht gemessen. Vermutet werden die Heat-Engine (die RAM-Variante wurde direkt nach dem Start gemessen, die disk-Laeufe danach) und der Lesepfad: bei disk liest die CPU die wenigen Zeilen pro Token aus dem Page-Cache, bei gepinnt die GPU ueber PCIe. Ein sauberer Vergleich mit gleichem Aufwaermen steht aus.",
+    "Streuung bei Flash-Next ist hoch: die ersten Wiederholungen nach dem Start sind langsamer (z. B. prosa 67 gegen 149 t/s). Der Median hat daher eine breite Unsicherheit, je Konfiguration nur ein Lauf.",
+    "--tp-wire exact gegen wht6: kein messbarer Tempounterschied (Median 170,5 gegen 167,0 t/s). Der Guide nennt wht6 oberhalb von 128 KiB je Nachricht verlustbehaftet; exact ist deshalb vorzuziehen.",
+    "Qualitaet nur grob geprueft: 8 Prompts mit greedy-Ausgabe gegen Strata IQ3_S (nicht gegen Q4_K_XL). Antworten sind inhaltlich gleichwertig, der Wortlaut weicht ab. Beide Backends rechnen 17*23+144/12 falsch (Radiance 407, Strata 409, richtig 403). Das sagt nichts ueber feine Qualitaetsunterschiede.",
+    "Kontext: die Laeufe oben waren mit --max-model-len 200000 gestartet (Kontext nie gefuellt). Danach mit 262144 (volle Modellgrenze, disk/exact) gestartet: Start weiter 40 s, KV-Pool traegt 4,0 Sitzungen in voller Laenge statt 5,4. Ein Request mit 243580 Prompt-Token (Zufallswoerter, Passwort als Nadel bei einem Drittel) wurde angenommen und richtig beantwortet (BLAUER-OTTER-4711): Prefill rund 5800-6700 t/s (TTFT 36-42 s), Decode 108-122 t/s, aber nur ueber 12 bis 40 Token gemessen, also grob. Eine Anfrage ueber 262144 Token wird mit 400 abgelehnt (417828 Token getestet).",
+    "KV-Cache-Typ: Radiance kennt nur bf16 und fp8, kein q8_0. Mit --kv-cache-dtype bf16 bei 262144 startet der Server ebenfalls in 40 s, der KV-Pool traegt aber nur 2,1 statt 4,0 Sitzungen in voller Laenge (560380 Token je Karte-Cache). Gleiche Nadelprobe mit 243580 Token: richtig beantwortet, Prefill 6159 t/s, Decode 107,6 t/s; kurze Prompts Median 157,1 t/s (nicht in den Konfigurationen abgelegt, ein Lauf). Kein messbarer Tempounterschied zu fp8.",
+    "Nicht gemessen: lange Kontexte, MTP/Drafter einzeln an und aus, VRAM-Belegung von Flash-Next je Karte, kalter Page-Cache bei disk.",
+    "Grenzen: je Konfiguration ein Lauf, kurze Prompts, nur Qwen-Modelle im .rad-Format, Radiance nur fuer RDNA4. tokenizer_perf_test und ops_doc der Radiance-Tests schlagen fehl (vermutlich unkritisch).",
+    "Router-Einbau (llm-router, RADIANCE_MODELS): Das Modell qwen3.8-flash-next steht in der normalen Modellauswahl. Gemessen im Betrieb: Anfrage an das Radiance-Modell bei laufendem llama-Server bis zur Antwort 32 bis 33 s (llama-Server stoppen, Radiance mit disk-n-gram starten), Rueckweg auf ein llama-Modell (qwen3.8-27b-heretic, Vulkan) 23 s. Je ein Lauf, kurze Anfrage.",
+    "Belege im Ordner: <backend>/baseline.server.log (Startlog mit Startbericht), _beilagen/ (bench_radiance.py, bench_conc.py, longctx.py, qual_run.py, qual_prompts.json) und die Antworttexte der Qualitaetsprobe als qualitaet-radiance-wht6.json, qualitaet-radiance-exact.json und qualitaet-strata-iq3s.json (8 Prompts, greedy, ohne Thinking). Die Concurrency-Rohwerte stehen je Backend in conc.jsonl.",
+    "27B-FP8 bei vollem Kontext (radiance27_262k, fp8-KV): Start 15 s, der KV-Pool traegt 3,5 Sitzungen in voller Laenge. Median 107,3 t/s bei einem Strom, Concurrency (gesamt, pro Strom): c1 105,5 / c4 292,9 (73,2) / c8 548,1 (68,5) t/s, also kein Verlust gegen den 65536er Lauf. Nadelprobe mit 243580 Token richtig beantwortet, aber deutlich langsamer als Flash-Next: Prefill 2297 t/s (TTFT 106 s), Decode 57,3 t/s (nur ueber 12 Token gemessen).",
+    "27B ueber den Router: Wechsel vom llama-Server auf das Radiance-Modell qwen3.8-27b-radiance bis zur Antwort 15 s, Wechsel zwischen den beiden Radiance-Modellen 15 s (27B) bzw. 33 s (Flash-Next), Rueckweg auf ein llama-Modell 15 s. Je ein Lauf. Der 27B steht neben dem llama-Modell qwen3.8-27b-code, ersetzt es nicht.",
+    "Vergleichbarkeit 27B: Radiance laeuft in FP8 (fp8_e4m3), die llama-Referenz in Q8_0. Das sind verschiedene 8-Bit-Formate, die Qualitaet ist nicht verglichen. Die Qualitaetsprobe (qualitaet-radiance27-fp8.json, 8 Prompts, greedy) zeigt denselben Rechenfehler wie Flash-Next: 17*23+144/12 ergibt 431 statt 403. Vision geht im Radiance-Build nicht: der Encoder ist geladen, es fehlt der Media-Decoder (RAD_WITH_FFMPEG), Bilder werden abgelehnt (capabilities image: false).",
+    "Hinweis zu _beilagen/longctx.py: die abgelegte Fassung ist auf den 27B (Modell qwen3.8-27b-radiance, Port 8952 aus dem manuellen Lauf) eingestellt. Fuer Flash-Next Port 8951 und Modellname qwen4exp (oder qwen3.8-flash-next) eintragen."
+  ]
+}

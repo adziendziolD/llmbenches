@@ -1,0 +1,5 @@
+[
+  {"id":"code","text":"Schreibe eine vollstaendige Python-Klasse fuer einen LRU-Cache mit Typannotationen, Docstrings und einer kurzen Erklaerung der Komplexitaet jeder Methode."},
+  {"id":"prosa","text":"Erklaere ausfuehrlich und in zusammenhaengendem Fliesstext, wie die Abrechnung von Heizkosten in einer Wohnungseigentuemergemeinschaft grundsaetzlich funktioniert."},
+  {"id":"reasoning","text":"Ein Zug faehrt um 8:00 Uhr mit 80 km/h los, ein zweiter um 9:30 Uhr mit 120 km/h auf derselben Strecke hinterher. Rechne Schritt fuer Schritt vor, wann und wo der zweite den ersten einholt, und pruefe dein Ergebnis anschliessend gegen."}
+]

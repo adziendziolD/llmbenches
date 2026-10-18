@@ -1,0 +1,42 @@
+{
+ "code": {
+  "content": "```python\ndef is_valid_ipv4(address: str) -> bool:\n    \"\"\"\n    Prüft, ob der übergebene String ein gültiges IPv4-Adressformat hat.\n    \n    Eine gültige IPv4-Adresse besteht aus vier durch Punkte getrennten Oktetten,\n    wobei jedes Oktett eine ganze Zahl zwischen 0 und 255 ist.\n    Keine führenden Nullen erlaubt (außer das Oktett ist genau \"0\").\n    \"\"\"\n    if not isinstance(address, str):\n        return False\n    \n    parts = address.split('.')\n    \n    # Es müssen genau 4 Teile sein\n    if len(parts) != 4:\n        return False\n    \n    for part in parts:\n        # Jeder Teil muss nicht leer sein\n        if not part:\n            return False\n        \n        # Jeder Teil muss nur Ziffern enthalten\n        if not part.isdigit():\n            return False\n        \n        # Keine führenden Nullen, außer der Wert ist genau \"0\"\n        if len(part) > 1 and part[0] == '0':\n            return False\n        \n        # Der Wert muss zwischen 0 und 255 liegen\n        value = int(part)\n        if value < 0 or value > 255:\n            return False\n    \n    return True\n```",
+  "reasoning": null,
+  "n": 282
+ },
+ "prosa": {
+  "content": "Das Blau des Himmels entsteht durch die Rayleigh-Streuung, bei der die Atmosphäre kurzwelliges blaues Licht stärker streut als langwelliges rotes Licht. Beim Sonnenuntergang muss das Sonnenlicht einen viel längeren Weg durch die Atmosphäre zurücklegen, wodurch das blaue Licht fast vollständig gestreut und herausgefiltert wird. Es bleibt vor allem das langwellige rote und orangefarbene Licht übrig, das direkt auf den Betrachter trifft. Diese veränderte Lichtzusammensetzung erzeugt die typischen warmen Farben am Horizont während der Dämmerung.",
+  "reasoning": null,
+  "n": 125
+ },
+ "reasoning": {
+  "content": "Hier ist die schrittweise Berechnung der Ankunftszeiten für beide Züge.\n\n### Gegebene Daten:\n\n**Zug 1:**\n*   Abfahrtszeit: 9:15 Uhr\n*   Fahrzeit: 2 Stunden 50 Minuten\n\n**Zug 2:**\n*   Abfahrtszeit: 10:05 Uhr\n*   Fahrzeit: \"1 Stunde 40 Minuten schneller\" als der erste Zug.\n    *   *Hinweis zur Interpretation:* Der Text sagt \"fährt 1 Stunde 40 Minuten schneller (kürzere Fahrzeit 1:10 h weniger als der erste)\".\n    *   Es gibt hier einen Widerspruch in der Klammer.\n        *   Variante A: \"1 Stunde 40 Minuten schneller\" bedeutet, die Fahrzeit ist um 1h 40min kürzer.\n        *   Variante B: Die Klammer sagt explizit \"kürzere Fahrzeit 1:10 h weniger als der erste\".\n    *   Da die Klammer eine spezifische Zahl nennt (\"1:10 h weniger\"), ist es wahrscheinlich, dass dies der korrekte Wert ist, oder es handelt sich um einen Tippfehler in der Aufgabe.\n    *   *Allerdings:* \"1 Stunde 40 Minuten schneller\" ist eine sehr große Differenz. Wenn Zug 1 2h 50min braucht, wäre Zug 2 dann 2h 50min - 1h 40min = 1h 10min.\n    *   Aha! **2 Stunden 50 Minuten minus 1 Stunde 40 Minuten ergibt genau 1 Stunde 10 Minuten.**\n    *   Die Klammer \"(kürzere Fahrzeit 1:10 h weniger als der erste)\" ist also **falsch formuliert**, sondern sollte heißen: \"Die Fahrzeit beträgt 1:10 h, was 1:40 h weniger ist als der erste.\" Oder die Klammer meinte: \"Die Fahrzeit ist 1:10 h\".\n    *   Lassen Sie uns die Logik prüfen:\n        *   Fahrzeit Zug 1: 2h 50min.\n        *   \"1 Stunde 40 Minuten schneller\" -> Fahrzeit Zug 2 = 2h 50min - 1h 40min = **1h 10min**.\n        *   Die Klammer sagt: \"kürzere Fahrzeit 1:10 h weniger als der erste\". Das wäre 2h 50min - 1h 10min = 1h 40min.\n    *   Welche Interpretation ist gemeint?\n        *   Satzteil",
+  "reasoning": null,
+  "n": 600
+ },
+ "math": {
+  "content": "431",
+  "reasoning": null,
+  "n": 4
+ },
+ "fakt": {
+  "content": "Die Hauptstadt von Australien ist Canberra, die im Jahr 1913 gegründet wurde.",
+  "reasoning": null,
+  "n": 19
+ },
+ "sql": {
+  "content": "```sql\nSELECT k.id, k.name, SUM(b.betrag) AS gesamtumsatz\nFROM kunden k\nJOIN bestellungen b ON k.id = b.kunde_id\nGROUP BY k.id, k.name\nORDER BY gesamtumsatz DESC\nLIMIT 3;\n```",
+  "reasoning": null,
+  "n": 63
+ },
+ "json": {
+  "content": "{\n  \"name\": \"Lena Müller\",\n  \"alter\": 28,\n  \"hobbys\": [\n    \"Lesen\",\n    \"Yoga\",\n    \"Kochen\"\n  ]\n}",
+  "reasoning": null,
+  "n": 52
+ },
+ "uebers": {
+  "content": "The quick brown fox jumps over the lazy dog while it rains lightly.",
+  "reasoning": null,
+  "n": 15
+ }
+}

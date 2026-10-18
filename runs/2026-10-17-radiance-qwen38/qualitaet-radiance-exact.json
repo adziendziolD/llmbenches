@@ -1,0 +1,42 @@
+{
+ "code": {
+  "content": "```python\ndef is_valid_ipv4(ip: str) -> bool:\n    \"\"\"\n    Prüft, ob ein String ein gültiges IPv4-Adressformat hat.\n    \n    Eine gültige IPv4-Adresse besteht aus vier Dezimalzahlen (0-255),\n    getrennt durch Punkte. Keine führenden Nullen erlaubt (außer \"0\" selbst).\n    \n    Args:\n        ip: Der zu prüfende String.\n        \n    Returns:\n        True, wenn die Adresse eine gültige IPv4-Adresse ist, sonst False.\n    \"\"\"\n    if not isinstance(ip, str):\n        return False\n    \n    parts = ip.split('.')\n    \n    # Muss genau 4 Teile haben\n    if len(parts) != 4:\n        return False\n    \n    for part in parts:\n        # Jeder Teil muss nicht leer sein\n        if not part:\n            return False\n        \n        # Jeder Teil muss nur aus Ziffern bestehen\n        if not part.isdigit():\n            return False\n        \n        # Keine führenden Nullen erlaubt (außer \"0\" selbst)\n        if len(part) > 1 and part[0] == '0':\n            return False\n        \n        # Wert muss zwischen 0 und 255 liegen\n        try:\n            num = int(part)\n        except ValueError:\n            return False\n        \n        if num < 0 or num > 255:\n            return False\n    \n    return True\n```",
+  "reasoning": null,
+  "n": 318
+ },
+ "prosa": {
+  "content": "Das Sonnenlicht besteht aus allen Farben des Spektrums, die beim Eintritt in die Atmosphäre an den Luftmolekülen gestreut werden. Kurzwelliges blaues Licht wird dabei deutlich stärker gestreut als langwelliges rotes Licht, weshalb wir den Himmel tagsüber blau wahrnehmen. Bei Sonnenuntergang muss das Licht einen viel längeren Weg durch die Atmosphäre zurücklegen, wodurch fast das gesamte blaue Licht herausgestreut wird. Übrig bleibt vor allem das langwellige rote und orange Licht, das direkt zu unseren Augen gelangt und den Himmel in diesen warmen Farben erstrahlen lässt.",
+  "reasoning": null,
+  "n": 129
+ },
+ "reasoning": {
+  "content": "Hier ist die schrittweise Berechnung der Ankunftszeiten für beide Züge.\n\n### **Zug 1**\n\n**Gegeben:**\n*   Abfahrtszeit: 9:15 Uhr\n*   Fahrzeit: 2 Stunden 50 Minuten\n\n**Schritt 1: Stunden addieren**\n$$9:15 + 2 \\text{ Stunden} = 11:15 \\text{ Uhr}$$\n\n**Schritt 2: Minuten addieren**\n$$11:15 + 50 \\text{ Minuten} = 11:65 \\text{ Uhr}$$\n\nDa 65 Minuten mehr als eine Stunde sind, rechnen wir um:\n$$65 \\text{ Minuten} = 1 \\text{ Stunde } 5 \\text{ Minuten}$$\n\n**Schritt 3: Endzeit berechnen**\n$$11:00 + 1 \\text{ Stunde } 5 \\text{ Minuten} = 12:05 \\text{ Uhr}$$\n\n✅ **Ankunftszeit Zug 1: 12:05 Uhr**\n\n---\n\n### **Zug 2**\n\n**Gegeben:**\n*   Abfahrtszeit: 10:05 Uhr\n*   Fahrzeit: 1 Stunde 40 Minuten *weniger* als die Fahrzeit von Zug 1.\n\n**Schritt 1: Fahrzeit von Zug 2 berechnen**\nFahrzeit Zug 1 = 2 Stunden 50 Minuten\nAbzug = 1 Stunde 40 Minuten\n\n$$2 \\text{ h } 50 \\text{ min} - 1 \\text{ h } 40 \\text{ min} = 1 \\text{ Stunde } 10 \\text{ Minuten}$$\n\nDie Fahrzeit von Zug 2 beträgt also **1 Stunde 10 Minuten**.\n\n**Schritt 2: Ankunftszeit berechnen**\nAbfahrtszeit: 10:05 Uhr\nFahrzeit: 1 Stunde 10 Minuten\n\n$$10:05 + 1 \\text{ Stunde} = 11:05 \\text{ Uhr}$$\n$$11:05 + 10 \\text{ Minuten} = 11:15 \\text{ Uhr}$$\n\n✅ **Ankunftszeit Zug 2: 11:15 Uhr**\n\n---\n\n### **Ergebnis**\n\n*   **Zug 1** kommt um **12:05 Uhr** an.\n*   **Zug 2** kommt um **11:15 Uhr** an.",
+  "reasoning": null,
+  "n": 577
+ },
+ "math": {
+  "content": "407",
+  "reasoning": null,
+  "n": 4
+ },
+ "fakt": {
+  "content": "Die Hauptstadt von Australien ist Canberra, die im Jahr 1913 gegründet wurde.",
+  "reasoning": null,
+  "n": 19
+ },
+ "sql": {
+  "content": "Hier ist die SQL-Abfrage, um die drei Kunden mit dem höchsten Gesamtumsatz zu ermitteln:\n\n```sql\nSELECT \n    k.id,\n    k.name,\n    SUM(b.betrag) AS gesamtumsatz\nFROM \n    kunden k\nJOIN \n    bestellungen b ON k.id = b.kunde_id\nGROUP BY \n    k.id, k.name\nORDER BY \n    gesamtumsatz DESC\nLIMIT 3;\n```\n\n### Erklärung:\n1. **`JOIN`**: Verknüpft die Tabellen `kunden` und `bestellungen` über die Kunden-ID.\n2. **`SUM(b.betrag)`**: Berechnet den Gesamtumsatz pro Kunde.\n3. **`GROUP BY`**: Gruppiert die Ergebnisse nach Kunde, damit die Summe pro Kunde berechnet wird.\n4. **`ORDER BY gesamtumsatz DESC`**: Sortiert die Ergebnisse absteigend nach dem Gesamtumsatz.\n5. **`LIMIT 3`**: Begrenzt das Ergebnis auf die ersten drei Zeilen (die drei Kunden mit dem höchsten Umsatz).\n\n> **Hinweis**:  \n> - Bei **MySQL** und **PostgreSQL** funktioniert `LIMIT 3` direkt.  \n> - Bei **SQL Server** verwenden Sie stattdessen `TOP 3` im `SELECT`:  \n>   ```sql\n>   SELECT TOP 3 k.id, k.name, SUM(b.betrag) AS gesamtumsatz\n>   FROM kunden k\n>   JOIN bestellungen b ON k.id = b.kunde_id\n>   GROUP BY k.id, k.name\n>   ORDER BY gesamtumsatz DESC;\n>   ```\n> - Bei **Oracle** können Sie `FETCH FIRST 3 ROWS ONLY` (ab Version 12c) oder `ROWNUM` verwenden.",
+  "reasoning": null,
+  "n": 393
+ },
+ "json": {
+  "content": "{\n  \"name\": \"Max Mustermann\",\n  \"alter\": 32,\n  \"hobbys\": [\n    \"Lesen\",\n    \"Wandern\",\n    \"Kochen\"\n  ]\n}",
+  "reasoning": null,
+  "n": 53
+ },
+ "uebers": {
+  "content": "The quick brown fox jumps over the lazy dog while it rains softly.",
+  "reasoning": null,
+  "n": 15
+ }
+}

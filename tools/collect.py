@@ -106,7 +106,8 @@ def main():
         results = {}
         for b in sorted(os.listdir(rdir)):
             bdir = os.path.join(rdir, b)
-            if os.path.isdir(bdir):
+            # Ordner mit "_" am Anfang sind Beilagen (Skripte, Antworttexte), keine Backends
+            if os.path.isdir(bdir) and not b.startswith(("_", ".")):
                 cfgs = load_backend(bdir)
                 if cfgs:
                     results[b] = cfgs
@@ -122,7 +123,18 @@ def main():
                     pb = base.get("prompts", {}).get(pid, {}).get("median") if bm else None
                     pe["speedup"] = round(pe["median"] / pb, 3) if pb else None
         meta["results"] = results
+        # Zeitstempel: meta.json darf ihn vorgeben, sonst der fruehste Zeitpunkt, an dem ein
+        # Ergebnis dieses Laufs geschrieben wurde (Start der Messreihe, lokale Zeit mit Offset).
+        if not meta.get("timestamp"):
+            stamps = [os.path.getmtime(os.path.join(d, f))
+                      for d, _, files in os.walk(rdir) if d != rdir
+                      for f in files if f.endswith((".json", ".jsonl"))]
+            if stamps:
+                meta["timestamp"] = datetime.datetime.fromtimestamp(min(stamps)).astimezone() \
+                    .isoformat(timespec="minutes")
         runs.append(meta)
+    # Neueste Messreihe zuerst (der Ordnername kennt nur das Datum, nicht die Uhrzeit)
+    runs.sort(key=lambda r: r.get("timestamp") or r.get("date") or "", reverse=True)
 
     data = {"generated": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
             "runs": runs}

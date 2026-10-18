@@ -1,0 +1,10 @@
+[
+{"id":"code","text":"Schreibe eine Python-Funktion, die prüft, ob ein String ein gültiges IPv4-Adressformat hat. Keine Bibliotheken."},
+{"id":"prosa","text":"Erkläre in vier Sätzen, warum der Himmel blau ist und der Sonnenuntergang rot."},
+{"id":"reasoning","text":"Ein Zug fährt um 9:15 Uhr los und braucht 2 Stunden 50 Minuten. Ein zweiter Zug startet um 10:05 Uhr und fährt 1 Stunde 40 Minuten schneller (kürzere Fahrzeit 1:10 h weniger als der erste). Wann kommen beide an? Rechne Schritt für Schritt."},
+{"id":"math","text":"Was ist 17 * 23 + 144 / 12? Antworte nur mit der Zahl."},
+{"id":"fakt","text":"Wie heißt die Hauptstadt von Australien, und in welchem Jahr wurde sie gegründet? Antworte in einem Satz."},
+{"id":"sql","text":"Schreibe eine SQL-Abfrage: die drei Kunden mit dem höchsten Gesamtumsatz aus den Tabellen kunden(id,name) und bestellungen(id,kunde_id,betrag)."},
+{"id":"json","text":"Gib ausschließlich gültiges JSON zurück mit den Schlüsseln name, alter, hobbys (Liste mit 3 Einträgen) für eine erfundene Person."},
+{"id":"uebers","text":"Übersetze ins Englische: Der schnelle braune Fuchs springt über den faulen Hund, während es leise regnet."}
+]

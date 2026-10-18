@@ -38,6 +38,7 @@ runs/2026-09-13-qwen38-mtp/
     run.log              enthaelt die VRAM-Zeilen, optional
   rocm/
     ...
+  _beilagen/             Ordner mit "_" am Anfang wird nicht eingesammelt: Skripte, Antworttexte
 ```
 
 Der Dateiname ohne Endung ist die Konfiguration, der Ordnername das Backend. Fehlt zu einer
@@ -52,6 +53,11 @@ Eine Messdatei ist eine Liste von Einzelmessungen:
 ```
 
 `draft_n` und `draft_accepted` duerfen fehlen, dann entfaellt die Akzeptanzrate.
+
+Die Seite waehlt den Lauf per Adresszeile vor: `index.html#run=<id>` (die Lauf-ID ist der
+Ordnername), optional `&scope=<prompt>` fuer die Ansicht eines einzelnen Prompts. Im Dropdown steht
+Datum und Uhrzeit des Laufs: `timestamp` aus der `meta.json`, sonst der fruehste Zeitpunkt, an dem
+ein Ergebnis des Laufs geschrieben wurde. Neueste Laeufe stehen oben.
 
 `meta.json` beschreibt den Lauf. `machine`, `model` und `method` sind freie
 Schluessel-Wert-Paare und werden als Steckbrief angezeigt -- kurze Werte, eine Zeile,

@@ -1,0 +1,3 @@
+{"c": 1, "tokens": 256, "s": 2.43, "agg_tps": 105.5, "per_stream": 105.5}
+{"c": 4, "tokens": 1024, "s": 3.5, "agg_tps": 292.9, "per_stream": 73.2}
+{"c": 8, "tokens": 2048, "s": 3.74, "agg_tps": 548.1, "per_stream": 68.5}

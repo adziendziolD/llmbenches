@@ -100,6 +100,25 @@ const fmt = (v, d = 2) => v == null ? '–' : v.toFixed(d).replace('.', ',');
 
 let DATA = null, runIdx = 0, scope = 'overall';
 
+/* Deeplink: #run=<id>[&scope=<prompt>] waehlt Messlauf und Prompt-Ansicht vor. */
+const stamp = r => r.timestamp ? r.timestamp.slice(0, 16).replace('T', ' ') : (r.date || '');
+function writeHash() {
+  const run = DATA && DATA.runs[runIdx];
+  if (!run) return;
+  const p = new URLSearchParams({ run: run.id });
+  if (scope !== 'overall') p.set('scope', scope);
+  try { history.replaceState(null, '', '#' + p); } catch (e) { /* z.B. in einer Vorschau */ }
+}
+function selectFromHash() {
+  const p = new URLSearchParams(location.hash.slice(1));
+  const i = p.get('run') ? DATA.runs.findIndex(r => r.id === p.get('run')) : -1;
+  if (i < 0) return false;
+  runIdx = i;
+  const sc = p.get('scope');
+  scope = sc && DATA.runs[i].prompts && sc in DATA.runs[i].prompts ? sc : 'overall';
+  return true;
+}
+
 /* ---------- Diagramme ---------- */
 
 // Gruppierte Balken mit Spannweite als Fehlerbalken.
@@ -229,6 +248,7 @@ const pick = (entry, scope) => !entry || entry.status !== 'ok' ? null
 
 function render() {
   const run = DATA.runs[runIdx];
+  writeHash();
   const app = document.getElementById('app');
   app.replaceChildren();
   const backends = Object.keys(run.results);
@@ -379,15 +399,26 @@ function render() {
 }
 
 function boot(data) {
+  const prevId = DATA && DATA.runs[runIdx] ? DATA.runs[runIdx].id : null;
   DATA = data;
   document.getElementById('gen').textContent =
     `${data.runs.length} Messlauf${data.runs.length === 1 ? '' : 'e'} · Stand ${new Date(data.generated).toLocaleString('de-DE')}`;
   const sel = document.getElementById('runsel');
-  data.runs.forEach((r, i) => sel.append($('option', { value: String(i), text: `${r.date || ''} ${r.title || r.id}`.trim() })));
+  data.runs.forEach((r, i) => sel.append($('option', { value: String(i), text: `${stamp(r)} · ${r.title || r.id}`.trim() })));
+  if (!selectFromHash()) {
+    // kein (gueltiger) Deeplink: nach einem Nachladen beim bisherigen Lauf bleiben
+    const keep = prevId ? data.runs.findIndex(r => r.id === prevId) : -1;
+    runIdx = keep >= 0 ? keep : 0;
+  }
+  sel.value = String(runIdx);
   sel.onchange = () => { runIdx = +sel.value; scope = 'overall'; render(); };
   if (!data.runs.length) { document.getElementById('app').replaceChildren($('div', { class: 'empty', text: 'Keine Messlaeufe in runs/ gefunden. tools/collect.py ausfuehren.' })); return; }
   render();
 }
+
+window.addEventListener('hashchange', () => {
+  if (DATA && selectFromHash()) { document.getElementById('runsel').value = String(runIdx); render(); }
+});
 
 function fail(msg) {
   document.getElementById('app').replaceChildren(
