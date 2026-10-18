@@ -1,6 +1,68 @@
 {
- "generated": "2026-10-18T11:28:06+02:00",
+ "generated": "2026-10-18T18:43:43+02:00",
  "runs": [
+  {
+   "id": "2026-10-18-minimax-h3-radiance-vs-comfyui",
+   "title": "MiniMax-H3 Text-zu-Video: Radiance 1.8.1 (2x R9700) gegen ComfyUI, nativ und mit Latent-Upscale",
+   "date": "2026-10-18",
+   "timestamp": "2026-10-18T17:45+02:00",
+   "question": "Wie lange braucht ein 5-s-Clip in 1344x768 mit MiniMax-H3 ueber Radiance und ueber ComfyUI, mit vollen Schritten und mit Latent-Upscale x2 (12 bzw. 20 Nachschritte)?",
+   "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne (64 Threads)",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0",
+    "ROCm": "7.2.4"
+   },
+   "model": {
+    "Radiance": "StillDeadcode/minimax-h3-fp8, minimax-h3-fp8.rad (60,5 GiB, SHA256 f32aa022...a40b0): Text-Encoder, Refiner und DiT block-fp8, Video-Decoder bf16, Audio-Decoder f32, Latent-Upscaler LBH-123-AI v1; radiance 1.8.1 (816e24b), eigener Build",
+    "ComfyUI": "ComfyUI 0.37.0: minimax_h3_fl2va_pruned_fp8_scaled (DiT), qwen3vl_32b_minimax_h3_ultra_uncensored_heretic_int8_convrot (Text-Encoder), minimax_h3_video_vae_fp16, minimax_h3_audio_vae_fp32, Upscaler-Node MinimaxH3LatentUpscaler3D (minimax_h3_latent_upscaler_3d_fp32.pth, fp16); kein LoRA"
+   },
+   "method": {
+    "Prompt": "'A red fox trotting through a snowy pine forest, snow crunching underfoot' (Beispiel aus GUIDE 5.16), Seed 7",
+    "Clip": "1344x768, 124 Frames (5,17 s bei 24 fps), Ton stereo",
+    "Schritte": "Radiance 50 Gitterpunkte = 49 Modellaufrufe (Default); ComfyUI 49 Schritte, Sampler res_multistep, Scheduler simple",
+    "Einstellungen": "native: alle Schritte in voller Groesse. up12/up20: Radiance latent_upscale 2 mit upscale_refine_steps 12 bzw. 20; ComfyUI nachgebaut: 37 bzw. 29 Schritte in 672x384, Upscaler x2 auf das Video-Latent (Audio-Latent unveraendert), dann 12 bzw. 20 Schritte in 1344x768 ab neu verrauschtem x0",
+    "Radiance-Messung": "je ein Lauf ueber POST /v1/videos bis status completed, Wanduhr inklusive Text-Encoder, Decode und MP4; vorher ein Warmlauf (672x384, 3 Gitterpunkte, 9 s)",
+    "ComfyUI-Messung": "Hochrechnung, weil ein Lauf ueber 10 min nicht durchgerechnet wird (Strom und Zeit): nativer Lauf nach 9 von 49 Schritten abgebrochen (52,1 s/Schritt), dann Kurzlaeufe mit 2 Schritten in 1344x768 und mit 4+2 Schritten ueber den Upscale-Pfad; Rechnung in _beilagen/comfy_estimate.json. Modelle jeweils schon geladen.",
+    "Grenze": "Laeufe ueber 10 Minuten werden abgebrochen und hochgerechnet"
+   },
+   "cmdline": "radiance --model minimax-h3-fp8.rad --tp 2 --vision-tower-placement ram --port 8960; ComfyUI ueber comfyui-minimax (llm-router), API-Graph aus _beilagen/comfy_h3.py",
+   "backends": {
+    "radiance": {
+     "label": "Radiance 1.8.1, fp8, tp 2",
+     "device": "ROCm0,ROCm1 (tp 2)",
+     "detail": "Start 39 s. Je Karte 14,39 GiB statische Gewichte und 12,40 GiB Aktivierungen; Text-Encoder plus Modulation (17,94 GiB je Rang) und Embedding (1,45 GiB je Rang) liegen im gepinnten Host-RAM."
+    },
+    "comfyui": {
+     "label": "ComfyUI, fp8-DiT auf einer Karte",
+     "device": "DiT auf cuda:0, Text-Encoder und VAEs auf gpu:1",
+     "detail": "Kein Turbo-LoRA, damit die Schrittzahl gleich ist. 51,9 s je Schritt in 1344x768, 5,42 s in 672x384, Decode plus Audio plus MP4 32 s, Upscaler plus Text-Encoder 8 s."
+    }
+   },
+   "configs": {
+    "native": {
+     "label": "nativ, 49 Schritte in 1344x768",
+     "order": 0
+    },
+    "up12": {
+     "label": "latent_upscale 2, 12 Nachschritte",
+     "order": 1
+    },
+    "up20": {
+     "label": "latent_upscale 2, 20 Nachschritte",
+     "order": 2
+    }
+   },
+   "notes": [
+    "Gesamtzeit je Clip (5,17 s, 1344x768): Radiance gemessen native 561 s (9,4 min), up12 213 s (3,6 min), up20 291 s (4,9 min). ComfyUI hochgerechnet native 2575 s (42,9 min), up12 864 s (14,4 min), up20 1236 s (20,6 min). Radiance ist damit 4,6x, 4,1x und 4,2x schneller.",
+    "Die Radiance-Zahlen liegen 6 bis 8 Prozent ueber den Angaben im Model-Card (8,8 / 3,4 / 4,5 min); der Unterschied ist nicht untersucht (Karten laut Startbericht mit PCIe 4.0 statt 5.0 verbunden, 'link-below-max').",
+    "Der Vergleich ist nicht ganz gleichwertig: Radiance verteilt den DiT auf beide Karten (tp 2), ComfyUI rechnet ihn auf einer Karte. Die Gewichte unterscheiden sich (Radiance block-fp8 aus dem Original, ComfyUI fl2va_pruned fp8 mit gestutzter AdaLN-Basis und ein Heretic-int8-Text-Encoder), ebenso der Sampler (Euler gegen res_multistep). Ein ComfyUI-Alltagslauf nutzt ausserdem ein Turbo-LoRA mit 4 bis 8 Schritten, das ist hier bewusst aus.",
+    "Bildqualitaet nur bei Radiance angesehen (Einzelbild bei Frame 60 in _beilagen/bilder): alle drei Clips zeigen einen sauberen Fuchs im Schneewald, mit Ton (AAC 32 kHz stereo). up12 und up20 haben dieselbe Komposition (gleicher kleiner Vorlauf), native eine andere. Die ComfyUI-Kurzlaeufe haben nur 2 bzw. 6 Schritte und sind als Bild nicht verwertbar, deshalb kein Qualitaetsvergleich.",
+    "Radiance kann in 1.8.1 bei H3 nur Text zu Video; Bild- und Referenzbild-Varianten (FL2VA, Ref2VA) fehlen, siehe Plan ~/radiance-work/PLAN-h3-ref.md."
+   ],
+   "results": {}
+  },
   {
    "id": "2026-10-18-gemma4-heretic-kontext",
    "title": "Gemma-4-31B Heretic bei 32k, 64k und 128k Kontext: llama.cpp Q8_0 gegen Radiance w8a8 (2x R9700)",

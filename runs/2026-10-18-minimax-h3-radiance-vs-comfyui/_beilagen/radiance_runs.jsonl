@@ -1,0 +1,4 @@
+{"run": "warmup", "status": "completed", "wall_s": 9.0, "video": {"seconds": "5.17", "size": "672x384", "latent_upscale": null, "upscale_refine_steps": null, "upscale_from": null, "error": null}, "aborted": null, "progress": 100}
+{"run": "native", "status": "completed", "wall_s": 561.2, "video": {"seconds": "5.17", "size": "1344x768", "latent_upscale": null, "upscale_refine_steps": null, "upscale_from": null, "error": null}, "aborted": null, "progress": 100}
+{"run": "up12", "status": "completed", "wall_s": 213.1, "video": {"seconds": "5.17", "size": "1344x768", "latent_upscale": 2.0, "upscale_refine_steps": 12, "upscale_from": "672x384", "error": null}, "aborted": null, "progress": 100}
+{"run": "up20", "status": "completed", "wall_s": 291.1, "video": {"seconds": "5.17", "size": "1344x768", "latent_upscale": 2.0, "upscale_refine_steps": 20, "upscale_from": "672x384", "error": null}, "aborted": null, "progress": 100}

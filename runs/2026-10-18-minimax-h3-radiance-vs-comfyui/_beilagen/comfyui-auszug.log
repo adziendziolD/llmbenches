@@ -1,0 +1,40 @@
+187:[32m[INFO][0m [32mPrompt executed in 117.89 seconds[0m
+188:[32m[INFO][0m got prompt
+189:[32m[INFO][0m [32mPrompt executed in 1.44 seconds[0m
+190:[32m[INFO][0m got prompt
+191:[32m[INFO][0m Unloaded partially: 441.99 MB freed, 4524.50 MB remains loaded, 40.50 MB buffer reserved, lowvram patches: 0
+192:[32m[INFO][0m loaded completely; 25280.67 MB usable, 25141.95 MB loaded, full load: True
+  0%|          | 0/49 [00:00<?, ?it/s]
+  2%|▏         | 1/49 [00:51<40:49, 51.03s/it]
+  4%|▍         | 2/49 [01:43<40:26, 51.63s/it]FETCH ComfyRegistry Data [DONE]
+  6%|▌         | 3/49 [02:35<39:45, 51.85s/it]
+  8%|▊         | 4/49 [03:27<38:57, 51.95s/it]
+ 10%|█         | 5/49 [04:19<38:09, 52.02s/it]
+ 12%|█▏        | 6/49 [05:11<37:19, 52.07s/it]
+ 14%|█▍        | 7/49 [06:03<36:28, 52.10s/it]
+ 16%|█▋        | 8/49 [06:55<35:36, 52.11s/it]
+ 18%|█▊        | 9/49 [07:48<34:45, 52.13s/it][32m[INFO][0m Global interrupt (no prompt_id specified)
+ 20%|██        | 10/49 [08:40<33:53, 52.14s/it]
+ 20%|██        | 10/49 [08:40<33:48, 52.03s/it]
+200:[32m[INFO][0m [32mPrompt executed in 522.40 seconds[0m
+201:[32m[INFO][0m got prompt
+100%|██████████| 2/2 [01:43<00:00, 51.97s/it]
+100%|██████████| 2/2 [01:43<00:00, 51.96s/it]
+204:[32m[INFO][0m Unloaded partially: 541.76 MB freed, 3982.74 MB remains loaded, 72.04 MB buffer reserved, lowvram patches: 0
+205:[32m[INFO][0m loaded completely; 680.91 MB usable, 577.08 MB loaded, full load: True
+206:[32m[INFO][0m Unloaded partially: 733.71 MB freed, 24408.25 MB remains loaded, 40.20 MB buffer reserved, lowvram patches: 0
+207:[32m[INFO][0m loaded completely; 5108.25 MB usable, 4966.19 MB loaded, full load: True
+208:[32m[INFO][0m [32mPrompt executed in 136.11 seconds[0m
+209:[32m[INFO][0m got prompt
+210:[32m[INFO][0m Unloaded partially: 428.49 MB freed, 4538.00 MB remains loaded, 40.50 MB buffer reserved, lowvram patches: 0
+211:[32m[INFO][0m loaded completely; 25266.66 MB usable, 25141.95 MB loaded, full load: True
+100%|██████████| 4/4 [00:21<00:00,  5.42s/it]
+100%|██████████| 4/4 [00:21<00:00,  5.42s/it]
+217:[MinimaxH3-3D] ✅ Model offloaded to CPU. VRAM released.
+100%|██████████| 2/2 [01:43<00:00, 51.90s/it]
+100%|██████████| 2/2 [01:43<00:00, 51.87s/it]
+220:[32m[INFO][0m Unloaded partially: 555.26 MB freed, 3982.74 MB remains loaded, 72.04 MB buffer reserved, lowvram patches: 0
+221:[32m[INFO][0m loaded completely; 680.91 MB usable, 577.08 MB loaded, full load: True
+222:[32m[INFO][0m Unloaded partially: 733.71 MB freed, 24408.25 MB remains loaded, 40.20 MB buffer reserved, lowvram patches: 0
+223:[32m[INFO][0m loaded completely; 5108.25 MB usable, 4966.19 MB loaded, full load: True
+224:[32m[INFO][0m [32mPrompt executed in 165.76 seconds[0m

@@ -1,0 +1,200 @@
+I device: AQL backend, 2 device(s) [0:gfx1201 1:gfx1201]
+I model: minimaxh3  arch=minimaxh3  quant=bf16  64 layers  262144 ctx
+I vocab: end-of-generation also on <|endoftext|>=151643 (a control token the container declares neither as eos nor eot; without this a turn ending on it runs on)
+I vocab: 151669 tokens, bos=-1 eos=151645
+I gbnf: vocabulary index built in 53 ms, 16.27 MiB
+I device: the 2 cards reach each other's memory directly (peer to peer)
+I declare: 2639 ops, 3235 weights, 151 buffers, 1 KV groups
+I activation arena: not lent -- the 'minimaxh3' plugin does not declare at a smaller step size (RadArchProbe::shape_probe_ok)
+I placement: token embedding (1.45 GiB a rank) ram (default): pinned in host memory and read over the link in place, so its VRAM goes to the KV cache and the experts
+I placement: encoder towers (17.94 GiB a rank) ram: pinned in host memory, read over the link once an image, their VRAM the KV cache's
+I VRAM budget, per card:
+  card total          31.86 GiB
+  already held         1.34 GiB   measured: driver context, code objects, anything else resident
+  driver drift        16.00 MiB   what that moves by after it is read: kept free
+  activation arena    12.40 GiB   computed from the buffer plan
+  step staging         1.23 MiB   the step batch's block tables and media staging, and the
+                                  KV tiers' copy staging
+  hardware queues    100.04 MiB   3 a card at 33.35 MiB each, measured: the engine's streams
+  expert prefetch           0 B   the next-layer prefetch's ring of expert units and buffers
+  --gpu-headroom-mib  96.00 MiB   left unclaimed on purpose
+  ------------------------------
+  claimable           17.92 GiB
+  static weights      14.39 GiB   off the top: every rank's own shard, and not a share of anything
+  ------------------------------
+  elastic              3.53 GiB   the experts keep what the host pool cannot hold; the cache takes the rest
+                                  and lends what no live request holds to the expert slab
+    experts                 0 B   0% of it -- a dense model, so there is no expert plane for this share to fill and the
+                                  cache took everything it could address
+    kv cache           3.53 GiB   100% of it
+  ==============================
+  vram_weights        14.39 GiB   static + experts
+  vram_kv              3.53 GiB   the cache's share
+  unclaimed           96.22 MiB   the headroom, the unusable above, and what MiB rounding
+                                  could not place
+I[0] pools:
+vram_weights    14.39 GiB budget,        0 B used,  14.39 GiB free
+vram_kv          3.53 GiB budget,        0 B used,   3.53 GiB free
+host_pool       19.39 GiB budget,        0 B used,  19.39 GiB free
+I[0] placement: 'te.token_embd.weight' (1.45 GiB) in the pinned host pool, read in place (--embedding-placement ram, the default)
+I[0] placement: the encoder towers, 102 units (17.94 GiB), in the pinned host pool, read in place (--vision-tower-placement ram)
+I[1] pools:
+vram_weights    14.39 GiB budget,        0 B used,  14.39 GiB free
+vram_kv          3.53 GiB budget,        0 B used,   3.53 GiB free
+host_pool       19.39 GiB budget,        0 B used,  19.39 GiB free
+I[1] placement: 'te.token_embd.weight' (1.45 GiB) in the pinned host pool, read in place (--embedding-placement ram, the default)
+I[1] placement: the encoder towers, 102 units (17.94 GiB), in the pinned host pool, read in place (--vision-tower-placement ram)
+I[0] mover: 0 slab slots (0 shadow, 0 more kept free out of a loan), 103 pinned pool slots, 14.39 GiB static vram
+I[0] load: rank 0, mover took 14.39 GiB, weights pool 450.00 KiB free of 14.39 GiB
+I[1] mover: 0 slab slots (0 shadow, 0 more kept free out of a loan), 103 pinned pool slots, 14.39 GiB static vram
+I[1] load: rank 1, mover took 14.39 GiB, weights pool 450.00 KiB free of 14.39 GiB
+I load: 8.00 GiB of 60.52 GiB read, 3.3 GB/s, at container offset 8596226048
+I load: 16.00 GiB of 60.52 GiB read, 3.4 GB/s, at container offset 17186160640
+I load: 24.00 GiB of 60.52 GiB read, 3.4 GB/s, at container offset 25776095232
+I load: 32.00 GiB of 60.52 GiB read, 3.4 GB/s, at container offset 34366029824
+I load: 40.00 GiB of 60.52 GiB read, 3.4 GB/s, at container offset 42955964416
+I load: 48.00 GiB of 60.52 GiB read, 3.4 GB/s, at container offset 51545899008
+I load: 56.00 GiB of 60.52 GiB read, 3.4 GB/s, at container offset 60135833600
+I load: one pass over the container, 60.53 GiB read in 19.0 s (3.4 GB/s) for 2 rank(s); 18.9 s of that was the disk (3.4 GB/s)
+I load: 1488 weight(s), 55.23 GiB of planes, rearranged for their kernels by 16 worker(s) behind the read, 375.00 MiB held at most; done 28.8 s after the read began
+I load: 6470 weights, 67.55 GiB placed from 60.53 GiB of container read
+I chunk geometry: quantum 1 (attn block 1, state chunk 1), checkpoint interval 0, max_tok 106016 -> prefill chunks of at most 106016
+I kv: KV layer bundles  (0 real layers)
+    vLLM stock    size  0 ->  0 groups,   0 slots (0 padding)
+    least-waste   size  0 ->  0 groups,   0 slots (0 padding)
+    radiance      per state kind, own pool ->  0 groups,   0 slots (0 padding)
+    (none)         ?        0 layers  state      0 B        0 slots =       0 B
+    pool at 0x7531e5c00000, 3.53 GiB; groups at +0..+0
+I prefix cache: disabled by --no-prefix-cache
+I[0] arena: 12.39 GiB device + 2 x 448.00 KiB scratch = 12.40 GiB, charged to the VRAM budget before it was split
+I[1] arena: 12.39 GiB device + 2 x 448.00 KiB scratch = 12.40 GiB, charged to the VRAM budget before it was split
+I device allocations: 4 totalling 53.57 GiB, of which 35.84 GiB is the two pools -- the rest is the activation arena and the step staging. Anything on the card past this is the driver or a kernel plugin's own hipMalloc, which this cannot see.
+I[0] card 0 settled at 3.77 GiB free against 130.58 MiB (the 96.00 MiB --gpu-headroom-mib and 34.58 MiB kept for the step staging and for what is built on first use). The split accounted for it: neither pool could address another byte, which is the `unusable` line of the VRAM budget above.
+I[1] card 1 settled at 3.67 GiB free against 130.58 MiB (the 96.00 MiB --gpu-headroom-mib and 34.58 MiB kept for the step staging and for what is built on first use). The split accounted for it: neither pool could address another byte, which is the `unusable` line of the VRAM budget above.
+I scheduler: --busy-prefill-chunk auto: a prefill chunk sharing a step leaves decode rows and waiting requests their room and keeps at least 1 tokens
+I video: 'minimax-h3', 1344x768 by default (up to 1032192 pixels), 5.17 to 14.38 s at 24 fps with 32000 Hz x 2 sound, 50 steps by default
+I video: latent upscaling up to 4x, the last 12 evaluations at the full size by default
+I STARTUP REPORT -- radiance 1.8.1
+I CONFIGURATION -- every option, the value in force, and where it came from
+I   --model                            /home/alex/llmstore/radiance/minimax-h3-fp8.rad  [command line]
+I   --download-dir                     the XDG cache (~/.cache/radiance/hf)        [default]
+I   --radiance-home                    /home/alex/radiance-work/src/build181/radiance_home  [environment (RADIANCE_HOME)]
+I   --kernels                          libavx@0.1.0,libr4d@0.5.0,libref@0.1.0      [auto]
+I                                        every kernel library under --radiance-home, in the loader's order (a reference implementation last); architecture plugin minimaxh3@0.1.0
+I   --tp                               2                                           [command line]
+I   --tp-wire                          exact                                       [default]
+I   --tp-wire-min-kb                   128                                         [default]
+I   --p2p                              peer to peer                                [auto]
+I                                        the driver reports every pair of the ranks' cards can reach the other's memory
+I   --max-num-batched-tokens           106016                                      [auto]
+I                                        a video generator: a denoising step carries the prompt, the soundtrack and every patch of the largest, longest video
+I   --busy-prefill-chunk               auto                                        [default]
+I   --prefill-interleave               off                                         [default]
+I   --max-num-seqs                     1                                           [auto]
+I                                        a video generator: a pass is one request's
+I   --max-model-len                    106016                                      [auto]
+I                                        a video generator: a step's rows
+I   --rope-scaling                     the checkpoint's own                        [default]
+I   --gpu-headroom-mib                 96                                          [default]
+I   --kv-cache-dtype                   bf16                                        [default]
+I   --host-pool-mib                    0                                           [default]
+I   --embedding-placement              ram                                         [auto]
+I                                        the table is 1.45 GiB a rank: pinned in host memory and read over the link in place, so its VRAM goes to the KV cache and the experts
+I   --vision-tower-placement           ram                                         [command line]
+I                                        the towers are 17.94 GiB a rank
+I   --ngram-placement                  n/a                                         [auto]
+I                                        this model has no n-gram table
+I   --weights-disk-tier                off                                         [default]
+I   --prefix-cache-mib                 0 (off)                                     [default]
+I   --prefix-cache-ttl                 3600 s                                      [default]
+I   --lora                             none                                        [default]
+I   --max-loras                        0 (off)                                     [default]
+I   --max-lora-rank                    16                                          [default]
+I   --lora-target-modules              -                                           [default]
+I   --placement                        all_vram                                    [auto]
+I                                        14.39 GiB of weights fit the 14.39 GiB weights pool
+I   --deterministic                    off                                         [default]
+I   --checkpoint-interval              0 (none)                                    [auto]
+I                                        the model keeps no linear state to checkpoint
+I   --prefill-span                     1                                           [default]
+I   --checkpoint-slots                 0                                           [auto]
+I                                        the model keeps no linear or sliding-window state to snapshot
+I   --no-prefix-cache                  prefix caching off                          [auto]
+I                                        a video generator: a prompt is read by its own request's steps and keeps no KV
+I   --checkpoint-policy                geometric-backoff                           [default]
+I   --num-speculative-tokens           0                                           [default]
+I   --draft-window                     fixed                                       [default]
+I   --draft-model                      not implemented (the container's own drafter)  [default]
+I   --host                             127.0.0.1                                   [command line]
+I   --port                             8960                                        [command line]
+I   --api-key                          not set                                     [default]
+I   --served-model-name                minimax-h3                                  [auto]
+I                                        a video generator: its own name
+I   --mm-max-patches                   0                                           [default]
+I   --generation-config                none                                        [default]
+I   --override-chat-template           none (the container's)                      [default]
+I   --temp                             unset                                       [default]
+I   --top-k                            unset                                       [default]
+I   --top-p                            unset                                       [default]
+I   --min-p                            unset                                       [default]
+I   --reasoning-effort                 the template's default                      [default]
+I   --reasoning-effort-map             none                                        [default]
+I   --thinking-token-budget            none                                        [default]
+I   --typical-p                        the request default                         [default]
+I   --presence-penalty                 the request default                         [default]
+I   --frequency-penalty                the request default                         [default]
+I   --repetition-penalty               the request default                         [default]
+I   --repeat-last-n                    the request default                         [default]
+I   --dry-multiplier                   the request default                         [default]
+I   --dry-base                         the request default                         [default]
+I   --dry-allowed-length               the request default                         [default]
+I   --dry-penalty-last-n               the request default                         [default]
+I   --dry-sequence-breakers            the request default                         [default]
+I   --xtc-probability                  the request default                         [default]
+I   --xtc-threshold                    the request default                         [default]
+I   --default-max-tokens               auto (what the context leaves after the prompt)  [default]
+I   --max-tokens-cap                   none                                        [default]
+I   --max-n                            8                                           [auto]
+I                                        the larger of 8 and --max-num-seqs
+I   --max-queued-requests              8                                           [auto]
+I                                        8 x --max-num-seqs
+I   --max-stop-strings                 64                                          [default]
+I   --max-stop-bytes                   4096                                        [default]
+I   --chat-template-kwargs             none                                        [default]
+I   --reasoning-format                 auto                                        [default]
+I   --http-threads                     64                                          [auto]
+I                                        one a hardware thread, at least 4
+I   --read-timeout                     30 s                                        [default]
+I   --write-timeout                    600 s                                       [default]
+I   --keep-alive-timeout               5 s                                         [default]
+I   --max-body-mib                     512                                         [default]
+I   --retry-after                      1 s                                         [default]
+I   --no-cors                          not given: CORS headers sent                [default]
+I   --image-min-pixels                 the container's                             [default]
+I   --image-max-pixels                 the container's                             [default]
+I   --video-min-pixels                 the container's                             [default]
+I   --video-max-pixels                 the container's                             [default]
+I   --video-fps                        the container's                             [default]
+I   --video-min-frames                 the container's                             [default]
+I   --video-max-frames                 the container's                             [default]
+I   --video-max-frame-tokens           the container's                             [default]
+I   --image-tokens                     the container's                             [default]
+I   --max-source-pixels                67108864                                    [default]
+I   --kld-record                       none                                        [default]
+I   --kld-ref                          none                                        [default]
+I   --kld-corpus                       none                                        [default]
+I   --kld-out                          none                                        [default]
+I   --kld-lora                         none (the base)                             [default]
+I   --kld-lora-sources                 every document                              [default]
+I   --debug-graph                      off                                         [default]
+I   --debug-selection                  off                                         [default]
+I   --debug-placement                  off                                         [default]
+I   --debug-accept-reference-kernels   off                                         [default]
+I   --profile-ops                      off                                         [default]
+I   --live                             off                                         [default]
+I   -v                                 off                                         [default]
+I   -vv                                off                                         [default]
+I ENVIRONMENT -- the RADIANCE_* variables set, by name; their values are not shown
+I   RADIANCE_HOME
+I DERIVED -- what startup worked out that no single option states
+I   kernel selection                   libavx (host) 4067, libr4d 4067 op bands

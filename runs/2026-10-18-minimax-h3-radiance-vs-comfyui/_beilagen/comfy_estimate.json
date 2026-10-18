@@ -1,0 +1,17 @@
+{
+ "s_per_step_full_1344x768": 51.9,
+ "s_per_step_small_672x384": 5.42,
+ "decode_and_save_s": 32.3,
+ "upscale_plus_te_s": 8.0,
+ "estimate_s": {
+  "native": 2575,
+  "up12": 864,
+  "up20": 1236
+ },
+ "estimate_min": {
+  "native": 42.9,
+  "up12": 14.4,
+  "up20": 20.6
+ },
+ "aborted_native": "9/49 Schritte nach 7:48 (52,1 s/it) abgebrochen"
+}
