@@ -1,0 +1,41 @@
+[
+ {
+  "cfg": "baseline",
+  "prompt": "ctx32k",
+  "rep": 1,
+  "draft_n": null,
+  "draft_accepted": null,
+  "pred_n": 256,
+  "pred_ms": 10224.7633934021,
+  "tps": 24.939452404790906,
+  "prompt_n": 32781,
+  "prompt_tps": 948.27682187669,
+  "ttft_ms": 34569.01955604553
+ },
+ {
+  "cfg": "baseline",
+  "prompt": "ctx32k",
+  "rep": 2,
+  "draft_n": null,
+  "draft_accepted": null,
+  "pred_n": 256,
+  "pred_ms": 10463.575601577759,
+  "tps": 24.37025446268574,
+  "prompt_n": 32718,
+  "prompt_tps": 881.4713140677051,
+  "ttft_ms": 37117.48695373535
+ },
+ {
+  "cfg": "baseline",
+  "prompt": "ctx32k",
+  "rep": 3,
+  "draft_n": null,
+  "draft_accepted": null,
+  "pred_n": 0,
+  "pred_ms": 0.001,
+  "tps": 0.0,
+  "prompt_n": 0,
+  "prompt_tps": 0.0,
+  "ttft_ms": 37337.33010292053
+ }
+]

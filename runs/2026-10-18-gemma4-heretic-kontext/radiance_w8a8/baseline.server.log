@@ -1,0 +1,282 @@
+I chat: reply format plugin:gemma4: reasoning "<|channel>thought\n".."<channel|>" anywhere; calls "<|tool_call>""call:"NAME"" {OBJECT, strings "<|\"|>".."<|\"|>", bare keys} """<tool_call|>"; grammar on "<|tool_call>"
+I sampling defaults for requests that send none: temperature 1.00, top_k 64, top_p 0.95, min_p 0.00 (from the container)
+I media: images and video through 'vision'; an image becomes at most 280 soft tokens (a request's image_tokens may ask for 70..1120), a video 70 a frame at 1 frames a second, at most 32 frames; 16380 patches a pass
+I STARTUP REPORT -- radiance 1.7.0
+I CONFIGURATION -- every option, the value in force, and where it came from
+I   --model                            /home/alex/llmstore/radiance/gemma4-31b-heretic-w8a8.rad  [command line]
+I   --download-dir                     the XDG cache (~/.cache/radiance/hf)        [default]
+I   --radiance-home                    /home/alex/radiance-work/src/build/radiance_home  [environment (RADIANCE_HOME)]
+I   --kernels                          libavx@0.1.0,libr4d@0.5.0,libref@0.1.0      [auto]
+I                                        every kernel library under --radiance-home, in the loader's order (a reference implementation last); architecture plugin gemma4_bf16@0.1.0
+I   --tp                               2                                           [command line]
+I   --tp-wire                          exact                                       [command line]
+I   --tp-wire-min-kb                   128                                         [default]
+I   --p2p                              peer to peer                                [auto]
+I                                        the driver reports every pair of the ranks' cards can reach the other's memory
+I   --max-num-batched-tokens           8192                                        [default]
+I   --busy-prefill-chunk               auto                                        [default]
+I   --prefill-interleave               off                                         [default]
+I   --max-num-seqs                     8                                           [command line]
+I   --max-model-len                    147456                                      [command line]
+I   --rope-scaling                     the checkpoint's own                        [default]
+I   --gpu-headroom-mib                 96                                          [default]
+I   --kv-cache-dtype                   fp8                                         [command line]
+I   --host-pool-mib                    0                                           [default]
+I   --embedding-placement              ram                                         [auto]
+I                                        the table is 1.36 GiB a rank: pinned in host memory and read over the link in place, so its VRAM goes to the KV cache and the experts
+I   --vision-tower-placement           vram                                        [auto]
+I                                        the towers are 1.03 GiB a rank
+I   --ngram-placement                  n/a                                         [auto]
+I                                        this model has no n-gram table
+I   --weights-disk-tier                off                                         [default]
+I   --prefix-cache-mib                 0 (off)                                     [default]
+I   --prefix-cache-ttl                 3600 s                                      [default]
+I   --lora                             none                                        [default]
+I   --max-loras                        0 (off)                                     [default]
+I   --max-lora-rank                    16                                          [default]
+I   --lora-target-modules              -                                           [default]
+I   --placement                        all_vram                                    [auto]
+I                                        16.65 GiB of weights fit the 16.65 GiB weights pool
+I   --deterministic                    off                                         [default]
+I   --checkpoint-interval              2048                                        [default]
+I   --prefill-span                     1                                           [default]
+I   --checkpoint-slots                 8                                           [default]
+I   --no-prefix-cache                  not given: prefix caching on                [default]
+I   --checkpoint-policy                geometric-backoff                           [default]
+I   --num-speculative-tokens           3                                           [command line]
+I   --draft-window                     fixed                                       [default]
+I   --draft-model                      not implemented (the container's own drafter)  [default]
+I   --host                             127.0.0.1                                   [command line]
+I   --port                             8951                                        [command line]
+I   --api-key                          not set                                     [default]
+I   --served-model-name                gemma4-31b-heretic-radiance                 [command line]
+I   --mm-max-patches                   16380                                       [auto]
+I                                        the model carries a vision tower: 16384 patches is a 2048 x 2048 image, the largest one encoder pass takes
+I   --generation-config                none                                        [default]
+I   --override-chat-template           none (the container's)                      [default]
+I   --temp                             1                                           [auto]
+I                                        from the container
+I   --top-k                            64                                          [auto]
+I                                        from the container
+I   --top-p                            0.95                                        [auto]
+I                                        from the container
+I   --min-p                            0                                           [auto]
+I                                        the container states no min_p, so this is the built-in default
+I   --reasoning-effort                 the template's default                      [default]
+I   --reasoning-effort-map             none                                        [default]
+I   --thinking-token-budget            none                                        [default]
+I   --typical-p                        the request default                         [default]
+I   --presence-penalty                 the request default                         [default]
+I   --frequency-penalty                the request default                         [default]
+I   --repetition-penalty               the request default                         [default]
+I   --repeat-last-n                    the request default                         [default]
+I   --dry-multiplier                   the request default                         [default]
+I   --dry-base                         the request default                         [default]
+I   --dry-allowed-length               the request default                         [default]
+I   --dry-penalty-last-n               the request default                         [default]
+I   --dry-sequence-breakers            the request default                         [default]
+I   --xtc-probability                  the request default                         [default]
+I   --xtc-threshold                    the request default                         [default]
+I   --default-max-tokens               auto (what the context leaves after the prompt)  [default]
+I   --max-tokens-cap                   none                                        [default]
+I   --max-n                            8                                           [auto]
+I                                        the larger of 8 and --max-num-seqs
+I   --max-queued-requests              64                                          [auto]
+I                                        8 x --max-num-seqs
+I   --max-stop-strings                 64                                          [default]
+I   --max-stop-bytes                   4096                                        [default]
+I   --chat-template-kwargs             none                                        [default]
+I   --reasoning-format                 auto                                        [default]
+I   --http-threads                     64                                          [auto]
+I                                        one a hardware thread, at least 4
+I   --read-timeout                     30 s                                        [default]
+I   --write-timeout                    600 s                                       [default]
+I   --keep-alive-timeout               5 s                                         [default]
+I   --max-body-mib                     512                                         [default]
+I   --retry-after                      1 s                                         [default]
+I   --no-cors                          not given: CORS headers sent                [default]
+I   --image-min-pixels                 the container's                             [default]
+I   --image-max-pixels                 the container's                             [default]
+I   --video-min-pixels                 the container's                             [default]
+I   --video-max-pixels                 the container's                             [default]
+I   --video-fps                        the container's                             [default]
+I   --video-min-frames                 the container's                             [default]
+I   --video-max-frames                 the container's                             [default]
+I   --video-max-frame-tokens           the container's                             [default]
+I   --image-tokens                     the container's                             [default]
+I   --max-source-pixels                67108864                                    [default]
+I   --kld-record                       none                                        [default]
+I   --kld-ref                          none                                        [default]
+I   --kld-corpus                       none                                        [default]
+I   --kld-out                          none                                        [default]
+I   --kld-lora                         none (the base)                             [default]
+I   --kld-lora-sources                 every document                              [default]
+I   --debug-graph                      off                                         [default]
+I   --debug-selection                  off                                         [default]
+I   --debug-placement                  off                                         [default]
+I   --debug-accept-reference-kernels   off                                         [default]
+I   --profile-ops                      off                                         [default]
+I   --live                             off                                         [default]
+I   -v                                 off                                         [default]
+I   -vv                                off                                         [default]
+I ENVIRONMENT -- the RADIANCE_* variables set, by name; their values are not shown
+I   RADIANCE_HOME
+I DERIVED -- what startup worked out that no single option states
+I   kernel selection                   libavx (host) 3764, libr4d 4123 op bands
+I                                        attention:
+I                                        attn_dense -> attn_vit_h72_bf16
+I                                        attn_dense -> avx_attn_dense
+I                                        attn_paged -> attn_decode_h256_gqa2_fp8kv
+I                                        attn_paged -> attn_prefill_h256_gqa2_fp8kv
+I                                        attn_paged -> attn_window_h512_gqa8_fp8kv
+I                                        attn_paged -> avx_attn_paged
+I                                        kv_store -> avx_kv_store
+I                                        kv_store -> kv_store_fp8
+I                                        qk_norm_rope -> avx_qk_norm_rope
+I                                        qk_norm_rope -> qk_norm_rope_bf16
+I                                        qkv_norm_rope -> qkv_norm_rope_bf16
+I                                        rope -> avx_rope
+I                                        rope -> rope_bf16
+I   vram split                         weights 16.65 GiB (experts 0 B of it), KV cache 8.31 GiB, a card
+I                                        VRAM budget, per card:
+I                                          card total          31.86 GiB
+I                                          already held       581.83 MiB   measured: driver context, code objects, anything else resident
+I                                          driver drift        16.00 MiB   what that moves by after it is read: kept free
+I                                          activation arena     6.04 GiB   computed from the buffer plan
+I                                          step staging       113.43 MiB   the step batch's block tables and media staging, and the
+I                                                                          KV tiers' copy staging
+I                                          hardware queues     66.70 MiB   2 a card at 33.35 MiB each, measured: the engine's streams
+I                                          expert prefetch           0 B   the next-layer prefetch's ring of expert units and buffers
+I                                          --gpu-headroom-mib  96.00 MiB   left unclaimed on purpose
+I                                          ------------------------------
+I                                          claimable           24.96 GiB
+I                                          static weights      16.65 GiB   off the top: every rank's own shard, and not a share of anything
+I                                          ------------------------------
+I                                          elastic              8.31 GiB   the experts keep what the host pool cannot hold; the cache takes the rest
+I                                                                          and lends what no live request holds to the expert slab
+I                                            experts                 0 B   0% of it -- a dense model, so there is no expert plane for this share to fill and the
+I                                                                          cache took everything it could address
+I                                            kv cache           8.31 GiB   100% of it -- 32% backing of the 8 x 147456 worst case: 2.6 full-length
+I                                                                          sessions. With prefix caching a finished sequence's blocks stay held
+I                                                                          for reuse, so the demand is live sessions, not running requests
+I                                          ==============================
+I                                          vram_weights        16.65 GiB   static + experts
+I                                          vram_kv              8.31 GiB   the cache's share
+I                                          unclaimed           96.05 MiB   the headroom, the unusable above, and what MiB rounding
+I                                                                          could not place
+I   weights by tier                    VRAM 16.65 GiB, host pool 1.36 GiB, container on disk 0 B, mapped 0 B (rank 0)
+I                                        the host pool holds the 1.36 GiB the placement flags put there (the token embedding, the encoder towers) beside the weights placed in it
+I   kv cache                           8.31 GiB a card: 269504 tokens, 1.8 sessions at 147456
+I                                        0 B of it is per-sequence state; nothing is lent: it is all the cache's
+I HARDWARE
+I   host      AMD Ryzen Threadripper PRO 3975WX 32-Cores | 32 cores, 64 threads | RAM 123.62 GiB, 112.27 GiB available | swap 8.00 GiB, 684.81 MiB used
+I   system    kernel 7.0.0-34-generic | Ubuntu 26.04.1 LTS | no container seen | cgroup memory 107.00 GiB | memlock 8.00 MiB
+I   memory    huge pages madvise (defrag madvise, shmem never) | ttm.pages_limit 61.81 GiB | pinned by this process 6.88 GiB
+I   iommu     passthrough (the display devices' IOMMU groups are of type identity)
+I   amdgpu    cwsr_enable 1 | boot parameters: none that bear on a card
+I   cpu       governor powersave, energy preference balance_performance (amd-pstate-epp) | io_uring available
+I   runtime   HIP 7.2.53211 | backend device
+I   card 0000:43:00.0  rank 1 (device 1)  gfx1201 "AMD Radeon AI PRO R9700"  31.86 GiB VRAM  NUMA -1  driver amdgpu card1
+I       link   40:01.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> 41:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> 42:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> 43:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 6% busy: a link at rest parks below its maximum]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       dma    copy lists not used: nothing streams weights onto this card
+I       power  cap 300 W (default 300 W, max 300 W) | voltage offset unknown | sclk 500-2350 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:63:00.0  rank 0 (device 0)  gfx1201 "AMD Radeon AI PRO R9700"  31.86 GiB VRAM  NUMA -1  driver amdgpu card0
+I       link   60:01.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> 61:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> 62:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> 63:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 5% busy: a link at rest parks below its maximum]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       dma    copy lists not used: nothing streams weights onto this card
+I       power  cap 300 W (default 300 W, max 300 W) | voltage offset unknown | sclk 115-2350 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I FINDINGS -- 0 warnings, 4 notes
+I   note link-capped: card 0000:63:00.0 (rank 0): the card's link is 32.0 GT/s x16 at most, and 0000:60:01.1 above it is 16.0 GT/s x16 at most
+I        why: the host side of the link bounds what the card can move to and from host memory: streamed experts, the host pool and the all-reduce when it goes through host memory
+I        fix: a slot with the card's full width and speed (the board manual says which slots share lanes), or no riser; nothing to do if the board has no faster slot
+I   note link-capped: card 0000:43:00.0 (rank 1): the card's link is 32.0 GT/s x16 at most, and 0000:40:01.1 above it is 16.0 GT/s x16 at most
+I        why: the host side of the link bounds what the card can move to and from host memory: streamed experts, the host pool and the all-reduce when it goes through host memory
+I        fix: a slot with the card's full width and speed (the board manual says which slots share lanes), or no riser; nothing to do if the board has no faster slot
+I   note swap-in-use: 684.81 MiB of swap is in use
+I        why: a host thread that faults on a swapped page stalls the step it is part of
+I        fix: free memory, or turn swap off on a machine that only serves
+I   note cpu-governor: the CPU governor is powersave with energy preference balance_performance
+I        why: the host side of a step -- scheduling, sampling, the n-gram gather, launch bookkeeping -- is single-threaded per rank, and a core that ramps slowly shows as host gap between steps
+I        fix: cpupower frequency-set -g performance, or echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference
+I serving on http://127.0.0.1:8951  (/v1/completions; /v1/chat/completions with tools and reasoning)
+I server: listening on http://127.0.0.1:8951 (64 threads, up to 128)
+I req chatcmpl-7816288b1931ae30fcc27970 chat stream from 127.0.0.1:53566 model=gemma4-31b-heretic-radiance msgs=1 tools=0 prompt=9330 tok n=1 max_tokens=1
+I recorded pass: draft pass -1 at 1 token(s) -- 80 records, 2 of the 80 dispatches unordered behind the one before; 0 host op(s), 0 table refresh point(s) and 0 routing report(s) between the played stretches
+I recorded pass: draft pass 2 at 1 token(s) -- 80 records, 2 of the 80 dispatches unordered behind the one before; 0 host op(s), 0 table refresh point(s) and 0 routing report(s) between the played stretches
+I recorded pass: draft pass 3 at 1 token(s) -- 80 records, 2 of the 80 dispatches unordered behind the one before; 0 host op(s), 0 table refresh point(s) and 0 routing report(s) between the played stretches
+I recorded pass: draft pass 0 at 4 token(s) -- 840 records, 110 of the 840 dispatches unordered behind the one before; 0 host op(s), 0 table refresh point(s) and 0 routing report(s) between the played stretches
+I req chatcmpl-7816288b1931ae30fcc27970 done from 127.0.0.1:53566 finish=length prompt=9330 (cache 0) gen=1 reason=0 ttft=3.38s 3.38s
+I req chatcmpl-e119858870393442578240de chat stream from 127.0.0.1:58182 model=gemma4-31b-heretic-radiance msgs=1 tools=0 prompt=14 tok n=1 max_tokens=16
+I req chatcmpl-e119858870393442578240de done from 127.0.0.1:58182 finish=stop prompt=14 (cache 0) gen=10 reason=0 ttft=0.07s 82.4 tok/s 0.18s
+I req chatcmpl-eaee0795965ac020d7d68787 chat stream from 127.0.0.1:58184 model=gemma4-31b-heretic-radiance msgs=1 tools=0 prompt=32781 tok n=1 max_tokens=256
+E device: a synchronisation has waited 5 s; the queues:
+E   device 0 queue 0x7ee0844ee000: written 0, read 0 -> idle
+E   device 1 queue 0x7ee0844e4000: written 0, read 0 -> idle
+E   device 0 queue 0x7ee0844dc000: written 14069, read 11073 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+E   device 1 queue 0x7ee0844d4000: written 14041, read 11050 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+W device: the queues advanced in the 5 s since; a synchronisation is long, not stuck
+I req chatcmpl-eaee0795965ac020d7d68787 done from 127.0.0.1:58184 finish=length prompt=32781 (cache 0) gen=256 reason=0 ttft=14.59s 47.9 tok/s 19.91s
+I req chatcmpl-ad6be7cc75ee971e9a19ad3b chat stream from 127.0.0.1:42794 model=gemma4-31b-heretic-radiance msgs=1 tools=0 prompt=32718 tok n=1 max_tokens=256
+E device: a synchronisation has waited 5 s; the queues:
+E   device 0 queue 0x7ee0844ee000: written 0, read 0 -> idle
+E   device 1 queue 0x7ee0844e4000: written 0, read 0 -> idle
+E   device 0 queue 0x7ee0844dc000: written 162493, read 159512 -> kernel _Z26r4d_gemm_w8a8_tiled_kernelILi2ELi8ELi4ELi2ELi4EEvPKaPKfPKjS5_S3_P14__hip_bfloat16iii
+E   device 1 queue 0x7ee0844d4000: written 162075, read 159099 -> kernel _Z26r4d_gemm_w8a8_tiled_kernelILi2ELi8ELi4ELi2ELi4EEvPKaPKfPKjS5_S3_P14__hip_bfloat16iii
+W device: the queues advanced in the 5 s since; a synchronisation is long, not stuck
+I req chatcmpl-ad6be7cc75ee971e9a19ad3b done from 127.0.0.1:42794 finish=length prompt=32718 (cache 0) gen=256 reason=0 ttft=14.68s 46.2 tok/s 20.21s
+I req chatcmpl-2b5cfa5009ae3b0c7a3f1b80 chat stream from 127.0.0.1:56632 model=gemma4-31b-heretic-radiance msgs=1 tools=0 prompt=32901 tok n=1 max_tokens=256
+E device: a synchronisation has waited 5 s; the queues:
+E   device 0 queue 0x7ee0844ee000: written 0, read 0 -> idle
+E   device 1 queue 0x7ee0844e4000: written 0, read 0 -> idle
+E   device 0 queue 0x7ee0844dc000: written 316210, read 313073 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+E   device 1 queue 0x7ee0844d4000: written 315389, read 312257 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+I req chatcmpl-2b5cfa5009ae3b0c7a3f1b80 done from 127.0.0.1:56632 finish=length prompt=32901 (cache 0) gen=256 reason=0 ttft=14.82s 49.5 tok/s 19.97s
+I req chatcmpl-4a0a159651d5f43bc928619b chat stream from 127.0.0.1:49166 model=gemma4-31b-heretic-radiance msgs=1 tools=0 prompt=65844 tok n=1 max_tokens=256
+E device: a synchronisation has waited 5 s; the queues:
+E   device 0 queue 0x7ee0844ee000: written 0, read 0 -> idle
+E   device 1 queue 0x7ee0844e4000: written 0, read 0 -> idle
+E   device 0 queue 0x7ee0844dc000: written 464027, read 460582 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+E   device 1 queue 0x7ee0844d4000: written 462823, read 459383 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+W device: the queues advanced in the 5 s since; a synchronisation is long, not stuck
+I req chatcmpl-4a0a159651d5f43bc928619b done from 127.0.0.1:49166 finish=length prompt=65844 (cache 0) gen=256 reason=0 ttft=38.05s 43.5 tok/s 43.91s
+I req chatcmpl-5d84088123e068411543a124 chat stream from 127.0.0.1:51780 model=gemma4-31b-heretic-radiance msgs=1 tools=0 prompt=65609 tok n=1 max_tokens=256
+E device: a synchronisation has waited 5 s; the queues:
+E   device 0 queue 0x7ee0844ee000: written 0, read 0 -> idle
+E   device 1 queue 0x7ee0844e4000: written 0, read 0 -> idle
+E   device 0 queue 0x7ee0844dc000: written 614110, read 610655 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+E   device 1 queue 0x7ee0844d4000: written 612517, read 609067 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+W device: the queues advanced in the 5 s since; a synchronisation is long, not stuck
+I req chatcmpl-5d84088123e068411543a124 done from 127.0.0.1:51780 finish=length prompt=65609 (cache 0) gen=256 reason=0 ttft=37.84s 46.5 tok/s 43.33s
+I req chatcmpl-d29b1412d365c24f01637b17 chat stream from 127.0.0.1:60442 model=gemma4-31b-heretic-radiance msgs=1 tools=0 prompt=65306 tok n=1 max_tokens=256
+E device: a synchronisation has waited 5 s; the queues:
+E   device 0 queue 0x7ee0844ee000: written 0, read 0 -> idle
+E   device 1 queue 0x7ee0844e4000: written 0, read 0 -> idle
+E   device 0 queue 0x7ee0844dc000: written 753250, read 749882 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+E   device 1 queue 0x7ee0844d4000: written 751296, read 747933 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+W device: the queues advanced in the 5 s since; a synchronisation is long, not stuck
+I req chatcmpl-d29b1412d365c24f01637b17 done from 127.0.0.1:60442 finish=length prompt=65306 (cache 0) gen=256 reason=0 ttft=37.52s 43.8 tok/s 43.35s
+I req chatcmpl-fb7a748bedc03a4a45a48144 chat stream from 127.0.0.1:45252 model=gemma4-31b-heretic-radiance msgs=1 tools=0 prompt=131234 tok n=1 max_tokens=256
+E device: a synchronisation has waited 5 s; the queues:
+E   device 0 queue 0x7ee0844ee000: written 0, read 0 -> idle
+E   device 1 queue 0x7ee0844e4000: written 0, read 0 -> idle
+E   device 0 queue 0x7ee0844dc000: written 909571, read 905884 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+E   device 1 queue 0x7ee0844d4000: written 907220, read 903539 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+W device: the queues advanced in the 5 s since; a synchronisation is long, not stuck
+I req chatcmpl-fb7a748bedc03a4a45a48144 done from 127.0.0.1:45252 finish=length prompt=131234 (cache 0) gen=256 reason=0 ttft=108.45s 36.8 tok/s 115.38s
+I req chatcmpl-ea3e4b11902a1c127749d9a4 chat stream from 127.0.0.1:37736 model=gemma4-31b-heretic-radiance msgs=1 tools=0 prompt=130786 tok n=1 max_tokens=256
+E device: a synchronisation has waited 5 s; the queues:
+E   device 0 queue 0x7ee0844ee000: written 0, read 0 -> idle
+E   device 1 queue 0x7ee0844e4000: written 0, read 0 -> idle
+E   device 0 queue 0x7ee0844dc000: written 1060599, read 1056912 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+E   device 1 queue 0x7ee0844d4000: written 1057864, read 1054183 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+W device: the queues advanced in the 5 s since; a synchronisation is long, not stuck
+I req chatcmpl-ea3e4b11902a1c127749d9a4 done from 127.0.0.1:37736 finish=length prompt=130786 (cache 0) gen=256 reason=0 ttft=107.80s 38.8 tok/s 114.37s
+I req chatcmpl-84c4a9f69657b9ed4b903505 chat stream from 127.0.0.1:43610 model=gemma4-31b-heretic-radiance msgs=1 tools=0 prompt=130986 tok n=1 max_tokens=256
+E device: a synchronisation has waited 5 s; the queues:
+E   device 0 queue 0x7ee0844ee000: written 0, read 0 -> idle
+E   device 1 queue 0x7ee0844e4000: written 0, read 0 -> idle
+E   device 0 queue 0x7ee0844dc000: written 1204859, read 1201172 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+E   device 1 queue 0x7ee0844d4000: written 1201758, read 1198077 -> kernel _ZN7r4d_win16attn_wmma_kernelILi512ELi8ELb1EEEvNS_8AttnArgsE
+W device: the queues advanced in the 5 s since; a synchronisation is long, not stuck
+I req chatcmpl-84c4a9f69657b9ed4b903505 done from 127.0.0.1:43610 finish=length prompt=130986 (cache 0) gen=256 reason=0 ttft=108.11s 36.1 tok/s 115.18s

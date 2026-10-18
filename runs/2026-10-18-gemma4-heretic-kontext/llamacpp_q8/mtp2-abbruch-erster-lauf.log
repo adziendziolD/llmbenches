@@ -1,0 +1,230 @@
+0.00.000.390 I srv  llama_server: initializing ...
+0.00.178.423 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.178.526 I srv  init_listene: The UI is disabled
+0.00.178.528 I srv  init_listene: Use --ui/--no-ui (or deprecated --webui/--no-webui) to enable/disable
+0.00.178.601 W srv  llama_server: security: no API key is set and CORS allows all origins (see https://github.com/ggml-org/llama.cpp/pull/25655)
+0.00.183.215 I srv    load_model: loading model '/home/alex/llmstore/gemma/gemma4-31b-heretic/gemma-4-31B-it-uncensored-heretic-Q8_0.gguf'
+0.00.243.099 W common_fit_params: failed to fit params to free device memory: llama_params_fit is not implemented for SPLIT_MODE_TENSOR, abort
+0.00.936.337 W load: control-looking token:    212 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.00.936.926 W load: control-looking token:     50 '<|tool_response>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.00.967.589 W load: special_eog_ids contains '<|tool_response>', removing '</s>' token from EOG list
+0.18.040.484 I cmn          init: llama threadpool init, n_threads = 32
+0.18.326.260 I common_speculative_init_result: loading draft model '/home/alex/llmstore/gemma/gemma4-uncensored-mtp/mtp-gemma-4-31B-it.gguf'
+0.18.985.723 W load: control-looking token:    212 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.18.986.307 W load: control-looking token:     50 '<|tool_response>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.19.016.447 W load: special_eog_ids contains '<|tool_response>', removing '</s>' token from EOG list
+0.19.233.686 W llama_context: n_ctx_seq (147456) > n_ctx_train (131072) -- possible training context overflow
+0.19.253.863 W llama_kv_cache: layer   3: sharing with layer 59. k = 0x2000000000000000, v = 0x2000000000000000
+0.19.254.012 W llama_kv_cache: layer   0: sharing with layer 58. k = 0x2000000000000000, v = 0x2000000000000000
+0.19.254.015 W llama_kv_cache: layer   1: sharing with layer 58. k = 0x2000000000000000, v = 0x2000000000000000
+0.19.254.016 W llama_kv_cache: layer   2: sharing with layer 58. k = 0x2000000000000000, v = 0x2000000000000000
+0.20.099.245 I srv    load_model: loaded multimodal model, '/home/alex/llmstore/gemma/gemma4-31b-heretic/gemma-4-31B-it-mmproj-BF16.gguf'
+0.20.181.176 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 147456, kv_unified = 'false'
+0.20.181.323 W set_sampler: backend sampling not supported with SPLIT_MODE_TENSOR; using CPU
+0.20.181.325 W spec common_specu: backend offload failed for seq_id=0; using CPU sampler
+0.20.208.180 I srv  llama_server: model loaded
+0.20.208.187 I srv  llama_server: listening on http://127.0.0.1:8899
+0.22.218.567 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.22.218.671 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.26.430.840 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =   6145, progress = 0.66, t =   4.19 s / 1465.52 tokens per second
+0.27.991.004 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =   8193, progress = 0.88, t =   5.75 s / 1424.72 tokens per second
+0.28.539.105 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =   8814, progress = 0.94, t =   6.31 s / 1395.82 tokens per second
+0.29.324.379 I slot print_timing: id  0 | task 0 | prompt processing, n_tokens =   9326, progress = 1.00, t =   7.09 s / 1316.02 tokens per second
+0.29.833.554 I slot print_timing: id  0 | task 0 | prompt eval time =    7614.84 ms /  9330 tokens (    0.82 ms per token,  1225.24 tokens per second)
+0.29.833.557 I slot print_timing: id  0 | task 0 |        eval time =       0.00 ms /     1 tokens (    0.00 ms per token,     0.00 tokens per second)
+0.29.833.558 I slot print_timing: id  0 | task 0 |       total time =    7614.84 ms /  9331 tokens
+0.29.833.561 I slot print_timing: id  0 | task 0 |    graphs reused =          1
+0.29.834.079 I slot      release: id  0 | task 0 | stop processing: n_tokens = 9330, truncated = 0
+0.29.837.744 I slot get_availabl: id  0 | task -1 | selected slot by LCP similarity, f_sim_best = 0.286 (> 0.100 thold), f_keep = 0.000
+0.30.976.061 I slot launch_slot_: id  0 | task 9 | processing task, is_child = 0
+0.31.628.776 I slot print_timing: id  0 | task 9 | prompt eval time =     407.34 ms /    14 tokens (   29.10 ms per token,    34.37 tokens per second)
+0.31.628.780 I slot print_timing: id  0 | task 9 |        eval time =     245.25 ms /    10 tokens (   27.25 ms per token,    36.70 tokens per second)
+0.31.628.780 I slot print_timing: id  0 | task 9 |       total time =     652.59 ms /    24 tokens
+0.31.628.781 I slot print_timing: id  0 | task 9 |    graphs reused =          4
+0.31.628.784 I slot print_timing: id  0 | task 9 | draft acceptance = 0.75000 (    6 accepted /     8 generated), mean len =  2.50
+0.31.628.810 I slot      release: id  0 | task 9 | stop processing: n_tokens = 24, truncated = 0
+0.31.690.943 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 1047163817931
+0.31.737.345 I slot launch_slot_: id  0 | task 17 | processing task, is_child = 0
+0.35.885.586 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =   6145, progress = 0.19, t =   4.13 s / 1488.18 tokens per second
+0.37.451.553 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =   8193, progress = 0.25, t =   5.69 s / 1439.29 tokens per second
+0.39.120.648 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  10241, progress = 0.31, t =   7.36 s / 1391.68 tokens per second
+0.40.895.229 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  12289, progress = 0.37, t =   9.13 s / 1345.96 tokens per second
+0.42.797.911 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  14337, progress = 0.44, t =  11.03 s / 1299.79 tokens per second
+0.44.802.475 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  16385, progress = 0.50, t =  13.03 s / 1257.25 tokens per second
+0.46.941.605 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  18433, progress = 0.56, t =  15.17 s / 1215.26 tokens per second
+0.49.200.935 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  20481, progress = 0.62, t =  17.42 s / 1175.43 tokens per second
+0.51.576.374 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  22529, progress = 0.69, t =  19.80 s / 1138.02 tokens per second
+0.54.071.148 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  24577, progress = 0.75, t =  22.29 s / 1102.64 tokens per second
+0.56.685.595 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  26625, progress = 0.81, t =  24.90 s / 1069.27 tokens per second
+0.59.412.548 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  28673, progress = 0.87, t =  27.62 s / 1037.95 tokens per second
+1.02.255.530 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  30721, progress = 0.94, t =  30.46 s / 1008.42 tokens per second
+1.04.591.477 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  32265, progress = 0.98, t =  32.85 s / 982.25 tokens per second
+1.05.724.681 I slot print_timing: id  0 | task 17 | prompt processing, n_tokens =  32777, progress = 1.00, t =  33.93 s / 965.88 tokens per second
+1.10.285.238 I slot print_timing: id  0 | task 17 | n_gen =    100, tg =  24.26 t/s, tg_3s =  24.51 t/s
+1.13.328.217 I slot print_timing: id  0 | task 17 | n_gen =    174, tg =  24.29 t/s, tg_3s =  24.32 t/s
+1.16.363.101 I slot print_timing: id  0 | task 17 | n_gen =    255, tg =  25.00 t/s, tg_3s =  26.69 t/s
+1.16.429.760 I slot print_timing: id  0 | task 17 | prompt eval time =   34467.61 ms / 32781 tokens (    1.05 ms per token,   951.07 tokens per second)
+1.16.429.764 I slot print_timing: id  0 | task 17 |        eval time =   10224.78 ms /   256 tokens (   40.10 ms per token,    24.94 tokens per second)
+1.16.429.765 I slot print_timing: id  0 | task 17 |       total time =   44692.39 ms / 33037 tokens
+1.16.429.766 I slot print_timing: id  0 | task 17 |    graphs reused =        156
+1.16.429.769 I slot print_timing: id  0 | task 17 | draft acceptance = 0.32039 (   99 accepted /   309 generated), mean len =  1.64
+1.16.431.200 I slot      release: id  0 | task 17 | stop processing: n_tokens = 33036, truncated = 0
+1.16.494.217 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 1047208620322
+1.18.311.235 I slot launch_slot_: id  0 | task 193 | processing task, is_child = 0
+1.21.385.662 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =   4097, progress = 0.13, t =   3.06 s / 1339.72 tokens per second
+1.22.871.966 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =   6145, progress = 0.19, t =   4.54 s / 1353.11 tokens per second
+1.24.458.973 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =   8193, progress = 0.25, t =   6.13 s / 1337.54 tokens per second
+1.26.144.912 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  10241, progress = 0.31, t =   7.81 s / 1311.45 tokens per second
+1.27.954.693 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  12289, progress = 0.38, t =   9.62 s / 1277.97 tokens per second
+1.29.874.039 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  14337, progress = 0.44, t =  11.53 s / 1243.18 tokens per second
+1.31.922.349 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  16385, progress = 0.50, t =  13.58 s / 1206.76 tokens per second
+1.34.090.958 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  18433, progress = 0.56, t =  15.74 s / 1170.85 tokens per second
+1.36.382.268 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  20481, progress = 0.63, t =  18.03 s / 1135.84 tokens per second
+1.38.795.704 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  22529, progress = 0.69, t =  20.44 s / 1102.13 tokens per second
+1.41.328.870 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  24577, progress = 0.75, t =  22.97 s / 1069.87 tokens per second
+1.43.976.624 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  26625, progress = 0.81, t =  25.62 s / 1039.34 tokens per second
+1.46.739.646 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  28673, progress = 0.88, t =  28.38 s / 1010.45 tokens per second
+1.49.629.829 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  30721, progress = 0.94, t =  31.26 s / 982.63 tokens per second
+1.51.861.206 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  32202, progress = 0.98, t =  33.50 s / 961.24 tokens per second
+1.53.086.370 I slot print_timing: id  0 | task 193 | prompt processing, n_tokens =  32714, progress = 1.00, t =  34.72 s / 942.16 tokens per second
+1.57.588.089 I slot print_timing: id  0 | task 193 | n_gen =    100, tg =  24.55 t/s, tg_3s =  24.80 t/s
+2.00.628.556 I slot print_timing: id  0 | task 193 | n_gen =    174, tg =  24.46 t/s, tg_3s =  24.34 t/s
+2.03.671.188 I slot print_timing: id  0 | task 193 | n_gen =    249, tg =  24.52 t/s, tg_3s =  24.65 t/s
+2.04.019.571 I slot print_timing: id  0 | task 193 | prompt eval time =   35244.64 ms / 32718 tokens (    1.08 ms per token,   928.31 tokens per second)
+2.04.019.575 I slot print_timing: id  0 | task 193 |        eval time =   10463.66 ms /   256 tokens (   41.03 ms per token,    24.37 tokens per second)
+2.04.019.576 I slot print_timing: id  0 | task 193 |       total time =   45708.30 ms / 32974 tokens
+2.04.019.577 I slot print_timing: id  0 | task 193 |    graphs reused =        312
+2.04.019.580 I slot print_timing: id  0 | task 193 | draft acceptance = 0.29968 (   95 accepted /   317 generated), mean len =  1.60
+2.04.021.008 I slot      release: id  0 | task 193 | stop processing: n_tokens = 32973, truncated = 0
+2.04.082.048 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 1047256210129
+2.06.074.365 I slot launch_slot_: id  0 | task 373 | processing task, is_child = 0
+2.10.440.592 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =   6145, progress = 0.19, t =   4.35 s / 1413.69 tokens per second
+2.12.034.047 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =   8193, progress = 0.25, t =   5.94 s / 1379.82 tokens per second
+2.13.740.932 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  10241, progress = 0.31, t =   7.64 s / 1340.19 tokens per second
+2.15.553.291 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  12289, progress = 0.37, t =   9.45 s / 1300.29 tokens per second
+2.17.485.110 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  14337, progress = 0.44, t =  11.38 s / 1259.83 tokens per second
+2.19.530.294 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  16385, progress = 0.50, t =  13.42 s / 1220.74 tokens per second
+2.21.702.198 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  18433, progress = 0.56, t =  15.59 s / 1182.28 tokens per second
+2.23.996.376 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  20481, progress = 0.62, t =  17.88 s / 1145.30 tokens per second
+2.26.410.921 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  22529, progress = 0.68, t =  20.29 s / 1110.12 tokens per second
+2.28.944.668 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  24577, progress = 0.75, t =  22.82 s / 1076.78 tokens per second
+2.31.599.073 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  26625, progress = 0.81, t =  25.48 s / 1045.12 tokens per second
+2.34.361.428 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  28673, progress = 0.87, t =  28.24 s / 1015.48 tokens per second
+2.37.246.809 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  30721, progress = 0.93, t =  31.12 s / 987.25 tokens per second
+2.39.739.039 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  32385, progress = 0.98, t =  33.65 s / 962.52 tokens per second
+2.40.906.110 I slot print_timing: id  0 | task 373 | prompt processing, n_tokens =  32897, progress = 1.00, t =  34.78 s / 945.90 tokens per second
+/home/runner/work/llama.cpp/llama.cpp/ggml/src/ggml-cuda/fattn.cu:759: fatal error
+:0:rocdevice.cpp            :3721: 1047293876721 us:  Callback: Queue 0x78ed45800000 aborting with error : HSA_STATUS_ERROR_MEMORY_APERTURE_VIOLATION: The agent attempted to access memory beyond the largest legal address. code: 0x29
+[New LWP 942196]
+[New LWP 942166]
+[New LWP 942165]
+[New LWP 942164]
+[New LWP 942163]
+[New LWP 942162]
+[New LWP 942161]
+[New LWP 942160]
+[New LWP 942159]
+[New LWP 942158]
+[New LWP 942157]
+[New LWP 942156]
+[New LWP 942155]
+[New LWP 942154]
+[New LWP 942153]
+[New LWP 942152]
+[New LWP 942151]
+[New LWP 942150]
+[New LWP 942149]
+[New LWP 942148]
+[New LWP 942147]
+[New LWP 942146]
+[New LWP 942145]
+[New LWP 942144]
+[New LWP 942143]
+[New LWP 942142]
+[New LWP 942141]
+[New LWP 942140]
+[New LWP 942139]
+[New LWP 942138]
+[New LWP 942137]
+[New LWP 942136]
+[New LWP 942135]
+[New LWP 942134]
+[New LWP 942133]
+[New LWP 942132]
+[New LWP 942131]
+[New LWP 942130]
+[New LWP 942129]
+[New LWP 942128]
+[New LWP 942127]
+[New LWP 942126]
+[New LWP 942125]
+[New LWP 942124]
+[New LWP 942123]
+[New LWP 942122]
+[New LWP 942121]
+[New LWP 942120]
+[New LWP 942119]
+[New LWP 942118]
+[New LWP 942117]
+[New LWP 942116]
+[New LWP 942115]
+[New LWP 942114]
+[New LWP 942113]
+[New LWP 942112]
+[New LWP 942111]
+[New LWP 942110]
+[New LWP 942109]
+[New LWP 942108]
+[New LWP 942107]
+[New LWP 942106]
+[New LWP 942105]
+[New LWP 942104]
+[New LWP 942103]
+[New LWP 942101]
+[New LWP 942100]
+[New LWP 942098]
+[New LWP 942097]
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/x86_64-linux-gnu/libthread_db.so.1".
+__syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+⚠️ Warnung: 56	../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S: Datei oder Verzeichnis nicht gefunden
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+56	in ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S
+#1  0x000078eff98a039c in __internal_syscall_cancel (a1=<optimized out>, a2=<optimized out>, a3=<optimized out>, a4=<optimized out>, a5=0, a6=0, nr=61) at ./nptl/cancellation.c:49
+⚠️ Warnung: 49	./nptl/cancellation.c: Datei oder Verzeichnis nicht gefunden
+#2  __syscall_cancel (a1=<optimized out>, a2=<optimized out>, a3=<optimized out>, a4=<optimized out>, a5=a5@entry=0, a6=a6@entry=0, nr=61) at ./nptl/cancellation.c:75
+75	in ./nptl/cancellation.c
+#3  0x000078eff991cacf in __GI___wait4 (pid=<optimized out>, stat_loc=<optimized out>, options=<optimized out>, usage=<optimized out>) at ../sysdeps/unix/sysv/linux/wait4.c:30
+⚠️ Warnung: 30	../sysdeps/unix/sysv/linux/wait4.c: Datei oder Verzeichnis nicht gefunden
+#4  0x000078eff9f47853 in ggml_print_backtrace () from /home/alex/llmstore/software/llama.cpp/rocm/libggml-base.so.0
+#5  0x000078eff9f479fb in ggml_abort () from /home/alex/llmstore/software/llama.cpp/rocm/libggml-base.so.0
+#6  0x000078efef431eb4 in ggml_cuda_flash_attn_ext(ggml_backend_cuda_context&, ggml_tensor*) () from /home/alex/llmstore/software/llama.cpp/rocm/libggml-hip.so
+#7  0x000078efef47df11 in ggml_cuda_graph_evaluate_and_capture(ggml_backend_cuda_context*, ggml_cgraph*, bool, bool, void const*) () from /home/alex/llmstore/software/llama.cpp/rocm/libggml-hip.so
+#8  0x000078efef4782b9 in ggml_backend_cuda_graph_compute(ggml_backend*, ggml_cgraph*) () from /home/alex/llmstore/software/llama.cpp/rocm/libggml-hip.so
+#9  0x000078eff9f7a11d in ggml_backend_meta_graph_compute(ggml_backend*, ggml_cgraph*) () from /home/alex/llmstore/software/llama.cpp/rocm/libggml-base.so.0
+#10 0x000078eff9f66e97 in ggml_backend_sched_graph_compute_async () from /home/alex/llmstore/software/llama.cpp/rocm/libggml-base.so.0
+#11 0x000078eff8ff5591 in llama_context::graph_compute(ggml_cgraph*, bool) () from /home/alex/llmstore/software/llama.cpp/rocm/libllama.so.0
+#12 0x000078eff8ff8f86 in llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&) () from /home/alex/llmstore/software/llama.cpp/rocm/libllama.so.0
+#13 0x000078eff90013c8 in llama_context::decode(llama_batch_ext const&) () from /home/alex/llmstore/software/llama.cpp/rocm/libllama.so.0
+#14 0x000078eff90027ac in llama_context::decode(llama_batch const&) () from /home/alex/llmstore/software/llama.cpp/rocm/libllama.so.0
+#15 0x000078eff90027ef in llama_decode () from /home/alex/llmstore/software/llama.cpp/rocm/libllama.so.0
+#16 0x000078eff9515963 in common_speculative_impl_draft_mtp::draft(std::vector<common_speculative_draft_params, std::allocator<common_speculative_draft_params> >&) () from /home/alex/llmstore/software/llama.cpp/rocm/libllama-common.so.0
+#17 0x000078eff9505524 in common_speculative_draft(common_speculative*) () from /home/alex/llmstore/software/llama.cpp/rocm/libllama-common.so.0
+#18 0x000078effa11ec76 in server_queue::yield_to_queue(std::function<void ()>&&) () from /home/alex/llmstore/software/llama.cpp/rocm/libllama-server-impl.so
+#19 0x000078effa16bf15 in server_context_impl::pre_decode() () from /home/alex/llmstore/software/llama.cpp/rocm/libllama-server-impl.so
+#20 0x000078effa17459c in server_context_impl::update_slots() () from /home/alex/llmstore/software/llama.cpp/rocm/libllama-server-impl.so
+#21 0x000078effa11f8b5 in server_queue::start_loop(long) () from /home/alex/llmstore/software/llama.cpp/rocm/libllama-server-impl.so
+#22 0x000078effa0d376d in llama_server(common_params&, int, char**) () from /home/alex/llmstore/software/llama.cpp/rocm/libllama-server-impl.so
+#23 0x000078effa0d43de in llama_server(int, char**) () from /home/alex/llmstore/software/llama.cpp/rocm/libllama-server-impl.so
+#24 0x000078eff982a601 in __libc_start_call_main (main=main@entry=0x585882b6d270 <main>, argc=argc@entry=30, argv=argv@entry=0x7fffcf8ddc28) at ../sysdeps/nptl/libc_start_call_main.h:59
+⚠️ Warnung: 59	../sysdeps/nptl/libc_start_call_main.h: Datei oder Verzeichnis nicht gefunden
+#25 0x000078eff982a718 in __libc_start_main_impl (main=0x585882b6d270 <main>, argc=30, argv=0x7fffcf8ddc28, init=<optimized out>, fini=<optimized out>, rtld_fini=<optimized out>, stack_end=0x7fffcf8ddc18) at ../csu/libc-start.c:360
+⚠️ Warnung: 360	../csu/libc-start.c: Datei oder Verzeichnis nicht gefunden
+#26 0x0000585882b6d2a5 in _start ()
+[Inferior 1 (process 942093) detached]

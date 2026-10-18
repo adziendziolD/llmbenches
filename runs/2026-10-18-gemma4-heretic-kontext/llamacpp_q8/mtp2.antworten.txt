@@ -1,0 +1,26 @@
+[
+ {
+  "prompt": "ctx32k",
+  "rep": 1,
+  "nadel": "ROTER-OTTER-9742",
+  "gefunden": true,
+  "prompt_n": 32781,
+  "antwort": "ROTER-OTTER-9742\n\nElias war ein Mann der Stille, und die Stille war seine einzige wahre Gefährtin. Seit drei Jahrzehnten bewohnte er den Leuchtturm von Cape Solitude, einem einsamen Finger aus grauem Stein, der trotzig in die tobende Nordsee ragte. Sein Leben war ein präziser Rhythmus aus poliertem "
+ },
+ {
+  "prompt": "ctx32k",
+  "rep": 2,
+  "nadel": "GRUENER-OTTER-5389",
+  "gefunden": true,
+  "prompt_n": 32718,
+  "antwort": "GRUENER-OTTER-5389\n\nElias war ein Mann der Stille, und die Stille war seine einzige wahre Gefährtin. Seit drei Jahrzehnten bewohnte er den Leuchtturm von Cape Solitude, einem einsamen Felsvorsprung, der wie ein mahnender Finger aus dem aufgewühlten Grau des Nordatlantiks ragte. Sein Leben war ein pr"
+ },
+ {
+  "prompt": "ctx32k",
+  "rep": 3,
+  "nadel": "GRUENER-LUCHS-5989",
+  "gefunden": false,
+  "prompt_n": 0,
+  "antwort": "GR"
+ }
+]

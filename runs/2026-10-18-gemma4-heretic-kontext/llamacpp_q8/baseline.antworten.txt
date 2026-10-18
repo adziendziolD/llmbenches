@@ -1,0 +1,74 @@
+[
+ {
+  "prompt": "ctx32k",
+  "rep": 1,
+  "nadel": "ROTER-OTTER-9742",
+  "gefunden": true,
+  "prompt_n": 32781,
+  "antwort": "ROTER-OTTER-9742\n\nElias war ein Mann der Stille, und die Stille war seine einzige wahre Gefährtin. Seit drei Jahrzehnten bewohnte er den Leuchtturm von Cape Solitude, einem einsamen Finger aus grauem Stein, der trotzig in die tobende Nordsee ragte. Sein Leben war ein präziser Rhythmus aus poliertem "
+ },
+ {
+  "prompt": "ctx32k",
+  "rep": 2,
+  "nadel": "GRUENER-OTTER-5389",
+  "gefunden": true,
+  "prompt_n": 32718,
+  "antwort": "GRUENER-OTTER-5389\n\nElias war ein Mann der Stille, und die Stille war sein einziger wahrer Gefährte. Seit drei Jahrzehnten bewohnte er den Leuchtturm von Cape Solitude, einem einsamen Felsvorsprung, der wie ein trotziger Finger in den grauen Atlantik ragte. Sein Leben war ein präzise getaktetes Uhrw"
+ },
+ {
+  "prompt": "ctx32k",
+  "rep": 3,
+  "nadel": "GRUENER-LUCHS-5989",
+  "gefunden": true,
+  "prompt_n": 32901,
+  "antwort": "GRUENER-LUCHS-5989\n\nElias war ein Mann der Stille, und die Stille war seine einzige wahre Gefährtin auf dem zerklüfteten Felsen von St. Jude. Seit drei Jahrzehnten bewohnte er den Leuchtturm, ein einsamer weißer Finger, der trotzig in den grauen Himmel von Cornwall ragte. Seine Aufgabe war simpel, a"
+ },
+ {
+  "prompt": "ctx64k",
+  "rep": 1,
+  "nadel": "ROTER-LUCHS-8538",
+  "gefunden": true,
+  "prompt_n": 65844,
+  "antwort": "ROTER-LUCHS-8538\n\nElias war ein Mann der Stille, und die Stille war seine einzige wahre Gefährtin. Seit drei Jahrzehnten bewohnte er den Leuchtturm von Cape Solitude, einem einsamen Felsvorsprung, der wie ein trotziger Finger in den grauen Atlantik ragte. Der Turm war ein massives Bauwerk aus weißem"
+ },
+ {
+  "prompt": "ctx64k",
+  "rep": 2,
+  "nadel": "BLAUER-BIBER-7144",
+  "gefunden": true,
+  "prompt_n": 65609,
+  "antwort": "BLAUER-BIBER-7144\n\nElias war ein Mann der Stille, und die Stille war seine einzige wahre Gefährtin. Seit drei Jahrzehnten bewohnte er den Leuchtturm von Cape Solitude, einem einsamen Felsvorsprung, der wie ein mahnender Finger in den grauen Atlantik ragte. Der Turm war ein massives Bauwerk aus weiße"
+ },
+ {
+  "prompt": "ctx64k",
+  "rep": 3,
+  "nadel": "ROTER-LUCHS-6579",
+  "gefunden": true,
+  "prompt_n": 65306,
+  "antwort": "ROTER-LUCHS-6579\n\nElias war ein Mann der Stille, und die Stille war seine einzige wahre Gefährtin. Seit drei Jahrzehnten bewohnte er den Leuchtturm von Cape Solitude, einem einsamen Felsvorsprung, der wie ein trotziger Finger in den grauen Atlantik ragte. Der Turm war ein massives Bauwerk aus weißem"
+ },
+ {
+  "prompt": "ctx128k",
+  "rep": 1,
+  "nadel": "GELBER-LUCHS-4741",
+  "gefunden": true,
+  "prompt_n": 131234,
+  "antwort": "GELBER-LUCHS-4741\n\nElias war ein Mann der Stille, und die Stille war seine einzige wahre Gefährtin. Seit drei Jahrzehnten bewohnte er den Leuchtturm von Cape Solitude, einem einsamen Finger aus weißem Stein, der trotzig in den stürmischen Fluten des Nordatlantiks stand. Seine Welt bestand aus einer "
+ },
+ {
+  "prompt": "ctx128k",
+  "rep": 2,
+  "nadel": "GRUENER-OTTER-4535",
+  "gefunden": false,
+  "prompt_n": 130786,
+  "antwort": "GRUENER-OTTER-453H\n\nElias war ein Mann der Stille, und die Stille war seine einzige wahre Gefährtin. Seit drei Jahrzehnten bewohnte er den Leuchtturm von Cape Solitude, einem einsamen Felsvorsprung, der wie ein trotziger Finger in den grauen Atlantik ragte. Sein Leben war ein präziser Rhythmus aus p"
+ },
+ {
+  "prompt": "ctx128k",
+  "rep": 3,
+  "nadel": "GELBER-FALKE-6155",
+  "gefunden": true,
+  "prompt_n": 130986,
+  "antwort": "GELBER-FALKE-6155\n\nElias war ein Mann der Stille, und die Stille war seine einzige wahre Gefährtin. Seit drei Jahrzehnten bewohnte er den Leuchtturm von Cape Solitude, einem einsamen Felsvorsprung, der wie ein trotziger Finger in den grauen Atlantik ragte. Der Turm war ein massives Bauwerk aus weiße"
+ }
+]

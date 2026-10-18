@@ -1,0 +1,32 @@
+bereit, VRAM 22,27 + 21,10 GiB
+2.18 Zeichen je Token
+ctx32k 1 pp 32781 tok 958 pp t/s 22.3 tg t/s nadel True
+ctx32k 2 pp 32718 tok 903 pp t/s 22.3 tg t/s nadel True
+ctx32k 3 pp 32901 tok 896 pp t/s 22.2 tg t/s nadel True
+ctx64k 1 pp 65844 tok 650 pp t/s 19.7 tg t/s nadel True
+ctx64k 2 pp 65609 tok 645 pp t/s 19.7 tg t/s nadel True
+ctx64k 3 pp 65306 tok 648 pp t/s 19.7 tg t/s nadel True
+ctx128k 1 pp 131234 tok 412 pp t/s 16.1 tg t/s nadel True
+ctx128k 2 pp 130786 tok 410 pp t/s 16.1 tg t/s nadel False
+ctx128k 3 pp 130986 tok 410 pp t/s 16.1 tg t/s nadel True
+bereit, VRAM 23,85 + 22,68 GiB
+             ~~~~^^^^^^^^^^^^^
+  File "/home/alex/git/llmbenches/runs/2026-10-18-gemma4-heretic-kontext/_beilagen/ctxbench.py", line 27, in call
+    with urllib.request.urlopen(req, timeout=7200) as r:
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/urllib/request.py", line 187, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/urllib/request.py", line 487, in open
+    response = self._open(req, data)
+  File "/usr/lib/python3.14/urllib/request.py", line 504, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+                              '_open', req)
+  File "/usr/lib/python3.14/urllib/request.py", line 464, in _call_chain
+    result = func(*args)
+  File "/usr/lib/python3.14/urllib/request.py", line 1350, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/urllib/request.py", line 1324, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [Errno 111] Connection refused>

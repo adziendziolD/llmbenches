@@ -1,6 +1,280 @@
 {
- "generated": "2026-10-18T05:06:52+02:00",
+ "generated": "2026-10-18T11:28:06+02:00",
  "runs": [
+  {
+   "id": "2026-10-18-gemma4-heretic-kontext",
+   "title": "Gemma-4-31B Heretic bei 32k, 64k und 128k Kontext: llama.cpp Q8_0 gegen Radiance w8a8 (2x R9700)",
+   "date": "2026-10-18",
+   "timestamp": "2026-10-18T10:46+02:00",
+   "question": "Wie skalieren Prefill und Decode mit dem Kontext, und haelt Radiance (int8, Drafter) gegen llama.cpp (Q8_0) mit?",
+   "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne (64 Threads)",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0",
+    "ROCm": "7.2.4"
+   },
+   "model": {
+    "Gemma": "llmfan46/gemma-4-31B-it-uncensored-heretic (bf16-Quelle), 60 Schichten, 5376 hidden, Kontext-Training 262144",
+    "llama.cpp": "gemma-4-31B-it-uncensored-heretic-Q8_0.gguf mit mmproj, Build b11177 (ROCm)",
+    "Radiance": "gemma4-31b-heretic-w8a8.rad (34,9 GiB): alle Linears int8 (w8a8, Gruppe 128, f16-Scale, rule=search) per rad-convert aus bf16, Embedding bf16, Googles gemma-4-31B-it-assistant als Drafter; radiance 1.7.0"
+   },
+   "method": {
+    "Prompt": "Zufallswoerter (2,18 Zeichen je Token) mit einer Passwort-Nadel an wechselnder Position, am Ende die Aufgabe: Passwort nennen, dann eine lange Geschichte schreiben. 32768, 65536, 131072 Prompt-Token.",
+    "Wiederholungen": "3 je Kontextgroesse, jede mit anderem Text und anderer Nadel (kein Prompt-Cache-Treffer), ein kurzer Warmlauf",
+    "Messung": "256 Token, greedy (temperature 0, top_k 1, seed 42), Streaming; Prefill = Prompt-Token / Zeit bis zum ersten Token, Decode ab dem ersten Token",
+    "Kontext": "beide Server mit 147456 Token, 1 Slot",
+    "Kennzahl": "Median der Einzelwerte",
+    "Nadel": "je Lauf in <backend>/<cfg>.antworten.txt (JSON): steht das Passwort in den ersten 200 Zeichen der Antwort"
+   },
+   "cmdline": "llama-server -m <Q8_0>.gguf --mmproj <BF16>.gguf --ctx-size 147456 --device ROCm0,ROCm1 --flash-attn on --split-mode tensor --cache-type-k q8_0 --cache-type-v q8_0 --parallel 1 [--model-draft mtp-gemma-4-31B-it.gguf --spec-type draft-mtp --spec-draft-n-max 2]; radiance --model gemma4-31b-heretic-w8a8.rad --tp 2 --tp-wire exact --max-num-seqs 8 --max-model-len 147456 --kv-cache-dtype fp8 --num-speculative-tokens 3",
+   "backends": {
+    "llamacpp_q8": {
+     "label": "llama.cpp Q8_0, ROCm Tensor-Split",
+     "device": "ROCm0,ROCm1 (split-mode tensor)",
+     "detail": "KV q8_0. baseline = ohne Spekulation, VRAM nach dem Start 22,27 + 21,10 GiB. mtp2 = MTP-Draft n=2 (HauhauCS-Draft), VRAM 23,85 + 22,68 GiB; stuerzte in zwei Durchgaengen beide Male beim dritten 32k-Lauf ab (siehe Notizen)."
+    },
+    "radiance_w8a8": {
+     "label": "Radiance w8a8 mit Drafter",
+     "device": "ROCm0,ROCm1 (tp 2)",
+     "detail": "int8-Linears, KV fp8, Assistant-Drafter mit 3 Token, VRAM nach dem Start 31,65 + 31,75 GiB (die Engine belegt den Kontext vorab)."
+    }
+   },
+   "configs": {
+    "baseline": {
+     "label": "Standard (llama.cpp ohne Spekulation, Radiance mit Drafter)",
+     "order": 0
+    },
+    "mtp2": {
+     "label": "MTP-Draft n=2 (nur llama.cpp)",
+     "order": 1
+    }
+   },
+   "prompts": {
+    "ctx32k": "32768 Prompt-Token (gemessen rund 32800)",
+    "ctx64k": "65536 Prompt-Token (gemessen rund 65600)",
+    "ctx128k": "131072 Prompt-Token (gemessen rund 131000)"
+   },
+   "notes": [
+    "Median Prefill / Decode in t/s. Radiance: 32k 2225 / 47,9; 64k 1732 / 43,8; 128k 1210 / 36,8. llama.cpp ohne Spekulation: 32k 903 / 22,3; 64k 648 / 19,7; 128k 410 / 16,1. llama.cpp mit MTP n=2: nur 32k, 886 / 24,3 aus zwei Laeufen.",
+    "Verhaeltnis Radiance zu llama.cpp (ohne Spekulation): Prefill 2,5x bei 32k, 2,7x bei 64k, 3,0x bei 128k; Decode 2,1x, 2,2x, 2,3x. Der Decode-Vergleich ist nicht gleichwertig, weil Radiance mit Drafter laeuft; fuer den fairen Vergleich fehlt Radiance mit --num-speculative-tokens 0.",
+    "Absturz llama.cpp mit MTP: ggml_cuda_flash_attn_ext (fattn.cu:759) bricht mit HSA_STATUS_ERROR_MEMORY_APERTURE_VIOLATION ab, aufgerufen aus common_speculative_impl_draft_mtp::draft. Beide Durchgaenge (llamacpp_q8/mtp2-abbruch-* und mtp2.*) starben bei ctx32k Wiederholung 3, also reproduzierbar mit demselben Prompt; die zwei bis dahin gemessenen Laeufe stehen in den Dateien. Ohne Spekulation lief llama.cpp alle neun Laeufe durch. Der 64k- und 128k-Fall mit MTP ist deshalb nicht gemessen.",
+    "Nadel (Passwort aus dem Kontext): Radiance 8 von 9 (ctx64k Wiederholung 2: 'BLAUER-BIBER-714' statt '-7144', letzte Ziffer fehlt). llama.cpp ohne Spekulation 8 von 9 (ctx128k Wiederholung 2 nicht gefunden). Jeweils ein Fehler, kein Hinweis auf einen systematischen Unterschied; mit drei Laeufen je Groesse nicht belastbar.",
+    "Radiance-Prefill sinkt von 2225 auf 1210 t/s (-46 %) zwischen 32k und 128k, llama.cpp von 903 auf 410 t/s (-55 %). Decode: Radiance -23 %, llama.cpp -28 %.",
+    "Die Radiance-Quantisierung (alle Linears int8) ist die groesste Stufe, die auf zwei Karten passt; bf16 braucht 62 GB. Qualitaet nicht gegen Q8_0 oder bf16 verglichen, nur die Nadel. Die Konvertierung lief nur auf der CPU und dauerte rund 8 Minuten.",
+    "Der Radiance-Serverlog ist auf den Start dieses Laufs gekuerzt. Skripte: _beilagen/ctxbench.py (Messung), serie.sh (erster Durchgang), serie2-llama.sh (llama.cpp ein zweites Mal)."
+   ],
+   "results": {
+    "llamacpp_q8": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "ctx128k": {
+        "n": 3,
+        "min": 16.06,
+        "median": 16.06,
+        "max": 16.07,
+        "mean": 16.06,
+        "spread_pct": 0.1,
+        "values": [
+         16.06,
+         16.06,
+         16.07
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 409.8,
+        "speedup": 1.0
+       },
+       "ctx32k": {
+        "n": 3,
+        "min": 22.23,
+        "median": 22.26,
+        "max": 22.33,
+        "mean": 22.28,
+        "spread_pct": 0.4,
+        "values": [
+         22.26,
+         22.33,
+         22.23
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 902.6,
+        "speedup": 1.0
+       },
+       "ctx64k": {
+        "n": 3,
+        "min": 19.66,
+        "median": 19.74,
+        "max": 19.75,
+        "mean": 19.71,
+        "spread_pct": 0.5,
+        "values": [
+         19.66,
+         19.74,
+         19.75
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 647.5,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 9,
+       "min": 16.06,
+       "median": 19.74,
+       "max": 22.33,
+       "mean": 19.35,
+       "spread_pct": 31.8,
+       "values": [
+        16.06,
+        16.06,
+        16.07,
+        22.26,
+        22.33,
+        22.23,
+        19.66,
+        19.74,
+        19.75
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "mtp2": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "ctx32k": {
+        "n": 3,
+        "min": 0.0,
+        "median": 24.33,
+        "max": 24.97,
+        "mean": 16.43,
+        "spread_pct": 102.6,
+        "values": [
+         24.97,
+         24.33,
+         0.0
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 912.4,
+        "speedup": 1.093
+       }
+      },
+      "overall": {
+       "n": 3,
+       "min": 0.0,
+       "median": 24.33,
+       "max": 24.97,
+       "mean": 16.43,
+       "spread_pct": 102.6,
+       "values": [
+        24.97,
+        24.33,
+        0.0
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.233
+     }
+    },
+    "radiance_w8a8": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "ctx128k": {
+        "n": 3,
+        "min": 36.08,
+        "median": 36.83,
+        "max": 38.82,
+        "mean": 37.25,
+        "spread_pct": 7.4,
+        "values": [
+         36.83,
+         38.82,
+         36.08
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 1210.3,
+        "speedup": 1.0
+       },
+       "ctx32k": {
+        "n": 3,
+        "min": 46.16,
+        "median": 47.93,
+        "max": 49.52,
+        "mean": 47.87,
+        "spread_pct": 7.0,
+        "values": [
+         47.93,
+         46.16,
+         49.52
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 2224.8,
+        "speedup": 1.0
+       },
+       "ctx64k": {
+        "n": 3,
+        "min": 43.52,
+        "median": 43.78,
+        "max": 46.47,
+        "mean": 44.59,
+        "spread_pct": 6.7,
+        "values": [
+         43.52,
+         46.47,
+         43.78
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 1731.5,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 9,
+       "min": 36.08,
+       "median": 43.78,
+       "max": 49.52,
+       "mean": 43.24,
+       "spread_pct": 30.7,
+       "values": [
+        36.83,
+        38.82,
+        36.08,
+        47.93,
+        46.16,
+        49.52,
+        43.52,
+        46.47,
+        43.78
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     }
+    }
+   }
+  },
   {
    "id": "2026-10-17-radiance-qwen38",
    "title": "Radiance (StillDeadcode) auf 2x R9700: Qwen3.8-27B FP8 und Qwen3.8-Flash-Next, --tp 2",

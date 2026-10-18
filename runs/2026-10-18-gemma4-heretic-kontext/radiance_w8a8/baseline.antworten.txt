@@ -1,0 +1,74 @@
+[
+ {
+  "prompt": "ctx32k",
+  "rep": 1,
+  "nadel": "ROTER-OTTER-9742",
+  "gefunden": true,
+  "prompt_n": 32781,
+  "antwort": "ROTER-OTTER-9742\n\nElias war ein Mann der Stille, geformt von der salzigen Gischt und dem unaufhörlichen Rhythmus der Nordsee. Seit drei Jahrzehnten bewohnte er den Leuchtturm von Kap Sturmwind, einen einsamen weißen Finger aus Stein, der trotzig in den grauen Himmel ragte. Für die Menschen im Dorf a"
+ },
+ {
+  "prompt": "ctx32k",
+  "rep": 2,
+  "nadel": "GRUENER-OTTER-5389",
+  "gefunden": true,
+  "prompt_n": 32718,
+  "antwort": "GRUENER-OTTER-5389\n\nElias war ein Mann der Stille, geformt von der salzigen Gischt und dem unaufhörlichen Rhythmus der Nordsee. Seit drei Jahrzehnten bewohnte er den „Leuchtturm am Ende der Welt“, einen einsamen, weiß getünchten Turm, der auf einem schroffen Felsen thronte, wo das Land endete und da"
+ },
+ {
+  "prompt": "ctx32k",
+  "rep": 3,
+  "nadel": "GRUENER-LUCHS-5989",
+  "gefunden": true,
+  "prompt_n": 32901,
+  "antwort": "GRUENER-LUCHS-5989\n\nElias war ein Mann der Stille, geformt von der salzigen Gischt und dem endlosen Rhythmus der Gezeiten. Seit drei Jahrzehnten bewohnte er den „Leuchtturm am Ende der Welt“, einen einsamen Turm aus grauem Granit, der auf einer schroffen Klippe thronte, wo das Land dem unerbittliche"
+ },
+ {
+  "prompt": "ctx64k",
+  "rep": 1,
+  "nadel": "ROTER-LUCHS-8538",
+  "gefunden": true,
+  "prompt_n": 65844,
+  "antwort": "ROTER-LUCHS-8538\n\nElias war ein Mann der Stille, geformt von der salzigen Gischt und dem unerbittlichen Rhythmus der Gezeiten. Seit drei Jahrzehnten bewohnte er den „Leuchtturm am Ende der Welt“, einen einsamen Felsstachel, der steil aus dem grauen Nordatlantik ragte. Sein Leben war ein Kreislauf au"
+ },
+ {
+  "prompt": "ctx64k",
+  "rep": 2,
+  "nadel": "BLAUER-BIBER-7144",
+  "gefunden": false,
+  "prompt_n": 65609,
+  "antwort": "BLAUER-BIBER-714 lautet das Passwort.\n\nHier ist die Geschichte von Elias, dem Wächter des einsamen Lichts:\n\nElias lebte auf einem winzigen, zerklüfteten Felsen, der weit draußen im Nordatlantik lag, wo das Meer eine Farbe annahm, die zwischen tiefem Indigo und einem bedrohlichen Schwarz schwankte. S"
+ },
+ {
+  "prompt": "ctx64k",
+  "rep": 3,
+  "nadel": "ROTER-LUCHS-6579",
+  "gefunden": true,
+  "prompt_n": 65306,
+  "antwort": "ROTER-LUCHS-6579\n\nElias war ein Mann der Stille, ein Mann, dessen Herz im Rhythmus der Gezeiten schlug. Seit drei Jahrzehnten bewohnte er den „Leuchtturm der verlorenen Seelen“, einen einsamen, steingrauen Turm, der auf einem zerklüfteten Felsen mitten im stürmischen Nordatlantik thronte. Sein Leben"
+ },
+ {
+  "prompt": "ctx128k",
+  "rep": 1,
+  "nadel": "GELBER-LUCHS-4741",
+  "gefunden": true,
+  "prompt_n": 131234,
+  "antwort": "GELBER-LUCHS-4741\n\nElias war ein Mann der Stille, ein Mann, dessen Herz im Rhythmus der Gezeiten schlug. Seit drei Jahrzehnten bewohnte er den „Leuchtturm der einsamen Klippen“, einen massiven Turm aus grauem Granit, der wie ein trotziger Finger in den stürmischen Himmel von Nordland ragte. Sein Leb"
+ },
+ {
+  "prompt": "ctx128k",
+  "rep": 2,
+  "nadel": "GRUENER-OTTER-4535",
+  "gefunden": true,
+  "prompt_n": 130786,
+  "antwort": "GRUENER-OTTER-4535\n\nElias war ein Mann der Stille, ein Mann, dessen Herz im Rhythmus der Gezeiten schlug. Seit drei Jahrzehnten bewohnte er den „Leuchtturm der sieben Winde“, einen einsamen, weißen Turm, der wie ein steinerner Finger aus dem zerklüfteten Gestein einer abgelegenen Nordküste ragte. Se"
+ },
+ {
+  "prompt": "ctx128k",
+  "rep": 3,
+  "nadel": "GELBER-FALKE-6155",
+  "gefunden": true,
+  "prompt_n": 130986,
+  "antwort": "GELBER-FALKE-6155\n\nElias war ein Mann der Stille, ein Mann, dessen Herz im Rhythmus der Gezeiten schlug. Seit drei Jahrzehnten bewohnte er den „Leuchtturm vom Nebelhorn“, einen einsamen Wächter aus weißem Stein, der auf einer schroffen Klippe am Rande der Welt thronte. Sein Leben war geprägt von der"
+ }
+]

@@ -1,0 +1,11 @@
+bereit, VRAM 31,65 + 31,75 GiB
+2.18 Zeichen je Token
+ctx32k 1 pp 32781 tok 2243 pp t/s 47.9 tg t/s nadel True
+ctx32k 2 pp 32718 tok 2225 pp t/s 46.2 tg t/s nadel True
+ctx32k 3 pp 32901 tok 2216 pp t/s 49.5 tg t/s nadel True
+ctx64k 1 pp 65844 tok 1728 pp t/s 43.5 tg t/s nadel True
+ctx64k 2 pp 65609 tok 1731 pp t/s 46.5 tg t/s nadel False
+ctx64k 3 pp 65306 tok 1738 pp t/s 43.8 tg t/s nadel True
+ctx128k 1 pp 131234 tok 1209 pp t/s 36.8 tg t/s nadel True
+ctx128k 2 pp 130786 tok 1212 pp t/s 38.8 tg t/s nadel True
+ctx128k 3 pp 130986 tok 1210 pp t/s 36.1 tg t/s nadel True

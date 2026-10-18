@@ -1,0 +1,41 @@
+[
+ {
+  "cfg": "mtp2",
+  "prompt": "ctx32k",
+  "rep": 1,
+  "draft_n": null,
+  "draft_accepted": null,
+  "pred_n": 256,
+  "pred_ms": 10212.558507919312,
+  "tps": 24.969257194684435,
+  "prompt_n": 32781,
+  "prompt_tps": 938.7080490099297,
+  "ttft_ms": 34921.40078544617
+ },
+ {
+  "cfg": "mtp2",
+  "prompt": "ctx32k",
+  "rep": 2,
+  "draft_n": null,
+  "draft_accepted": null,
+  "pred_n": 256,
+  "pred_ms": 10480.775594711304,
+  "tps": 24.330260455979552,
+  "prompt_n": 32718,
+  "prompt_tps": 886.1363903914877,
+  "ttft_ms": 36922.0814704895
+ },
+ {
+  "cfg": "mtp2",
+  "prompt": "ctx32k",
+  "rep": 3,
+  "draft_n": null,
+  "draft_accepted": null,
+  "pred_n": 0,
+  "pred_ms": 0.001,
+  "tps": 0.0,
+  "prompt_n": 0,
+  "prompt_tps": 0.0,
+  "ttft_ms": 37182.53779411316
+ }
+]
