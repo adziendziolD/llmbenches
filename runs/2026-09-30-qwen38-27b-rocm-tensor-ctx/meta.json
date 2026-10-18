@@ -2,6 +2,7 @@
   "id": "2026-09-30-qwen38-27b-rocm-tensor-ctx",
   "title": "Kontextstufen 64k bis 256k, ROCm Tensor-Split, Qwen3.8-27B mit MTP",
   "date": "2026-09-30",
+  "timestamp": "2026-09-30T13:32+02:00",
   "question": "Haelt die Empfehlung (ROCm, Tensor-Split ueber beide R9700, MTP n-max 2) ihre Geschwindigkeit, wenn der reservierte Kontext von 64k auf 256k waechst und der Prompt lang ist (ca. 3,5k Token)?",
   "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",

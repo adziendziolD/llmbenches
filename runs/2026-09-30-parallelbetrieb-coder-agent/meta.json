@@ -2,6 +2,7 @@
   "id": "2026-09-30-parallelbetrieb-coder-agent",
   "title": "Parallelbetrieb Coding-Modell und Agenten-Modell, zwei R9700",
   "date": "2026-09-30",
+  "timestamp": "2026-09-30T15:35+02:00",
   "question": "Wie stark bremsen sich qwen3.8-27b-code und ornstein-hermes-27b aus, wenn beide im selben Router geladen sind und gleichzeitig generieren, und kostet das reine Geladensein Tempo?",
   "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",

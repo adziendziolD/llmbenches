@@ -1,11 +1,12 @@
 // erzeugt von tools/collect.py, nicht von Hand aendern
 window.BENCH_DATA = {
- "generated": "2026-10-18T02:53:22+02:00",
+ "generated": "2026-10-18T02:56:21+02:00",
  "runs": [
   {
    "id": "2026-10-17-radiance-qwen38",
    "title": "Radiance (StillDeadcode) auf 2x R9700: Qwen3.8-27B FP8 und Qwen3.8-Flash-Next, --tp 2",
    "date": "2026-10-17",
+   "timestamp": "2026-10-17T23:46+02:00",
    "question": "Lohnt Radiance, die reine RDNA4-Engine, als zusaetzliches Backend gegenueber llama.cpp und Strata auf unserer Maschine?",
    "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
@@ -535,13 +536,13 @@ window.BENCH_DATA = {
       "speedup": 1.0
      }
     }
-   },
-   "timestamp": "2026-10-17T23:46+02:00"
+   }
   },
   {
    "id": "2026-09-30-gemma4-heretic-split",
    "title": "Gemma-4-31B Heretic: Split-Mode, ROCm gegen Vulkan, MTP, Q6_K und Q8_0",
    "date": "2026-09-30",
+   "timestamp": "2026-09-30T16:24+02:00",
    "question": "Ist ROCm mit Tensor-Split auch bei Gemma-4-31B Heretic schneller als das bisherige Vulkan-Preset, bringt MTP etwas, und was kostet Q8_0 gegenueber Q6_K?",
    "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
@@ -1158,13 +1159,13 @@ window.BENCH_DATA = {
       "speedup": null
      }
     }
-   },
-   "timestamp": "2026-09-30T16:24+02:00"
+   }
   },
   {
    "id": "2026-09-30-parallelbetrieb-q8-q4-prefill",
    "title": "Parallelbetrieb Coder Q8_0 und Agent Q4_K_M, Prompt-Processing",
    "date": "2026-09-30",
+   "timestamp": "2026-09-30T15:55+02:00",
    "question": "Wie verhalten sich Prompt-Processing und Generierung, wenn der Coder (Q8_0, ca. 3k-Prompt) und der Agent (Q4_K_M, ca. 12k-Prompt) einzeln und gleichzeitig laufen?",
    "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
@@ -1381,13 +1382,13 @@ window.BENCH_DATA = {
       "speedup": null
      }
     }
-   },
-   "timestamp": "2026-09-30T15:55+02:00"
+   }
   },
   {
    "id": "2026-09-30-parallelbetrieb-coder-agent",
    "title": "Parallelbetrieb Coding-Modell und Agenten-Modell, zwei R9700",
    "date": "2026-09-30",
+   "timestamp": "2026-09-30T15:35+02:00",
    "question": "Wie stark bremsen sich qwen3.8-27b-code und ornstein-hermes-27b aus, wenn beide im selben Router geladen sind und gleichzeitig generieren, und kostet das reine Geladensein Tempo?",
    "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
@@ -1806,13 +1807,13 @@ window.BENCH_DATA = {
       "speedup": null
      }
     }
-   },
-   "timestamp": "2026-09-30T15:35+02:00"
+   }
   },
   {
    "id": "2026-09-30-qwen38-27b-q8-vs-q6",
    "title": "Quant Q8_0 gegen Q6_K bei vollem Kontext, ROCm Tensor-Split, Qwen3.8-27B",
    "date": "2026-09-30",
+   "timestamp": "2026-09-30T13:40+02:00",
    "question": "Kostet die hoechste Quantisierung, die bei ctx 262144 in 2x31,9 GiB passt (Q8_0), Geschwindigkeit gegenueber Q6_K?",
    "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
@@ -2232,13 +2233,13 @@ window.BENCH_DATA = {
       "speedup": 1.727
      }
     }
-   },
-   "timestamp": "2026-09-30T13:40+02:00"
+   }
   },
   {
    "id": "2026-09-30-qwen38-27b-rocm-tensor-ctx",
    "title": "Kontextstufen 64k bis 256k, ROCm Tensor-Split, Qwen3.8-27B mit MTP",
    "date": "2026-09-30",
+   "timestamp": "2026-09-30T13:32+02:00",
    "question": "Haelt die Empfehlung (ROCm, Tensor-Split ueber beide R9700, MTP n-max 2) ihre Geschwindigkeit, wenn der reservierte Kontext von 64k auf 256k waechst und der Prompt lang ist (ca. 3,5k Token)?",
    "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
@@ -2477,13 +2478,13 @@ window.BENCH_DATA = {
       "speedup": null
      }
     }
-   },
-   "timestamp": "2026-09-30T13:32+02:00"
+   }
   },
   {
    "id": "2026-09-30-qwen38-27b-rocm-p2p",
    "title": "Split-Mode und P2P auf ROCm mit zwei R9700, Qwen3.8-27B mit MTP",
    "date": "2026-09-30",
+   "timestamp": "2026-09-30T13:09+02:00",
    "question": "Wie verhalten sich Layer- und Tensor-Split auf dem ROCm-Backend, und bringt GGML_CUDA_P2P=1 (Peer-Access zwischen den Karten) etwas?",
    "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
@@ -3545,13 +3546,13 @@ window.BENCH_DATA = {
       "speedup": null
      }
     }
-   },
-   "timestamp": "2026-09-30T13:09+02:00"
+   }
   },
   {
    "id": "2026-09-30-qwen38-27b-tensorsplit",
    "title": "Split-Mode none/layer/tensor mit zwei R9700, Qwen3.8-27B mit MTP",
    "date": "2026-09-30",
+   "timestamp": "2026-09-30T12:51+02:00",
    "question": "Ist qwen3.8-27b-code mit --split-mode tensor ueber zwei R9700 schneller als auf einer Karte oder mit Layer-Split?",
    "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
@@ -4150,13 +4151,13 @@ window.BENCH_DATA = {
       "speedup": 1.946
      }
     }
-   },
-   "timestamp": "2026-09-30T12:51+02:00"
+   }
   },
   {
    "id": "2026-09-29-qwen38-flashnext-router",
    "title": "Flash-Next nach dem Update, Router-Preset gegen 1 Slot",
    "date": "2026-09-29",
+   "timestamp": "2026-09-29T14:50+02:00",
    "question": "Ist Qwen3.8-Flash-Next nach dem llama.cpp-Update und dem RAM-Upgrade (61 auf 123 GiB) langsamer geworden, und was kostet das Router-Preset mit 3 Slots gegenueber der Reihe vom 2026-09-13?",
    "machine": {
     "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",
@@ -4482,13 +4483,13 @@ window.BENCH_DATA = {
       "speedup": 1.379
      }
     }
-   },
-   "timestamp": "2026-09-29T14:50+02:00"
+   }
   },
   {
    "id": "2026-09-29-qwen38-27b-slots-build",
    "title": "Slotzahl, kv-unified, mmproj und Build, Qwen3.8-27B mit MTP",
    "date": "2026-09-29",
+   "timestamp": "2026-09-29T13:39+02:00",
    "question": "Warum fuehlt sich das Preset qwen3.8-27b-code (ctx 262144) nach dem llama.cpp-Update langsam an: Build, Slotzahl, --kv-unified oder mmproj?",
    "machine": {
     "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",
@@ -5483,13 +5484,13 @@ window.BENCH_DATA = {
       "speedup": null
      }
     }
-   },
-   "timestamp": "2026-09-29T13:39+02:00"
+   }
   },
   {
    "id": "2026-09-14-qwen38-27b-mtp",
    "title": "MTP-Speculative-Decoding, Qwen3.8-27B (dicht, qwen35)",
    "date": "2026-09-14",
+   "timestamp": "2026-09-14T09:50+02:00",
    "question": "Bringt der MTP-Draft-Head auch beim dichten Qwen3.8-27B Durchsatz, welches --spec-draft-n-max ist optimal, und wie viel davon kostet jeder zusaetzliche Server-Slot?",
    "machine": {
     "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",
@@ -6451,13 +6452,13 @@ window.BENCH_DATA = {
       "speedup": 1.283
      }
     }
-   },
-   "timestamp": "2026-09-14T09:50+02:00"
+   }
   },
   {
    "id": "2026-09-13-qwen38-mtp",
    "title": "MTP-Speculative-Decoding, Qwen3.8-Flash-Next",
    "date": "2026-09-13",
+   "timestamp": "2026-09-13T20:19+02:00",
    "question": "Bringt der MTP-Draft-Head auf dieser Maschine Durchsatz, welches --spec-draft-n-max ist optimal, und wie schlaegt sich ROCm gegen Vulkan?",
    "machine": {
     "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",
@@ -7342,8 +7343,7 @@ window.BENCH_DATA = {
       "speedup": 1.357
      }
     }
-   },
-   "timestamp": "2026-09-13T20:19+02:00"
+   }
   }
  ]
 };

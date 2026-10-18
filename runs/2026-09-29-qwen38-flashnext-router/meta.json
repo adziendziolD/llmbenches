@@ -2,6 +2,7 @@
   "id": "2026-09-29-qwen38-flashnext-router",
   "title": "Flash-Next nach dem Update, Router-Preset gegen 1 Slot",
   "date": "2026-09-29",
+  "timestamp": "2026-09-29T14:50+02:00",
   "question": "Ist Qwen3.8-Flash-Next nach dem llama.cpp-Update und dem RAM-Upgrade (61 auf 123 GiB) langsamer geworden, und was kostet das Router-Preset mit 3 Slots gegenueber der Reihe vom 2026-09-13?",
   "machine": {
     "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",

@@ -123,8 +123,9 @@ def main():
                     pb = base.get("prompts", {}).get(pid, {}).get("median") if bm else None
                     pe["speedup"] = round(pe["median"] / pb, 3) if pb else None
         meta["results"] = results
-        # Zeitstempel: meta.json darf ihn vorgeben, sonst der fruehste Zeitpunkt, an dem ein
-        # Ergebnis dieses Laufs geschrieben wurde (Start der Messreihe, lokale Zeit mit Offset).
+        # Zeitstempel: steht er in der meta.json, gilt der. Sonst der fruehste Zeitpunkt, an dem ein
+        # Ergebnis dieses Laufs geschrieben wurde (nur ein Notbehelf: nach git checkout/rebase stimmt
+        # die Dateizeit nicht mehr, darum steht der Wert fuer alle bestehenden Laeufe in der meta.json).
         if not meta.get("timestamp"):
             stamps = [os.path.getmtime(os.path.join(d, f))
                       for d, _, files in os.walk(rdir) if d != rdir

@@ -2,6 +2,7 @@
   "id": "2026-09-13-qwen38-mtp",
   "title": "MTP-Speculative-Decoding, Qwen3.8-Flash-Next",
   "date": "2026-09-13",
+  "timestamp": "2026-09-13T20:19+02:00",
   "question": "Bringt der MTP-Draft-Head auf dieser Maschine Durchsatz, welches --spec-draft-n-max ist optimal, und wie schlaegt sich ROCm gegen Vulkan?",
   "machine": {
     "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",

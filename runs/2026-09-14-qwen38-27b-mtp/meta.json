@@ -2,6 +2,7 @@
   "id": "2026-09-14-qwen38-27b-mtp",
   "title": "MTP-Speculative-Decoding, Qwen3.8-27B (dicht, qwen35)",
   "date": "2026-09-14",
+  "timestamp": "2026-09-14T09:50+02:00",
   "question": "Bringt der MTP-Draft-Head auch beim dichten Qwen3.8-27B Durchsatz, welches --spec-draft-n-max ist optimal, und wie viel davon kostet jeder zusaetzliche Server-Slot?",
   "machine": {
     "GPU": "AMD Radeon AI PRO R9700, gfx1201, 31,86 GiB VRAM",

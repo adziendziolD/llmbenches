@@ -2,6 +2,7 @@
   "id": "2026-09-30-gemma4-heretic-split",
   "title": "Gemma-4-31B Heretic: Split-Mode, ROCm gegen Vulkan, MTP, Q6_K und Q8_0",
   "date": "2026-09-30",
+  "timestamp": "2026-09-30T16:24+02:00",
   "question": "Ist ROCm mit Tensor-Split auch bei Gemma-4-31B Heretic schneller als das bisherige Vulkan-Preset, bringt MTP etwas, und was kostet Q8_0 gegenueber Q6_K?",
   "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",

@@ -2,6 +2,7 @@
   "id": "2026-09-30-qwen38-27b-q8-vs-q6",
   "title": "Quant Q8_0 gegen Q6_K bei vollem Kontext, ROCm Tensor-Split, Qwen3.8-27B",
   "date": "2026-09-30",
+  "timestamp": "2026-09-30T13:40+02:00",
   "question": "Kostet die hoechste Quantisierung, die bei ctx 262144 in 2x31,9 GiB passt (Q8_0), Geschwindigkeit gegenueber Q6_K?",
   "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",

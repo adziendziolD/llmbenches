@@ -2,6 +2,7 @@
   "id": "2026-09-30-parallelbetrieb-q8-q4-prefill",
   "title": "Parallelbetrieb Coder Q8_0 und Agent Q4_K_M, Prompt-Processing",
   "date": "2026-09-30",
+  "timestamp": "2026-09-30T15:55+02:00",
   "question": "Wie verhalten sich Prompt-Processing und Generierung, wenn der Coder (Q8_0, ca. 3k-Prompt) und der Agent (Q4_K_M, ca. 12k-Prompt) einzeln und gleichzeitig laufen?",
   "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",

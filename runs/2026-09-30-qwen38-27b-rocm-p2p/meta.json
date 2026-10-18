@@ -2,6 +2,7 @@
   "id": "2026-09-30-qwen38-27b-rocm-p2p",
   "title": "Split-Mode und P2P auf ROCm mit zwei R9700, Qwen3.8-27B mit MTP",
   "date": "2026-09-30",
+  "timestamp": "2026-09-30T13:09+02:00",
   "question": "Wie verhalten sich Layer- und Tensor-Split auf dem ROCm-Backend, und bringt GGML_CUDA_P2P=1 (Peer-Access zwischen den Karten) etwas?",
   "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",

@@ -2,6 +2,7 @@
   "id": "2026-10-17-radiance-qwen38",
   "title": "Radiance (StillDeadcode) auf 2x R9700: Qwen3.8-27B FP8 und Qwen3.8-Flash-Next, --tp 2",
   "date": "2026-10-17",
+  "timestamp": "2026-10-17T23:46+02:00",
   "question": "Lohnt Radiance, die reine RDNA4-Engine, als zusaetzliches Backend gegenueber llama.cpp und Strata auf unserer Maschine?",
   "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",

@@ -2,6 +2,7 @@
   "id": "2026-09-30-qwen38-27b-tensorsplit",
   "title": "Split-Mode none/layer/tensor mit zwei R9700, Qwen3.8-27B mit MTP",
   "date": "2026-09-30",
+  "timestamp": "2026-09-30T12:51+02:00",
   "question": "Ist qwen3.8-27b-code mit --split-mode tensor ueber zwei R9700 schneller als auf einer Karte oder mit Layer-Split?",
   "machine": {
     "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
