@@ -1,0 +1,11 @@
+[Unit]
+Description=Leistungsgrenze 210 W fuer alle AMD-GPUs
+After=systemd-modules-load.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'for h in /sys/class/drm/card[0-9]*/device/hwmon/hwmon*; do [ "$(cat $h/name)" = amdgpu ] && echo 210000000 > $h/power1_cap; done'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+{"c": 1, "tokens": 256, "s": 1.82, "agg_tps": 140.8, "per_stream": 140.8}
+{"c": 4, "tokens": 1024, "s": 3.81, "agg_tps": 268.7, "per_stream": 67.2}
+{"c": 8, "tokens": 2048, "s": 4.96, "agg_tps": 413.2, "per_stream": 51.6}
+{"c": 1, "max_tokens": 2048, "tokens": 2048, "s": 12.6, "agg_tps": 162.2, "per_stream": 162.2}
+{"c": 4, "max_tokens": 2048, "tokens": 7590, "s": 22.2, "agg_tps": 341.9, "per_stream": 85.5}
+{"c": 8, "max_tokens": 2048, "tokens": 15315, "s": 32.7, "agg_tps": 467.9, "per_stream": 58.5}

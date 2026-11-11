@@ -1,0 +1,19 @@
+== 160000 Zeichen
+prompt_tokens 74279 completion 12
+TTFT 12.6 s -> Prefill 5916 t/s
+Decode 134.0 t/s
+Antwort: BLAUER-OTTER-4711
+== 640000 Zeichen
+{"error":{"message":"This model's maximum context length is 262144 tokens: the request (297172 tokens) exceeds the available context size (262144 tokens) and leaves nothing to generate into; shorten the prompt by at least 35029 tokens","type":"invalid_request_error","param":"messages","code":"context_length_exceeded","n_prompt_tokens":297172,"n_ctx":262144}}
+== 1220000 Zeichen
+{"error":{"message":"This model's maximum context length is 262144 tokens: the request (566705 tokens) exceeds the available context size (262144 tokens) and leaves nothing to generate into; shorten the prompt by at least 304562 tokens","type":"invalid_request_error","param":"messages","code":"context_length_exceeded","n_prompt_tokens":566705,"n_ctx":262144}}
+== 280000 Zeichen
+prompt_tokens 129970 completion 12
+TTFT 18.4 s -> Prefill 7050 t/s
+Decode 134.3 t/s
+Antwort: BLAUER-OTTER-4711
+== 523000 Zeichen
+prompt_tokens 242678 completion 12
+TTFT 44.2 s -> Prefill 5494 t/s
+Decode 102.7 t/s
+Antwort: BLAUER-OTTER-4711

@@ -1,0 +1,60 @@
+{
+  "id": "2026-11-11-flashnext-210w",
+  "title": "Qwen3.8-Flash-Next (Radiance) mit Leistungsgrenze 210 W je GPU",
+  "date": "2026-11-11",
+  "timestamp": "2026-11-11T16:33+01:00",
+  "question": "Wie viel Tempo kostet die Leistungsgrenze von 210 W (statt 300 W) je R9700 bei Qwen3.8-Flash-Next ueber Radiance?",
+  "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "Leistungsgrenze": "210 W je Karte (power1_cap, Minimum des Treibers; Standard 300 W)",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0"
+  },
+  "model": {
+    "Modell": "qwen3.8-next-flash-fp8-iq4r-moe.rad, 4-Bit-Experten, int8-Trunk",
+    "Engine": "Radiance, --tp 2, so wie der llm-router es startet"
+  },
+  "method": {
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42)",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf; lange Ausgabe 3 x 2 mit 4096 Tokens",
+    "Kennzahl": "Median der Einzelwerte",
+    "Referenz": "referenz_300w = radiance_flashnext_disk_exact aus Lauf 2026-10-17-radiance-qwen38, unveraendert kopiert",
+    "Leistung": "power1_average beider Karten alle 0,5 s mitgeschrieben (_beilagen/power_*.log)"
+  },
+  "cmdline": "radiance --model qwen3.8-next-flash-fp8-iq4r-moe.rad --served-model-name qwen3.8-flash-next --tp 2 --tp-wire exact --max-num-seqs 8 --max-model-len 262144 --kv-cache-dtype fp8 --placement expert_tiered --host-pool-mib 12288 --gpu-headroom-mib 96 --num-speculative-tokens 3 --max-num-batched-tokens 2048 --ngram-placement disk",
+  "backends": {
+    "radiance_210w": {
+      "label": "Radiance Flash-Next, 210 W",
+      "device": "ROCm0,ROCm1 (tp 2)",
+      "detail": "Konfiguration des llm-routers am 2026-11-11 (siehe Startzeile), beide Karten auf 210 W begrenzt."
+    },
+    "referenz_300w": {
+      "label": "Referenz 300 W (Lauf 2026-10-17)",
+      "device": "ROCm0,ROCm1 (tp 2)",
+      "detail": "radiance_flashnext_disk_exact aus 2026-10-17-radiance-qwen38: 300 W, --tp-wire exact, n-gram disk, andere Startparameter als heute (kein expert_tiered, Kontext 200000). Nur kopiert, nicht neu gemessen."
+    }
+  },
+  "configs": {
+    "baseline": { "label": "256 Tokens", "order": 0 },
+    "lang4096": { "label": "4096 Tokens", "order": 1 }
+  },
+  "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+  },
+  "notes": [
+    "Ein Strom, 256 Tokens: Median 149,3 t/s gegen 170,5 t/s in der Referenz, also rund 12 Prozent weniger (code 143,5 gegen 160,0, prosa 151,6 gegen 170,5, reasoning 177,0 gegen 200,3). Prompt-Rate kurzer Prompts unveraendert (Median 1527 gegen 1502 t/s).",
+    "Lange Ausgabe (4096 Tokens, je Prompt 2 Wiederholungen, die Antworten enden teils frueher): Median 170,4 t/s, also nicht langsamer als kurze Antworten. Keine Referenz dazu.",
+    "Concurrency mit 256 Tokens (gesamt, pro Strom): c1 140,8 / c4 268,7 (67,2) / c8 413,2 (51,6) t/s gegen c1 154,7 / c4 391,3 (97,8) / c8 587,7 (73,5) in der Referenz. Bei mehreren Stroemen also rund 30 Prozent weniger; hier ist die Leistung der Engpass.",
+    "Concurrency mit bis zu 2048 Tokens: c1 162,2 / c4 341,9 (85,5) / c8 467,9 (58,5) t/s. Keine Referenz dazu.",
+    "Langer Kontext (Zufallswoerter, Passwort als Nadel bei einem Drittel, _beilagen/longctx.py): 74279 Token Prefill 5916 t/s (TTFT 12,6 s), 129970 Token 7050 t/s (TTFT 18,4 s), 242678 Token 5494 t/s (TTFT 44,2 s). Decode 134 / 134 / 103 t/s, nur ueber 12 Token gemessen, also grob. Alle drei richtig beantwortet (BLAUER-OTTER-4711). Referenz bei 243580 Token: Prefill 5800 bis 6700 t/s, TTFT 36 bis 42 s, Decode 108 bis 122 t/s; das Prefill verliert also hoechstens rund 15 Prozent.",
+    "Leistung: im Mittel unter Last 206 bis 211 W je Karte, 88 bis 99 Prozent der Proben unter Last bei 200 W oder mehr, die Grenze greift also. Zu Beginn langer Prompts kurze Spitzen bis 354 W, das Limit regelt mit Verzoegerung.",
+    "Vergleichbarkeit: die Referenz lief mit anderen Startparametern (ohne --placement expert_tiered, ohne --host-pool-mib, Kontext 200000). Ein Teil des Unterschieds, besonders bei Concurrency, kann daher aus der Konfiguration kommen. Eine Gegenmessung bei 300 W mit der heutigen Konfiguration fehlt.",
+    "Streuung: je Konfiguration ein Lauf. Ausreisser in diesem Lauf: code 1 mit 117 t/s, prosa 2 mit 122 t/s, reasoning 2 mit 121 t/s; die Referenz streut aehnlich.",
+    "Grenze gesetzt mit einer systemd-Unit (_beilagen/gpu-power-cap.service), die bei jedem Start 210000000 in power1_cap beider amdgpu-Karten schreibt.",
+    "Ueber den llm-router (_beilagen/bench_router.py, temperature 0.7, 600 Tokens, nicht in den Konfigurationen): 131 bis 140 t/s, Prefill eines 7110-Token-Prompts 6023 t/s. Modellwechsel von minimax-h3 auf Flash-Next bis zur ersten Antwort 34,9 s.",
+    "Die Messungen in radiance_210w liefen direkt gegen den Radiance-Server auf Port 8951, nicht ueber den Router."
+  ]
+}

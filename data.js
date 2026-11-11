@@ -1,7 +1,331 @@
 // erzeugt von tools/collect.py, nicht von Hand aendern
 window.BENCH_DATA = {
- "generated": "2026-10-18T18:43:43+02:00",
+ "generated": "2026-11-11T16:41:19+01:00",
  "runs": [
+  {
+   "id": "2026-11-11-flashnext-210w",
+   "title": "Qwen3.8-Flash-Next (Radiance) mit Leistungsgrenze 210 W je GPU",
+   "date": "2026-11-11",
+   "timestamp": "2026-11-11T16:33+01:00",
+   "question": "Wie viel Tempo kostet die Leistungsgrenze von 210 W (statt 300 W) je R9700 bei Qwen3.8-Flash-Next ueber Radiance?",
+   "machine": {
+    "GPU": "2x AMD Radeon AI PRO R9700, gfx1201, je 31,86 GiB VRAM",
+    "Leistungsgrenze": "210 W je Karte (power1_cap, Minimum des Treibers; Standard 300 W)",
+    "CPU": "AMD Ryzen Threadripper PRO 3975WX, 32 Kerne",
+    "RAM": "123 GiB",
+    "OS": "Ubuntu 26.04, Kernel 7.0"
+   },
+   "model": {
+    "Modell": "qwen3.8-next-flash-fp8-iq4r-moe.rad, 4-Bit-Experten, int8-Trunk",
+    "Engine": "Radiance, --tp 2, so wie der llm-router es startet"
+   },
+   "method": {
+    "Sampling": "greedy (temperature 0, top_k 1, seed 42)",
+    "Messung": "3 Prompt-Typen x 4 Wiederholungen, 256 Tokens, ein Warmlauf; lange Ausgabe 3 x 2 mit 4096 Tokens",
+    "Kennzahl": "Median der Einzelwerte",
+    "Referenz": "referenz_300w = radiance_flashnext_disk_exact aus Lauf 2026-10-17-radiance-qwen38, unveraendert kopiert",
+    "Leistung": "power1_average beider Karten alle 0,5 s mitgeschrieben (_beilagen/power_*.log)"
+   },
+   "cmdline": "radiance --model qwen3.8-next-flash-fp8-iq4r-moe.rad --served-model-name qwen3.8-flash-next --tp 2 --tp-wire exact --max-num-seqs 8 --max-model-len 262144 --kv-cache-dtype fp8 --placement expert_tiered --host-pool-mib 12288 --gpu-headroom-mib 96 --num-speculative-tokens 3 --max-num-batched-tokens 2048 --ngram-placement disk",
+   "backends": {
+    "radiance_210w": {
+     "label": "Radiance Flash-Next, 210 W",
+     "device": "ROCm0,ROCm1 (tp 2)",
+     "detail": "Konfiguration des llm-routers am 2026-11-11 (siehe Startzeile), beide Karten auf 210 W begrenzt."
+    },
+    "referenz_300w": {
+     "label": "Referenz 300 W (Lauf 2026-10-17)",
+     "device": "ROCm0,ROCm1 (tp 2)",
+     "detail": "radiance_flashnext_disk_exact aus 2026-10-17-radiance-qwen38: 300 W, --tp-wire exact, n-gram disk, andere Startparameter als heute (kein expert_tiered, Kontext 200000). Nur kopiert, nicht neu gemessen."
+    }
+   },
+   "configs": {
+    "baseline": {
+     "label": "256 Tokens",
+     "order": 0
+    },
+    "lang4096": {
+     "label": "4096 Tokens",
+     "order": 1
+    }
+   },
+   "prompts": {
+    "code": "Python-Klasse fuer einen LRU-Cache mit Typannotationen und Komplexitaetsanalyse",
+    "prosa": "Fliesstext zur Heizkostenabrechnung in einer WEG",
+    "reasoning": "Einholvorgang zweier Zuege, Schritt fuer Schritt mit Gegenprobe"
+   },
+   "notes": [
+    "Ein Strom, 256 Tokens: Median 149,3 t/s gegen 170,5 t/s in der Referenz, also rund 12 Prozent weniger (code 143,5 gegen 160,0, prosa 151,6 gegen 170,5, reasoning 177,0 gegen 200,3). Prompt-Rate kurzer Prompts unveraendert (Median 1527 gegen 1502 t/s).",
+    "Lange Ausgabe (4096 Tokens, je Prompt 2 Wiederholungen, die Antworten enden teils frueher): Median 170,4 t/s, also nicht langsamer als kurze Antworten. Keine Referenz dazu.",
+    "Concurrency mit 256 Tokens (gesamt, pro Strom): c1 140,8 / c4 268,7 (67,2) / c8 413,2 (51,6) t/s gegen c1 154,7 / c4 391,3 (97,8) / c8 587,7 (73,5) in der Referenz. Bei mehreren Stroemen also rund 30 Prozent weniger; hier ist die Leistung der Engpass.",
+    "Concurrency mit bis zu 2048 Tokens: c1 162,2 / c4 341,9 (85,5) / c8 467,9 (58,5) t/s. Keine Referenz dazu.",
+    "Langer Kontext (Zufallswoerter, Passwort als Nadel bei einem Drittel, _beilagen/longctx.py): 74279 Token Prefill 5916 t/s (TTFT 12,6 s), 129970 Token 7050 t/s (TTFT 18,4 s), 242678 Token 5494 t/s (TTFT 44,2 s). Decode 134 / 134 / 103 t/s, nur ueber 12 Token gemessen, also grob. Alle drei richtig beantwortet (BLAUER-OTTER-4711). Referenz bei 243580 Token: Prefill 5800 bis 6700 t/s, TTFT 36 bis 42 s, Decode 108 bis 122 t/s; das Prefill verliert also hoechstens rund 15 Prozent.",
+    "Leistung: im Mittel unter Last 206 bis 211 W je Karte, 88 bis 99 Prozent der Proben unter Last bei 200 W oder mehr, die Grenze greift also. Zu Beginn langer Prompts kurze Spitzen bis 354 W, das Limit regelt mit Verzoegerung.",
+    "Vergleichbarkeit: die Referenz lief mit anderen Startparametern (ohne --placement expert_tiered, ohne --host-pool-mib, Kontext 200000). Ein Teil des Unterschieds, besonders bei Concurrency, kann daher aus der Konfiguration kommen. Eine Gegenmessung bei 300 W mit der heutigen Konfiguration fehlt.",
+    "Streuung: je Konfiguration ein Lauf. Ausreisser in diesem Lauf: code 1 mit 117 t/s, prosa 2 mit 122 t/s, reasoning 2 mit 121 t/s; die Referenz streut aehnlich.",
+    "Grenze gesetzt mit einer systemd-Unit (_beilagen/gpu-power-cap.service), die bei jedem Start 210000000 in power1_cap beider amdgpu-Karten schreibt.",
+    "Ueber den llm-router (_beilagen/bench_router.py, temperature 0.7, 600 Tokens, nicht in den Konfigurationen): 131 bis 140 t/s, Prefill eines 7110-Token-Prompts 6023 t/s. Modellwechsel von minimax-h3 auf Flash-Next bis zur ersten Antwort 34,9 s.",
+    "Die Messungen in radiance_210w liefen direkt gegen den Radiance-Server auf Port 8951, nicht ueber den Router."
+   ],
+   "results": {
+    "radiance_210w": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 116.95,
+        "median": 143.48,
+        "max": 148.02,
+        "mean": 137.98,
+        "spread_pct": 21.7,
+        "values": [
+         116.95,
+         139.27,
+         148.02,
+         147.69
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 1460.0,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 122.35,
+        "median": 151.55,
+        "max": 157.19,
+        "mean": 145.66,
+        "spread_pct": 23.0,
+        "values": [
+         150.64,
+         122.35,
+         152.46,
+         157.19
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 1527.2,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 121.02,
+        "median": 177.01,
+        "max": 188.87,
+        "mean": 165.98,
+        "spread_pct": 38.3,
+        "values": [
+         166.36,
+         121.02,
+         187.66,
+         188.87
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 1842.1,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 116.95,
+       "median": 149.33,
+       "max": 188.87,
+       "mean": 149.87,
+       "spread_pct": 48.2,
+       "values": [
+        116.95,
+        139.27,
+        148.02,
+        147.69,
+        150.64,
+        122.35,
+        152.46,
+        157.19,
+        166.36,
+        121.02,
+        187.66,
+        188.87
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     },
+     "lang4096": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 2,
+        "min": 162.26,
+        "median": 170.36,
+        "max": 178.47,
+        "mean": 170.36,
+        "spread_pct": 9.5,
+        "values": [
+         162.26,
+         178.47
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 4096,
+        "prompt_tps": 1435.6,
+        "speedup": 1.187
+       },
+       "prosa": {
+        "n": 2,
+        "min": 143.65,
+        "median": 150.57,
+        "max": 157.48,
+        "mean": 150.57,
+        "spread_pct": 9.2,
+        "values": [
+         157.48,
+         143.65
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 4096,
+        "prompt_tps": 1346.8,
+        "speedup": 0.994
+       },
+       "reasoning": {
+        "n": 2,
+        "min": 181.19,
+        "median": 184.05,
+        "max": 186.91,
+        "mean": 184.05,
+        "spread_pct": 3.1,
+        "values": [
+         181.19,
+         186.91
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 1397,
+        "prompt_tps": 1666.0,
+        "speedup": 1.04
+       }
+      },
+      "overall": {
+       "n": 6,
+       "min": 143.65,
+       "median": 170.36,
+       "max": 186.91,
+       "mean": 168.33,
+       "spread_pct": 25.4,
+       "values": [
+        162.26,
+        178.47,
+        157.48,
+        143.65,
+        181.19,
+        186.91
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.141
+     }
+    },
+    "referenz_300w": {
+     "baseline": {
+      "status": "ok",
+      "vram_gib": null,
+      "prompts": {
+       "code": {
+        "n": 4,
+        "min": 158.02,
+        "median": 160.03,
+        "max": 161.98,
+        "mean": 160.02,
+        "spread_pct": 2.5,
+        "values": [
+         158.02,
+         158.09,
+         161.97,
+         161.98
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 1485.2,
+        "speedup": 1.0
+       },
+       "prosa": {
+        "n": 4,
+        "min": 163.65,
+        "median": 170.51,
+        "max": 178.41,
+        "mean": 170.77,
+        "spread_pct": 8.7,
+        "values": [
+         163.65,
+         168.47,
+         172.54,
+         178.41
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 1502.5,
+        "speedup": 1.0
+       },
+       "reasoning": {
+        "n": 4,
+        "min": 195.07,
+        "median": 200.31,
+        "max": 207.63,
+        "mean": 200.83,
+        "spread_pct": 6.3,
+        "values": [
+         195.07,
+         200.34,
+         200.29,
+         207.63
+        ],
+        "acceptance": null,
+        "mean_len": null,
+        "pred_n": 256,
+        "prompt_tps": 1904.2,
+        "speedup": 1.0
+       }
+      },
+      "overall": {
+       "n": 12,
+       "min": 158.02,
+       "median": 170.51,
+       "max": 207.63,
+       "mean": 177.2,
+       "spread_pct": 29.1,
+       "values": [
+        158.02,
+        158.09,
+        161.97,
+        161.98,
+        163.65,
+        168.47,
+        172.54,
+        178.41,
+        195.07,
+        200.34,
+        200.29,
+        207.63
+       ],
+       "acceptance": null,
+       "mean_len": null
+      },
+      "speedup": 1.0
+     }
+    }
+   }
+  },
   {
    "id": "2026-10-18-minimax-h3-radiance-vs-comfyui",
    "title": "MiniMax-H3 Text-zu-Video: Radiance 1.8.1 (2x R9700) gegen ComfyUI, nativ und mit Latent-Upscale",
